@@ -1,9 +1,13 @@
 # GrowBot System Router — Mission
 
-**Status:** definitive mission statement, v1 (2026-11-16). Changes only by B's decision.
-**Owner:** B (EPIC WIN Pro Media). **Sanctioned by:** Brit Cruise (GrowBot founder), Discord DM, 2026-11-08.
+**Status:** mission statement, v1 (2026-11-16).
+**Designer:** B (EPIC WIN Pro Media). **Submitted to:** Brit Cruise (GrowBot founder), Discord DM, 2026-11-08.
 
 ---
+
+## The intent
+
+Make every kind of computational intelligence GrowBot can use, System One and System Two alike, available as a primitive: to the system itself and to developers building extensions. The router is the means; access to those primitives is the goal.
 
 ## The mission, in one paragraph
 
@@ -36,14 +40,13 @@ SysRouter turns these hand-placed fast paths into one registry, adds engines tha
 - Anything at sensor or motor rate. Balance, walking, IMU interpretation and servo control stay with the existing policies and clamps.
 - Replacing the language model for open conversation, planning, counting, date math or anything that needs generation.
 - Replacing a safety control with a probability. Clamps, bands and stop paths stay deterministic code.
-- Rewriting the existing corpus or the old proposal documents. They are archive; this repository's `sysrouter/` docs are the working record.
 
 ## Principles (the tie-breakers)
 
 1. **Principles before practices.** Coherence, simplicity and integrity decide ties.
 2. **Rule of Least Power.** Deterministic code first, then a System One engine, then a System Two engine. Each step up must be earned by data.
 3. **The clamp is code.** Prompts and model outputs are advisory. Limits are enforced by code (`agent-harness/README.md`, design law 4).
-4. **Measure before claiming.** No number enters a spec unless it was measured or its source is cited. Every figure in the old documents is a placeholder.
+4. **Measure before claiming.** No number enters a spec unless it was measured or its source is cited.
 5. **Fit the codebase's own conventions.** Feature flags with kill switches, log-only first, `typeof`-guarded calls so pieces can be tested in isolation, and the existing three brain-funding lanes (house credits, the user's own OpenRouter key, the user's own server).
 6. **Thin.** If the router needs a framework, the design is wrong.
 

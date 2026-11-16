@@ -29,7 +29,26 @@ These are **requirements, not a design.** They say what must be true and how it 
 - **R-SAFE-2** Text from the person is untrusted input to any engine (prompt injection). No engine output can widen what an action may do.
 - **R-SAFE-3** Engine failure, timeout, missing key or low confidence → today's path, unchanged.
 - **R-SAFE-4** A kill switch turns all of SysRouter off (URL flag persisted to `localStorage`, per codebase convention), plus a per-route switch.
-- **R-SAFE-5** A written threat model built from the real code (`CODEMAP.md` §8: the relay has no auth; the gateway is not a security boundary). The model from the earlier documents doesn't apply.
+- **R-SAFE-5** A written threat model built from the real code (`CODEMAP.md` §8: the relay has no auth; the gateway is not a security boundary).
+
+## R-TRUST — System lane vs extension lane
+
+**The question:** should work that comes from the system (GrowBot's own architecture) be privileged over work from third-party extensions, and how do we stop an extension from hijacking primary systems? This must be answered, with reasons, before the specification is final.
+
+**What the code already shows (V):** several resources are single and shared:
+- one brain flight at a time (`think()`)
+- one owner of the legs at a time (`moveLegs` takeover)
+- one voice
+- one budget of house credits or the user's own key
+- one journal holding private speech
+
+Contention for these is the real priority question.
+
+- **R-TRUST-1** Every registration carries an **origin tier**: `core` (engine-owned safety), `system` (GrowBot's own features), `extension` (third party). The tier is assigned by whatever loads the code, never declared by the code itself.
+- **R-TRUST-2** Priority by tier for each shared resource. A lower tier never pre-empts an action a higher tier owns. A `core` stop always wins, whoever owns the resource.
+- **R-TRUST-3** Extensions get **capability grants**, not ambient access: which actions, which expressive channels, which input text, which providers, which keys and budget. Grants are visible to the person and revocable.
+- **R-TRUST-4** Extensions can't read or change other routes, core thresholds, reserved actions or keys. They get per-extension rate and cost caps, and every decision is logged with its tier.
+- **R-TRUST-5 (open, decide with reasons):** isolation. Code loaded into the same page shares one JavaScript global scope, so tiers enforced only by API are *cooperative*, not a security boundary (the gateway's header says the same of itself). Hard isolation means running extensions in a Web Worker or sandboxed iframe that reach the router only by messages. The decision needs measured costs (latency, complexity) against the threat model in R-SAFE-5.
 
 ## R-SEC — Secrets and keys (whole-system, not SysRouter-only)
 
