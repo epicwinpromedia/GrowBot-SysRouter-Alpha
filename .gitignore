@@ -31,3 +31,7 @@ Thumbs.db
 *.swp
 .idea/
 .vscode/
+
+# Local AI-tooling session state (plugins write these; never project content)
+.harnesskit/
+.cto-toolkit/
