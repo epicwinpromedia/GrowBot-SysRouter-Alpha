@@ -204,7 +204,7 @@ export function createRouter(opts) {
     const P = providers[pid], x = { p: pid, ms: Math.round(now() - t0) };
     if (!res || typeof res !== 'object' || !res.answers) return { d: null, x, why: 'bad_answer' };
     if (res.model) x.m = String(res.model).replace(/[^\w.\/:@~-]/g, '').slice(0, 48);
-    if (typeof res.usd === 'number' && res.usd >= 0 && res.usd < 1) { x.usd = res.usd; usd += res.usd; if (res.usd > 0) paid[pid] = true; }
+    if (Number.isFinite(res.usd) && res.usd >= 0) { x.usd = res.usd; usd += res.usd; if (res.usd > 0) paid[pid] = true; }
     if (res.usage && res.usage.input_tokens >= 0) x.tok = res.usage.input_tokens;
     const raw = res.answers.q;
     if (raw && raw.abstain) return { d: null, x, why: 'abstain' };                      // "my rules do not cover this": escalate, never a confident none

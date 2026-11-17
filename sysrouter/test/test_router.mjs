@@ -363,6 +363,13 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   check("the spend cap holds: a charging engine is not asked once the session has spent its limit", calls === 3 && Math.abs(b.sr.spent() - 0.0012) < 1e-9 && b.rows.filter((r) => r.why === "budget").length === 5, [calls, b.sr.spent(), b.rows.map((r) => r.why)]);
   check("…and the free, on-device layer was still consulted every time", true);
 
+  const b2Rows = [], b2 = createRouter({ log: (e, d) => b2Rows.push(d), maxUsd: 1 });
+  b2.action("spin", { run() {} });
+  b2.provider("paid", fake(async () => Object.assign(choice("spin", 0.99), { usd: 1.5 })));
+  b2.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["paid"], mode: "parallel" }); b2.calibrate({ r: { "paid@m1": { p: 0.9 } } });
+  await b2.hear("spin 1").done; await b2.hear("spin 2").done;
+  check("a cost of $1 or more is counted and triggers the spend cap", b2.spent() === 1.5 && b2Rows[1].why === "budget", [b2.spent(), b2Rows]);
+
   const c = mk(); let heard = 0;
   c.sr.action("echo", { run: () => { heard++; c.sr.hear("spin", { from: "creature" }); } });
   c.sr.provider("p", fake(choice("spin", 1), { sync: true, exact: true }));

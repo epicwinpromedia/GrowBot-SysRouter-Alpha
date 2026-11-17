@@ -51,7 +51,8 @@ const MUTANTS = [
   ["a race loser trips the breaker", "signal.reason === 'won' ? 'lost'", "signal.reason === 'won' ? 'timeout'"],
   ["an unversioned gate acts", "return g[pid + '@' + model] || null;", "return g[pid + '@' + model] || g[pid] || null;"],
   ["a getter changes `on` after validation", "on: ro === undefined ? dict() : copyDict(ro),", "on: ro,"],
-  ["an extension reaches a stop", "if (acts.some((id) => actions[id] && actions[id].reserved)) throw new Error('sysrouter: extensions cannot be granted reserved actions');", ""]
+  ["an extension reaches a stop", "if (acts.some((id) => actions[id] && actions[id].reserved)) throw new Error('sysrouter: extensions cannot be granted reserved actions');", ""],
+  ["a cost of $1 or more is not counted", "if (Number.isFinite(res.usd) && res.usd >= 0)", "if (typeof res.usd === 'number' && res.usd >= 0 && res.usd < 1)"]
 ];
 
 const dir = mkdtempSync(tmpdir() + "/sysrouter-mutants-");
