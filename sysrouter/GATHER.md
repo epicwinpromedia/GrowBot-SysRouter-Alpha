@@ -1,6 +1,6 @@
 # What we still need — and the order we get it in
 
-Status as of 2026-11-16. Items move to the research files once done, with their evidence.
+Sections A–D: status as of 2026-11-16, not re-checked in the 2026-11-17 design pass. Section E: added 2026-11-17. Items move to the research files once done, with their evidence.
 
 ---
 
@@ -48,3 +48,28 @@ Status as of 2026-11-16. Items move to the research files once done, with their 
 - **D1** Approve the repo layout (`sysrouter/` holds all our work; Brit's files stay untouched).
 - **D2** Who holds the keys for live tests: your laptop `.env` only, or also a Cloudflare Worker we deploy under your account (needed if the phone calls System One directly).
 - **D3** Benchmark tooling language: Node (matches the app and harness, zero-dependency culture) unless an arm needs Python (for example a self-hosted Clef-flash via SGLang). I recommend Node, with Python only where a vendor tool requires it.
+
+## E. From the 2026-11-17 design pass (v2 framing, `MISSION.md` v2)
+
+### Decided in the pass (recorded in `SPEC.md` §14)
+
+- The router is part of the mind and runs alongside Brit's layer (the body and the creature agent). It reads his streams, requests only commands he exposed, never pre-empts anything and never calls `think()`.
+- The vocabulary is stream, event, trigger, command, capability, primitive, engine, attachment, behavior, extension, lane and permission. One vocabulary is used across lanes, and Brit's members of each class stay his.
+- There are two lanes: Brit's system lane (sealed at load, its reference never published) and an open third-party lane (data-only registrations, with third-party code in Workers).
+- `generate` is admitted as a primitive, and chaining is allowed with a hop limit.
+- The block list is published by Brit's server and works by name and manifest hash. It is a curation tool, not a boundary.
+- Attachments connect over the network by default.
+
+### Open (`SPEC.md` §15)
+
+| # | Question | Waiting on |
+|---|---|---|
+| E1 | `when`: can a trigger carry a condition on context? Three options written down | B (not a blocker) |
+| E2 | A path for Bluetooth and serial attachments, which have no Worker support recorded | B |
+| E3 | The creature's door (`SPEC.md` §9.4), and whether the person approves a creature-usable command once or on each use | Brit |
+| E4 | The hop limit for chaining | measurement |
+| E5 | The exact data shapes for separate stream, command, capability and trigger registrations (`SPEC.md` §7.2–7.4) | review by B |
+
+### Code work the v2 design calls for (`SPEC.md` §16)
+
+D1 remove `preempt` · D2 public port instead of `window.SysRouter` · D3 `seal()` closes the system lane · D4 command entries are Brit's whole command path · D5 no double requests · D6 emote reads both speakers · D7 v2 names · D8 separate registrations, composed steps, publish, `generate`, attachments, permissions UI, block list.
