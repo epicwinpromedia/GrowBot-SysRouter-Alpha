@@ -15,7 +15,7 @@ import { dataset, ROOT } from "../bench/lib.mjs";
 import { BRIT_FT, BRIT_SEEK } from "../data/authored.mjs";
 import { createRouter } from "../src/sysrouter.js";
 import { readersProvider, ftPick } from "../src/s1-readers.js";
-import { WAKE_ROUTE } from "../src/wakeword.js";
+import { FUZZY } from "../src/fuzzy.js";
 import { check, done, rng } from "./t.mjs";
 
 const R = loadReaders(), GOLD = ROOT + "test/golden/readers.json";
@@ -38,15 +38,15 @@ if (gold.next_html_sha256 !== R.sha256) console.log("  note: app/v3/next.html ch
 
 // 3. readers-first routing never changes a reader's decision. The engine behind them here is
 //    adversarial: it answers every line with a random confident option, as fast as it can.
-const rand = rng(20261117), opts = Object.keys(WAKE_ROUTE.question.criteria);
+const rand = rng(20261117), opts = Object.keys(FUZZY.question.criteria);
 function routed(policy) {
   const ran = [], rows = [], sr = createRouter({ log: (e, d) => rows.push(d) });
   for (const k of ["halt", "still"]) sr.action(k, { run: () => ran.push(k), reserved: true });
   for (const k of opts) if (k !== "none" && k !== "halt" && k !== "still") sr.action(k, { run: () => ran.push(k) });
   sr.provider("readers", readersProvider((t) => ftPick(R._ftWords(t))));
   sr.provider("chaos", { ask: async () => { const k = opts[Math.floor(rand() * opts.length)]; return { model: "chaos", answers: { q: { type: "choice", choice: k, probabilities: { [k]: 1 } } } }; } });
-  sr.route(Object.assign({}, WAKE_ROUTE, { providers: ["readers", "chaos"], policy, mode: "parallel", cooldownMs: 0 }));
-  sr.calibrate({ wake: { "chaos@chaos": { p: 0.9 } } });
+  sr.route(Object.assign({}, FUZZY, { providers: ["readers", "chaos"], policy, mode: "parallel", cooldownMs: 0 }));
+  sr.calibrate({ fuzzy: { "chaos@chaos": { p: 0.9 } } });
   return { sr, ran, rows };
 }
 for (const policy of ["cascade"]) {

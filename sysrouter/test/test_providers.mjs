@@ -11,7 +11,7 @@ import { readersProvider, ftPick } from "../src/s1-readers.js";
 import { ngramProvider, features, words } from "../src/s1-ngram.js";
 import { tokenizer, embedProvider } from "../src/s1-embed.js";
 import { softReflexRoute, softReflexes, SOFT_ACTS, MAX_SOFT } from "../src/soft-reflex.js";
-import { registerWake, WAKE_ROUTE } from "../src/wakeword.js";
+import { registerFuzzy, FUZZY } from "../src/fuzzy.js";
 import { registerExpress, EXPRESS_ROUTE, REACTIONS } from "../src/expressive.js";
 import { createRouter, readAnswer } from "../src/sysrouter.js";
 import { workerEngine } from "../src/worker-engine.js";
@@ -20,7 +20,7 @@ import { model, ROOT } from "../bench/lib.mjs";
 import { check, done, rng } from "./t.mjs";
 
 const gold = JSON.parse(readFileSync(ROOT + "test/golden/vendor-replies.json", "utf8"));
-const Q = WAKE_ROUTE.question, req = { state: "hey quit staring at me", questions: { q: Q } };
+const Q = FUZZY.question, req = { state: "hey quit staring at me", questions: { q: Q } };
 
 // ---- the decision contract: Jev, Clef, Clef-flash, as recorded ----
 for (const name of ["jev", "clef", "clef-flash"]) {
@@ -101,8 +101,8 @@ for (const name of ["jev", "clef", "clef-flash"]) {
   const ran = [], rows = [], sr = createRouter({ log: (e, d) => rows.push(d) });
   sr.provider("readers", readersProvider((t) => /^stop\b/.test(t) ? "halt" : ""));
   sr.provider("model", { ask: async (r) => { const q = r.questions.q; if (q.type === "noul") return { model: "m", answers: { q: { type: "noul", noul: /won|hooray/.test(r.state) ? 0.98 : 0.02 } } }; const k = /won/.test(r.state) && q.criteria.happy ? "happy" : /spin/.test(r.state) && q.criteria.spin ? "spin" : q.criteria.none ? "none" : "calm"; return { model: "m", answers: { q: { type: "choice", choice: k, probabilities: { [k]: 0.97 } } } }; } });
-  const run = Object.fromEntries(Object.keys(WAKE_ROUTE.on).map((k) => [k, () => ran.push(k)]));
-  registerWake(sr, run, ["readers", "model"], { mode: "parallel" });
+  const run = Object.fromEntries(Object.keys(FUZZY.on).map((k) => [k, () => ran.push(k)]));
+  registerFuzzy(sr, run, ["readers", "model"], { mode: "parallel" });
   registerExpress(sr, (rx, id) => ran.push(id + ":" + (rx.emotion || "") + ":" + (rx.expression || "")), ["model"], { mode: "parallel" });
   const soft = softReflexes(sr, Object.fromEntries(SOFT_ACTS.map((a) => [a, () => ran.push("reflex_" + a)])), "model");
   sr.calibrate({ wake: { "model@m": { p: 0.9 } }, express: { "model@m": { p: 0.9 } } });
@@ -203,5 +203,14 @@ for (const name of ["jev", "clef", "clef-flash"]) {
   const p2 = await boot(w2, { fetch: fakeFetch });
   await p2.hear("please stop right now").done;
   check("boot: falls back to SysRouterHost.run[kind] when command is absent", runCalls.join() === "run_halt", runCalls);
+
+  // 2A.2: dynamic option set from exposed commands + ?sysroute=wake:live sets fuzzy live
+  const dynSr = createRouter({}); let sawCrit = null;
+  dynSr.provider("chk", { ask: async (r) => { sawCrit = Object.keys(r.questions.q.criteria); return { model: "m", answers: { q: { type: "choice", choice: "none", probabilities: { none: 0.99 } } } }; } });
+  registerFuzzy(dynSr, { halt: () => {}, still: () => {} }, ["chk"], { mode: "live" });
+  dynSr.calibrate({ fuzzy: { "chk@m": { p: 0.9 } } });
+  await dynSr.hear("spin").done;
+  check("2A.2: removing spin from host removes spin from fuzzy question", sawCrit && !sawCrit.includes("spin") && sawCrit.includes("halt") && sawCrit.includes("none") && dynSr.list()[0].id === "fuzzy", [sawCrit, dynSr.list()]);
+  check("2A.2: ?sysroute=wake:live sets fuzzy live", p2.flags().routes.fuzzy === "live", p2.flags());
 }
 done("providers and registrations");

@@ -282,7 +282,7 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   await a.sr.hear("spin").done;
   check("off: no provider asked, no action, no row", asked === 0 && a.ran.length === 0 && a.rows.length === 0);
   f = readFlags("?sysrouter=1&sysroute=r:off,wake:parallel,x:preempt,bad id:live,y:nonsense", store);
-  check("?sysrouter=1 turns it back on; per-route flags parse, parallel normalizes to live, preempt and junk are dropped", !f.off && f.routes.r === "off" && f.routes.wake === "live" && !("x" in f.routes) && Object.keys(f.routes).length === 2, f);
+  check("?sysrouter=1 turns it back on; per-route flags parse, parallel normalizes to live, preempt and junk are dropped", !f.off && f.routes.r === "off" && f.routes.fuzzy === "live" && !("x" in f.routes) && Object.keys(f.routes).length === 2, f);
   const b = mk({ off: false, routes: { r: "off", s: "live" } }); b.sr.provider("p", fake(choice("spin", 1), { sync: true, exact: true }));
   b.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" });
   b.sr.route({ id: "s", question: { type: "choice", instructions: "s q", criteria: Q.criteria }, notFor: NOT, on: { spin: "perk" }, providers: ["p"] });

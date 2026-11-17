@@ -9,12 +9,12 @@ import { httpProvider } from "../src/s1-http.js";
 import { chatProvider } from "../src/s1-chat.js";
 import { ngramProvider } from "../src/s1-ngram.js";
 import { embedProvider, embedder } from "../src/s1-embed.js";
-import { WAKE_ROUTE } from "../src/wakeword.js";
+import { FUZZY } from "../src/fuzzy.js";
 import { EXPRESS_ROUTE } from "../src/expressive.js";
 import { loadReaders } from "./slice.mjs";
 
 export const ROOT = new URL("..", import.meta.url).pathname;
-export const ROUTES = { wake: WAKE_ROUTE, express: EXPRESS_ROUTE };
+export const ROUTES = { wake: FUZZY, express: EXPRESS_ROUTE };
 export const NONE = { wake: "none", express: "calm" };          // the option that triggers nothing
 
 // One secrets convention (R-SEC-1): a `.env` at the repo root, never committed. Lines are

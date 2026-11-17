@@ -18,7 +18,7 @@ import { dataset, model, pct, round } from "../bench/lib.mjs";
 import { createRouter } from "../src/sysrouter.js";
 import { readersProvider, ftPick } from "../src/s1-readers.js";
 import { ngramProvider } from "../src/s1-ngram.js";
-import { registerWake, WAKE_ROUTE } from "../src/wakeword.js";
+import { registerFuzzy, FUZZY } from "../src/fuzzy.js";
 import { registerExpress } from "../src/expressive.js";
 import { check, done } from "./t.mjs";
 
@@ -61,7 +61,7 @@ function run(text, said, state, sysrouter) {
 function realRouter(R) {
   const rows = [], acted = [], sr = createRouter({ log: (e, d) => rows.push(d) });
   sr.provider("readers", readersProvider((t) => ftPick(R(t)))); sr.provider("ngram-wake", ngramProvider(model("wake.ngram"))); sr.provider("ngram-express", ngramProvider(model("express.ngram")));
-  registerWake(sr, Object.fromEntries(Object.keys(WAKE_ROUTE.on).map((k) => [k, () => acted.push(k)])), ["readers", "ngram-wake"]);
+  registerFuzzy(sr, Object.fromEntries(Object.keys(FUZZY.on).map((k) => [k, () => acted.push(k)])), ["readers", "ngram-wake"]);
   registerExpress(sr, (f, id) => acted.push(id), ["ngram-express"]);
   sr.calibrate({ wake: { "ngram-wake@wake.ngram-v1": { p: 0.6 } }, express: { "ngram-express@express.ngram-v1": { p: 0.6 } } }); sr.seal();
   return { sr, rows, acted };

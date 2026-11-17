@@ -20,7 +20,7 @@ import { readersProvider, ftPick } from './s1-readers.js';
 import { ngramProvider } from './s1-ngram.js';
 import { httpProvider } from './s1-http.js';
 import { keyring, browserEnv } from './keys.js';
-import { registerWake, WAKE_ROUTE } from './wakeword.js';
+import { registerFuzzy, FUZZY } from './fuzzy.js';
 import { registerExpress } from './expressive.js';
 
 export async function boot(w, opts) {
@@ -45,8 +45,8 @@ export async function boot(w, opts) {
 
   if (wake.length) {
     const run = host.run || {}, r = {};
-    for (const k in WAKE_ROUTE.on) r[k] = typeof host.command === 'function' ? () => host.command(k, 'sysrouter') : (typeof run[k] === 'function' ? run[k] : unwired(k));
-    registerWake(sr, r, wake);
+    for (const k in FUZZY.on) r[k] = typeof host.command === 'function' ? () => host.command(k, 'sysrouter') : (typeof run[k] === 'function' ? run[k] : unwired(k));
+    registerFuzzy(sr, r, wake);
   }
   if (express.length) registerExpress(sr, typeof host.react === 'function' ? host.react : (fields, id) => unwired(id)(), express);
   if (gates) sr.calibrate(gates);

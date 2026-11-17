@@ -47,7 +47,7 @@ export function readFlags(search, storage) {
     if (b !== null) storage.gb_sysroute = b;
     f.off = storage.gb_sysrouter === '0';
     for (const part of String(storage.gb_sysroute || '').split(',')) {
-      const [id, rawM] = part.split(':'), m = rawM === 'parallel' ? 'live' : rawM;
+      const [rawId, rawM] = part.split(':'), id = rawId === 'wake' ? 'fuzzy' : (rawId === 'express' ? 'emote' : rawId), m = rawM === 'parallel' ? 'live' : rawM;
       if (ID.test(id || '') && (m === 'off' || MODES.includes(m))) f.routes[id] = m;
     }
   } catch (e) {}
@@ -221,8 +221,14 @@ export function createRouter(opts) {
   function calibrate(table) {   // { routeId: { 'providerId' or 'providerId@model': { p, pn, margin } } }
     assertOpen();
     if (!table || typeof table !== 'object') return;
-    for (const rid of Object.keys(table)) { if (!ID.test(rid) || !table[rid] || typeof table[rid] !== 'object') continue; gates[rid] = gates[rid] || dict();
-      for (const k of Object.keys(table[rid])) { const g = table[rid][k]; if (GATE.test(k) && g && g.p > 0.5 && g.p <= 1) gates[rid][k] = { p: +g.p, pn: g.pn > 0.5 && g.pn <= 1 ? +g.pn : +g.p, margin: +g.margin || 0 }; } }
+    for (const rawRid of Object.keys(table)) {
+      if (!ID.test(rawRid) || !table[rawRid] || typeof table[rawRid] !== 'object') continue;
+      const rids = rawRid === 'wake' ? ['wake', 'fuzzy'] : (rawRid === 'express' ? ['express', 'emote'] : [rawRid]);
+      for (const rid of rids) {
+        gates[rid] = gates[rid] || dict();
+        for (const k of Object.keys(table[rawRid])) { const g = table[rawRid][k]; if (GATE.test(k) && g && g.p > 0.5 && g.p <= 1) gates[rid][k] = { p: +g.p, pn: g.pn > 0.5 && g.pn <= 1 ? +g.pn : +g.p, margin: +g.margin || 0 }; }
+      }
+    }
   }
 
   // Registration is DATA: no function crosses this line, so the same call works from a Worker

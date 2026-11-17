@@ -29,8 +29,8 @@ async function measure(rate) {
   // each run appends its own run of spaces: the same words, but new strings, so the embedder's cache cannot answer for the network
   return page.evaluate(async (lines) => {
     const pc = (xs, p) => { const s = xs.slice().sort((a, b) => a - b); return Math.round(s[Math.min(s.length - 1, Math.floor(p / 100 * s.length))] * 1000) / 1000; }, stat = (xs) => ({ p50: pc(xs, 50), p95: pc(xs, 95), p99: pc(xs, 99), n: xs.length });
-    const { ngramProvider } = await import("../src/s1-ngram.js"), { WAKE_ROUTE } = await import("../src/wakeword.js");
-    const out = {}, m = await (await fetch("../models/wake.ngram.json")).json(), ng = ngramProvider(m), Q = WAKE_ROUTE.question;
+    const { ngramProvider } = await import("../src/s1-ngram.js"), { FUZZY } = await import("../src/fuzzy.js");
+    const out = {}, m = await (await fetch("../models/wake.ngram.json")).json(), ng = ngramProvider(m), Q = FUZZY.question;
     for (let i = 0; i < 50; i++) ng.ask({ state: lines[i], questions: { q: Q } });                       // warm-up
     // performance.now() is coarse in a page (0.1 ms). Time batches of 20 and divide.
     let xs = []; for (let i = 0; i + 20 <= lines.length; i += 20) { const t = performance.now(); for (let k = 0; k < 20; k++) ng.ask({ state: lines[i + k], questions: { q: Q } }); xs.push((performance.now() - t) / 20); }

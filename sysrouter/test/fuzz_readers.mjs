@@ -12,7 +12,7 @@ import { loadReaders } from "../bench/slice.mjs";
 import { readersProvider, ftPick } from "../src/s1-readers.js";
 import { ngramProvider } from "../src/s1-ngram.js";
 import { readAnswer } from "../src/sysrouter.js";
-import { WAKE_ROUTE } from "../src/wakeword.js";
+import { FUZZY } from "../src/fuzzy.js";
 import { model } from "../bench/lib.mjs";
 import { check, done, rng } from "./t.mjs";
 
@@ -33,7 +33,7 @@ function make() {
   return pick(["", " ", "\n\n", "stop".repeat(2000), " ".repeat(5000) + "stop", "stop" + " ".repeat(5000) + "following me", "don't".repeat(1000)]);
 }
 
-const FT = ["again", "go", "halt", "off", "softStop", "still"], prov = readersProvider((t) => ftPick(R._ftWords(t))), ng = ngramProvider(model("wake.ngram")), Q = WAKE_ROUTE.question;
+const FT = ["again", "go", "halt", "off", "softStop", "still"], prov = readersProvider((t) => ftPick(R._ftWords(t))), ng = ngramProvider(model("wake.ngram")), Q = FUZZY.question;
 let threw = 0, shape = 0, nondet = 0, provBad = 0, ngBad = 0; const slow = [], first = [];
 for (let i = 0; i < N; i++) {
   const s = make(); let a, b, sk;
