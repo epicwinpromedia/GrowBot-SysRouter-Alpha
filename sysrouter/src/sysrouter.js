@@ -102,7 +102,7 @@ export function createRouter(opts) {
     const o = { r: r.id, tier: r.tier, mode: modeOf(r), why };
     if (r.owner) o.ext = r.owner;
     if (x) for (const k in x) if (x[k] !== undefined && x[k] !== null && x[k] !== '') o[k] = x[k];
-    if (r.agree && o.a && why !== 'agree' && why !== 'shadow_arm') lastPick[r.id] = o.a;
+    if (r.agree && o.a && why !== 'agree' && why !== 'shadow_arm' && o.from !== 'creature') lastPick[r.id] = o.a;
     try { log('sysroute', o); } catch (e) {}
     return o;
   }
@@ -430,10 +430,13 @@ export function createRouter(opts) {
 
   // Shadow agreement (R-OBS-3): when the brain's reply lands, say whether it agreed with what
   // each route decided for the same words. route.agree names the reply field to compare.
-  function replied(reply) {
+  function replied(reply, kind) {
     if (flags.off || !reply || typeof reply !== 'object') return;
-    for (const rid in routes) { const r = routes[rid], lp = lastPick[rid]; if (!r.agree || !lp) continue; delete lastPick[rid];
-      row(r, 'agree', { a: lp, brain: typeof reply[r.agree] === 'string' ? reply[r.agree].slice(0, 24) : '', ok: reply[r.agree] === lp ? 1 : 0 }); }
+    if (kind === undefined || kind === 'event') {
+      for (const rid in routes) { const r = routes[rid], lp = lastPick[rid]; if (!r.agree || !lp) continue; delete lastPick[rid];
+        row(r, 'agree', { a: lp, brain: typeof reply[r.agree] === 'string' ? reply[r.agree].slice(0, 24) : '', ok: reply[r.agree] === lp ? 1 : 0 }); }
+    }
+    if (typeof reply.say === 'string' && reply.say.trim()) hear(reply.say, { from: 'creature' });
   }
 
   function addCapability(rawSpec, who) {

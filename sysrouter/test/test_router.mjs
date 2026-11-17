@@ -551,6 +551,22 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   const okRow2 = rqp.request("creature_cmd", {}, { from: "creature" });
   const rateRow = rqp.request("creature_cmd", {}, { from: "creature" });
   check("creature request runs exposed command up to per-source rate cap", okRow.why === "acted" && okRow2.why === "acted" && rateRow.why === "rate" && rqCount === 2, [okRow, rateRow, rqCount]);
+
+  // 2B.3: replied(o, kind) agree on event only, creature say emitted without overwriting person pick
+  const repRows = [], repSr = createRouter({ log: (e, d) => repRows.push(d) });
+  repSr.provider("ep", { ask: async (r) => ({ model: "m", answers: { q: { type: "choice", choice: /yay/.test(r.state) ? "happy" : "scared", probabilities: { happy: 0.99, scared: 0.99, calm: 0.01 } } } }) });
+  repSr.route({ id: "em", question: { type: "choice", instructions: "feel", criteria: { happy: "h", scared: "s", calm: "c" } }, notFor: NOT, on: {}, providers: ["ep"], input: "both", agree: "emotion", mode: "shadow" });
+  repSr.calibrate({ em: { "ep@m": { p: 0.9 } } });
+  await repSr.hear("yay!").done;
+  repSr.replied({ emotion: "scared", say: "oh no" }, "tick");
+  await new Promise((r) => setTimeout(r, 10));
+  check("tick reply writes no agree row, keeps pending person pick, and emits creature speech",
+    repRows.filter((r) => r.why === "agree").length === 0 &&
+    repRows.some((r) => r.r === "em" && r.from === "creature" && r.a === "scared") &&
+    repSr.read("speech").type === "creature" && repSr.read("speech").data === "oh no", repRows);
+  repSr.replied({ emotion: "happy", say: "" }, "event");
+  const agrees = repRows.filter((r) => r.why === "agree");
+  check("event reply after tick produces exactly one agree row against person pick", agrees.length === 1 && agrees[0].a === "happy" && agrees[0].ok === 1, agrees);
 }
 
 done("router laws");

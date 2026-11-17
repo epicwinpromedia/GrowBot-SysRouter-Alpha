@@ -60,7 +60,8 @@ const MUTANTS = [
   ["an event past the hop limit is dispatched", "if (hop > maxHops) {", "if (false) {"],
   ["out-of-range args reach the capability", "if (a.args) { const okArgs = checkArgs(a.args, checkedArgs); if (!okArgs) return row(r, 'bad_args', x); checkedArgs = okArgs; }", "if (false) {}"],
   ["a blocked hash installs", "if (blockList.hashes.has(hash)) throw new Error('sysrouter: blocked extension hash ' + hash);", ""],
-  ["a creature request reaches an unexposed command", "if (!a.exposeTo.includes(from)) return row({ id: 'request', tier: a.tier, owner: a.owner, mode: 'live' }, 'refused', { act: commandId, from, did: 0 });", ""]
+  ["a creature request reaches an unexposed command", "if (!a.exposeTo.includes(from)) return row({ id: 'request', tier: a.tier, owner: a.owner, mode: 'live' }, 'refused', { act: commandId, from, did: 0 });", ""],
+  ["a tick reply writes an agree row", "if (kind === undefined || kind === 'event') {", "if (true) {"]
 ];
 
 const dir = mkdtempSync(tmpdir() + "/sysrouter-mutants-");
