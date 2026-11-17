@@ -537,6 +537,20 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   try { await ip.install({ name: "blocked_ext" }, {}); } catch (e) { blockedNameErr = e.message; }
   try { await ip.install(man1, { streams: ["ext_ev"], commands: ["ext_cmd"] }); } catch (e) { blockedHashErr = e.message; }
   check("blocked name and blocked hash are both refused", /blocked extension name/.test(blockedNameErr) && /blocked extension hash/.test(blockedHashErr), [blockedNameErr, blockedHashErr]);
+
+  // port.request() exposeTo + rate cap (1D.9)
+  const rqClock = { t: 1e6 }, rqRows = []; let rqCount = 0;
+  const rqSr = createRouter({ log: (e, d) => rqRows.push(d), now: () => rqClock.t, reqPerMin: 2 });
+  rqSr.command({ id: "secret_cmd", run: () => { rqCount++; }, exposeTo: ["person"] });
+  rqSr.command({ id: "creature_cmd", run: () => { rqCount++; }, exposeTo: ["creature", "person"] });
+  const rqp = rqSr.port();
+  const refRow = rqp.request("secret_cmd", {}, { from: "creature" });
+  check("creature request for unexposed command logs refused and runs nothing", refRow.why === "refused" && refRow.did === 0 && rqCount === 0, [refRow, rqCount]);
+  rqClock.t += 60000;
+  const okRow = rqp.request("creature_cmd", {}, { from: "creature" });
+  const okRow2 = rqp.request("creature_cmd", {}, { from: "creature" });
+  const rateRow = rqp.request("creature_cmd", {}, { from: "creature" });
+  check("creature request runs exposed command up to per-source rate cap", okRow.why === "acted" && okRow2.why === "acted" && rateRow.why === "rate" && rqCount === 2, [okRow, rateRow, rqCount]);
 }
 
 done("router laws");

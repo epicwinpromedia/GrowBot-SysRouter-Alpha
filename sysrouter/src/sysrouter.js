@@ -80,9 +80,9 @@ export function createRouter(opts) {
   const log = typeof opts.log === 'function' ? opts.log : () => {};
   const now = opts.now || (() => Date.now());
   const flags = opts.flags || { off: false, routes: {} };
-  const actions = dict(), providers = dict(), routes = dict(), capabilities = dict(), triggers = dict(), installed = dict(), gates = dict(), held = dict(), last = dict(), seqOf = dict(), spend = dict(), lastPick = dict(), flight = dict(), health = dict(), paid = dict(), streams = dict();
+  const actions = dict(), providers = dict(), routes = dict(), capabilities = dict(), triggers = dict(), installed = dict(), gates = dict(), held = dict(), last = dict(), seqOf = dict(), spend = dict(), reqSpend = dict(), lastPick = dict(), flight = dict(), health = dict(), paid = dict(), streams = dict();
   // reliability limits, all overridable: a provider that fails BREAK.fails times in a row is left alone for BREAK.ms; hosted engines stop being asked once the session has spent maxUsd
-  const BREAK = { fails: Math.max(1, +(opts.breaker && opts.breaker.fails) || 3), ms: Math.max(0, +(opts.breaker && opts.breaker.ms) || 30000) }, maxUsd = opts.maxUsd >= 0 ? +opts.maxUsd : 0.25;
+  const BREAK = { fails: Math.max(1, +(opts.breaker && opts.breaker.fails) || 3), ms: Math.max(0, +(opts.breaker && opts.breaker.ms) || 30000) }, maxUsd = opts.maxUsd >= 0 ? +opts.maxUsd : 0.25, reqPerMin = opts.reqPerMin > 0 ? +opts.reqPerMin : 30;
   const maxHops = Number.isInteger(opts.maxHops) && opts.maxHops >= 0 ? opts.maxHops : 3;
   let sealed = false, seq = 0, evSeq = 0, activeHop = -1, usd = 0;
   let blockList = { names: new Set(), hashes: new Set() };
@@ -569,13 +569,22 @@ export function createRouter(opts) {
   function request(commandId, args, reqOpts) {
     if (flags.off) return { did: 0, why: 'off' };
     const from = reqOpts && reqOpts.from;
-    if (from !== 'person' && from !== 'creature') return { did: 0, why: 'refused' };
+    if (from !== 'person' && from !== 'creature') return row({ id: 'request', tier: 'system', mode: 'live' }, 'refused', { act: String(commandId || ''), did: 0 });
+    const m = Math.floor(now() / 60000), rs = reqSpend[from] && reqSpend[from].min === m ? reqSpend[from] : (reqSpend[from] = { min: m, n: 0 });
+    if (++rs.n > reqPerMin) return row({ id: 'request', tier: 'system', mode: 'live' }, 'rate', { act: String(commandId || ''), from, did: 0 });
     let res = null;
     for (const tid in triggers) {
       const tr = triggers[tid];
       if (tr.on[from] === true && tr.command === commandId) res = fireTrigger(tr, args);
     }
-    return res || { did: 0, why: 'refused' };
+    if (res) return res;
+    const a = has(actions, commandId) ? actions[commandId] : null;
+    if (!a) return row({ id: 'request', tier: 'system', mode: 'live' }, 'refused', { act: String(commandId || ''), from, did: 0 });
+    if (!a.exposeTo.includes(from)) return row({ id: 'request', tier: a.tier, owner: a.owner, mode: 'live' }, 'refused', { act: commandId, from, did: 0 });
+    if (a.tier === 'extension' && (!has(installed, a.owner) || !installed[a.owner].permissions.actions.includes(commandId))) {
+      return row({ id: 'request', tier: a.tier, owner: a.owner, mode: 'live' }, 'refused', { act: commandId, from, did: 0 });
+    }
+    return act({ id: 'request', tier: a.tier, owner: a.owner, mode: 'live', on: { go: commandId }, cooldownMs: a.cooldownMs }, 'go', { from }, args);
   }
 
   function uninstall(name) {
