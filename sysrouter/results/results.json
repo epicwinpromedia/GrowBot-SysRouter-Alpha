@@ -19,6 +19,8 @@
       "n_should_not": 1062,
       "recall": 0.2011,
       "wrong": 0.0057,
+      "wrong_all": 0.0014,
+      "bad_acts_all": 0.0028,
       "false_trigger": 0.0019,
       "precision": 0.9459,
       "acted": 74
@@ -30,6 +32,8 @@
        "n_should_not": 0,
        "recall": 0.2024,
        "wrong": 0.006,
+       "wrong_all": 0.006,
+       "bad_acts_all": 0.006,
        "false_trigger": null,
        "precision": 0.9714,
        "acted": 35
@@ -39,6 +43,8 @@
        "n_should_not": 40,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -48,6 +54,8 @@
        "n_should_not": 465,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -57,6 +65,8 @@
        "n_should_not": 348,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -66,6 +76,8 @@
        "n_should_not": 122,
        "recall": 0.2083,
        "wrong": 0.006,
+       "wrong_all": 0.0034,
+       "bad_acts_all": 0.0069,
        "false_trigger": 0.0082,
        "precision": 0.9459,
        "acted": 37
@@ -75,6 +87,8 @@
        "n_should_not": 4,
        "recall": 0.0833,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": 1,
        "acted": 1
@@ -84,6 +98,8 @@
        "n_should_not": 83,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0.012,
        "false_trigger": 0.012,
        "precision": 0,
        "acted": 1
@@ -124,6 +140,8 @@
       "n_should_not": 1062,
       "recall": 0.477,
       "wrong": 0.0172,
+      "wrong_all": 0.0043,
+      "bad_acts_all": 0.0071,
       "false_trigger": 0.0038,
       "precision": 0.9432,
       "acted": 176
@@ -135,6 +153,8 @@
        "n_should_not": 0,
        "recall": 0.494,
        "wrong": 0.0179,
+       "wrong_all": 0.0179,
+       "bad_acts_all": 0.0179,
        "false_trigger": null,
        "precision": 0.9651,
        "acted": 86
@@ -144,6 +164,8 @@
        "n_should_not": 40,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -153,6 +175,8 @@
        "n_should_not": 465,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -162,6 +186,8 @@
        "n_should_not": 348,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -171,6 +197,8 @@
        "n_should_not": 122,
        "recall": 0.4643,
        "wrong": 0.0179,
+       "wrong_all": 0.0103,
+       "bad_acts_all": 0.0172,
        "false_trigger": 0.0164,
        "precision": 0.9398,
        "acted": 83
@@ -180,6 +208,8 @@
        "n_should_not": 4,
        "recall": 0.4167,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": 1,
        "acted": 5
@@ -189,6 +219,8 @@
        "n_should_not": 83,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0.0241,
        "false_trigger": 0.0241,
        "precision": 0,
        "acted": 2
@@ -229,6 +261,8 @@
       "n_should_not": 1062,
       "recall": 0.1178,
       "wrong": 0.0029,
+      "wrong_all": 0.0007,
+      "bad_acts_all": 0.0035,
       "false_trigger": 0.0038,
       "precision": 0.8913,
       "acted": 46
@@ -240,6 +274,8 @@
        "n_should_not": 0,
        "recall": 0.1429,
        "wrong": 0.006,
+       "wrong_all": 0.006,
+       "bad_acts_all": 0.006,
        "false_trigger": null,
        "precision": 0.96,
        "acted": 25
@@ -249,6 +285,8 @@
        "n_should_not": 40,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -258,6 +296,8 @@
        "n_should_not": 465,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -267,6 +307,8 @@
        "n_should_not": 348,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -276,6 +318,8 @@
        "n_should_not": 122,
        "recall": 0.0893,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0.0069,
        "false_trigger": 0.0164,
        "precision": 0.8824,
        "acted": 17
@@ -285,6 +329,8 @@
        "n_should_not": 4,
        "recall": 0.1667,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": 1,
        "acted": 2
@@ -294,6 +340,8 @@
        "n_should_not": 83,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0.0241,
        "false_trigger": 0.0241,
        "precision": 0,
        "acted": 2
@@ -334,6 +382,8 @@
       "n_should_not": 1062,
       "recall": 0.5345,
       "wrong": 0.0172,
+      "wrong_all": 0.0043,
+      "bad_acts_all": 0.0085,
       "false_trigger": 0.0056,
       "precision": 0.9394,
       "acted": 198
@@ -345,6 +395,8 @@
        "n_should_not": 0,
        "recall": 0.5774,
        "wrong": 0.0179,
+       "wrong_all": 0.0179,
+       "bad_acts_all": 0.0179,
        "false_trigger": null,
        "precision": 0.97,
        "acted": 100
@@ -354,6 +406,8 @@
        "n_should_not": 40,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -363,6 +417,8 @@
        "n_should_not": 465,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -372,6 +428,8 @@
        "n_should_not": 348,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -381,6 +439,8 @@
        "n_should_not": 122,
        "recall": 0.5,
        "wrong": 0.0179,
+       "wrong_all": 0.0103,
+       "bad_acts_all": 0.0207,
        "false_trigger": 0.0246,
        "precision": 0.9333,
        "acted": 90
@@ -390,6 +450,8 @@
        "n_should_not": 4,
        "recall": 0.4167,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": 1,
        "acted": 5
@@ -399,6 +461,8 @@
        "n_should_not": 83,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0.0361,
        "false_trigger": 0.0361,
        "precision": 0,
        "acted": 3
@@ -439,6 +503,8 @@
       "n_should_not": 1062,
       "recall": 0.8103,
       "wrong": 0.0029,
+      "wrong_all": 0.0007,
+      "bad_acts_all": 0.0007,
       "false_trigger": 0,
       "precision": 0.9965,
       "acted": 283
@@ -450,6 +516,8 @@
        "n_should_not": 0,
        "recall": 0.8452,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": null,
        "precision": 1,
        "acted": 142
@@ -459,6 +527,8 @@
        "n_should_not": 40,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -468,6 +538,8 @@
        "n_should_not": 465,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -477,6 +549,8 @@
        "n_should_not": 348,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -486,6 +560,8 @@
        "n_should_not": 122,
        "recall": 0.7798,
        "wrong": 0.006,
+       "wrong_all": 0.0034,
+       "bad_acts_all": 0.0034,
        "false_trigger": 0,
        "precision": 0.9924,
        "acted": 132
@@ -495,6 +571,8 @@
        "n_should_not": 4,
        "recall": 0.75,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": 1,
        "acted": 9
@@ -504,6 +582,8 @@
        "n_should_not": 83,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -544,6 +624,8 @@
       "n_should_not": 1062,
       "recall": 0.6006,
       "wrong": 0,
+      "wrong_all": 0,
+      "bad_acts_all": 0.0007,
       "false_trigger": 0.0009,
       "precision": 0.9952,
       "acted": 210
@@ -555,6 +637,8 @@
        "n_should_not": 0,
        "recall": 0.5833,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": null,
        "precision": 1,
        "acted": 98
@@ -564,6 +648,8 @@
        "n_should_not": 40,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -573,6 +659,8 @@
        "n_should_not": 465,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -582,6 +670,8 @@
        "n_should_not": 348,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -591,6 +681,8 @@
        "n_should_not": 122,
        "recall": 0.619,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0.0034,
        "false_trigger": 0.0082,
        "precision": 0.9905,
        "acted": 105
@@ -600,6 +692,8 @@
        "n_should_not": 4,
        "recall": 0.5833,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": 1,
        "acted": 7
@@ -609,6 +703,8 @@
        "n_should_not": 83,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -649,6 +745,8 @@
       "n_should_not": 1062,
       "recall": 0.5603,
       "wrong": 0,
+      "wrong_all": 0,
+      "bad_acts_all": 0,
       "false_trigger": 0,
       "precision": 1,
       "acted": 195
@@ -660,6 +758,8 @@
        "n_should_not": 0,
        "recall": 0.5833,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": null,
        "precision": 1,
        "acted": 98
@@ -669,6 +769,8 @@
        "n_should_not": 40,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -678,6 +780,8 @@
        "n_should_not": 465,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -687,6 +791,8 @@
        "n_should_not": 348,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -696,6 +802,8 @@
        "n_should_not": 122,
        "recall": 0.5357,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": 1,
        "acted": 90
@@ -705,6 +813,8 @@
        "n_should_not": 4,
        "recall": 0.5833,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": 1,
        "acted": 7
@@ -714,6 +824,8 @@
        "n_should_not": 83,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -754,6 +866,8 @@
       "n_should_not": 1062,
       "recall": 0.7098,
       "wrong": 0.0057,
+      "wrong_all": 0.0014,
+      "bad_acts_all": 0.0028,
       "false_trigger": 0.0019,
       "precision": 0.9841,
       "acted": 251
@@ -765,6 +879,8 @@
        "n_should_not": 0,
        "recall": 0.7321,
        "wrong": 0.006,
+       "wrong_all": 0.006,
+       "bad_acts_all": 0.006,
        "false_trigger": null,
        "precision": 0.9919,
        "acted": 124
@@ -774,6 +890,8 @@
        "n_should_not": 40,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -783,6 +901,8 @@
        "n_should_not": 465,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -792,6 +912,8 @@
        "n_should_not": 348,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -801,6 +923,8 @@
        "n_should_not": 122,
        "recall": 0.6905,
        "wrong": 0.006,
+       "wrong_all": 0.0034,
+       "bad_acts_all": 0.0069,
        "false_trigger": 0.0082,
        "precision": 0.9831,
        "acted": 118
@@ -810,6 +934,8 @@
        "n_should_not": 4,
        "recall": 0.6667,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": 1,
        "acted": 8
@@ -819,6 +945,8 @@
        "n_should_not": 83,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0.012,
        "false_trigger": 0.012,
        "precision": 0,
        "acted": 1
@@ -859,6 +987,8 @@
       "n_should_not": 1062,
       "recall": 0.5603,
       "wrong": 0,
+      "wrong_all": 0,
+      "bad_acts_all": 0.0007,
       "false_trigger": 0.0009,
       "precision": 0.9949,
       "acted": 196
@@ -870,6 +1000,8 @@
        "n_should_not": 0,
        "recall": 0.5774,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": null,
        "precision": 1,
        "acted": 97
@@ -879,6 +1011,8 @@
        "n_should_not": 40,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -888,6 +1022,8 @@
        "n_should_not": 465,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -897,6 +1033,8 @@
        "n_should_not": 348,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -906,6 +1044,8 @@
        "n_should_not": 122,
        "recall": 0.5476,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": 1,
        "acted": 92
@@ -915,6 +1055,8 @@
        "n_should_not": 4,
        "recall": 0.5,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": 1,
        "acted": 6
@@ -924,6 +1066,8 @@
        "n_should_not": 83,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0.012,
        "false_trigger": 0.012,
        "precision": 0,
        "acted": 1
@@ -964,6 +1108,8 @@
       "n_should_not": 1062,
       "recall": 0,
       "wrong": 0,
+      "wrong_all": 0,
+      "bad_acts_all": 0,
       "false_trigger": 0,
       "precision": null,
       "acted": 0
@@ -975,6 +1121,8 @@
        "n_should_not": 0,
        "recall": 0,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": null,
        "precision": null,
        "acted": 0
@@ -984,6 +1132,8 @@
        "n_should_not": 40,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -993,6 +1143,8 @@
        "n_should_not": 465,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1002,6 +1154,8 @@
        "n_should_not": 348,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1011,6 +1165,8 @@
        "n_should_not": 122,
        "recall": 0,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1020,6 +1176,8 @@
        "n_should_not": 4,
        "recall": 0,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1029,6 +1187,8 @@
        "n_should_not": 83,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1070,6 +1230,8 @@
       "n_should_not": 1062,
       "recall": 0,
       "wrong": 0,
+      "wrong_all": 0,
+      "bad_acts_all": 0,
       "false_trigger": 0,
       "precision": null,
       "acted": 0
@@ -1081,6 +1243,8 @@
        "n_should_not": 0,
        "recall": 0,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": null,
        "precision": null,
        "acted": 0
@@ -1090,6 +1254,8 @@
        "n_should_not": 40,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1099,6 +1265,8 @@
        "n_should_not": 465,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1108,6 +1276,8 @@
        "n_should_not": 348,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1117,6 +1287,8 @@
        "n_should_not": 122,
        "recall": 0,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1126,6 +1298,8 @@
        "n_should_not": 4,
        "recall": 0,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1135,6 +1309,8 @@
        "n_should_not": 83,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1174,6 +1350,8 @@
       "n_should_not": 1062,
       "recall": 0.5718,
       "wrong": 0.0172,
+      "wrong_all": 0.0043,
+      "bad_acts_all": 0.0085,
       "false_trigger": 0.0056,
       "precision": 0.9431,
       "acted": 211
@@ -1184,6 +1362,8 @@
        "n_should_not": 0,
        "recall": 0.5893,
        "wrong": 0.0179,
+       "wrong_all": 0.0179,
+       "bad_acts_all": 0.0179,
        "false_trigger": null,
        "precision": 0.9706,
        "acted": 102
@@ -1193,6 +1373,8 @@
        "n_should_not": 40,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1202,6 +1384,8 @@
        "n_should_not": 465,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1211,6 +1395,8 @@
        "n_should_not": 348,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1220,6 +1406,8 @@
        "n_should_not": 122,
        "recall": 0.5655,
        "wrong": 0.0179,
+       "wrong_all": 0.0103,
+       "bad_acts_all": 0.0207,
        "false_trigger": 0.0246,
        "precision": 0.9406,
        "acted": 101
@@ -1229,6 +1417,8 @@
        "n_should_not": 4,
        "recall": 0.4167,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": 1,
        "acted": 5
@@ -1238,6 +1428,8 @@
        "n_should_not": 83,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0.0361,
        "false_trigger": 0.0361,
        "precision": 0,
        "acted": 3
@@ -1259,6 +1451,8 @@
       "n_should_not": 1062,
       "recall": 0.6322,
       "wrong": 0.0201,
+      "wrong_all": 0.005,
+      "bad_acts_all": 0.0106,
       "false_trigger": 0.0075,
       "precision": 0.9362,
       "acted": 235
@@ -1269,6 +1463,8 @@
        "n_should_not": 0,
        "recall": 0.6726,
        "wrong": 0.0179,
+       "wrong_all": 0.0179,
+       "bad_acts_all": 0.0179,
        "false_trigger": null,
        "precision": 0.9741,
        "acted": 116
@@ -1278,6 +1474,8 @@
        "n_should_not": 40,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1287,6 +1485,8 @@
        "n_should_not": 465,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1296,6 +1496,8 @@
        "n_should_not": 348,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1305,6 +1507,8 @@
        "n_should_not": 122,
        "recall": 0.6071,
        "wrong": 0.0238,
+       "wrong_all": 0.0138,
+       "bad_acts_all": 0.0276,
        "false_trigger": 0.0328,
        "precision": 0.9273,
        "acted": 110
@@ -1314,6 +1518,8 @@
        "n_should_not": 4,
        "recall": 0.4167,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": 1,
        "acted": 5
@@ -1323,6 +1529,8 @@
        "n_should_not": 83,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0.0482,
        "false_trigger": 0.0482,
        "precision": 0,
        "acted": 4
@@ -1344,6 +1552,8 @@
       "n_should_not": 1062,
       "recall": 0.8333,
       "wrong": 0.0086,
+      "wrong_all": 0.0021,
+      "bad_acts_all": 0.0035,
       "false_trigger": 0.0019,
       "precision": 0.9831,
       "acted": 295
@@ -1354,6 +1564,8 @@
        "n_should_not": 0,
        "recall": 0.869,
        "wrong": 0.006,
+       "wrong_all": 0.006,
+       "bad_acts_all": 0.006,
        "false_trigger": null,
        "precision": 0.9932,
        "acted": 147
@@ -1363,6 +1575,8 @@
        "n_should_not": 40,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1372,6 +1586,8 @@
        "n_should_not": 465,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1381,6 +1597,8 @@
        "n_should_not": 348,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1390,6 +1608,8 @@
        "n_should_not": 122,
        "recall": 0.8036,
        "wrong": 0.0119,
+       "wrong_all": 0.0069,
+       "bad_acts_all": 0.0103,
        "false_trigger": 0.0082,
        "precision": 0.9783,
        "acted": 138
@@ -1399,6 +1619,8 @@
        "n_should_not": 4,
        "recall": 0.75,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": 1,
        "acted": 9
@@ -1408,6 +1630,8 @@
        "n_should_not": 83,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0.012,
        "false_trigger": 0.012,
        "precision": 0,
        "acted": 1
@@ -1429,6 +1653,8 @@
       "n_should_not": 1062,
       "recall": 0.6753,
       "wrong": 0.0057,
+      "wrong_all": 0.0014,
+      "bad_acts_all": 0.0028,
       "false_trigger": 0.0019,
       "precision": 0.9833,
       "acted": 239
@@ -1439,6 +1665,8 @@
        "n_should_not": 0,
        "recall": 0.7024,
        "wrong": 0.006,
+       "wrong_all": 0.006,
+       "bad_acts_all": 0.006,
        "false_trigger": null,
        "precision": 0.9916,
        "acted": 119
@@ -1448,6 +1676,8 @@
        "n_should_not": 40,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1457,6 +1687,8 @@
        "n_should_not": 465,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1466,6 +1698,8 @@
        "n_should_not": 348,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1475,6 +1709,8 @@
        "n_should_not": 122,
        "recall": 0.6548,
        "wrong": 0.006,
+       "wrong_all": 0.0034,
+       "bad_acts_all": 0.0069,
        "false_trigger": 0.0082,
        "precision": 0.9821,
        "acted": 112
@@ -1484,6 +1720,8 @@
        "n_should_not": 4,
        "recall": 0.5833,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": 1,
        "acted": 7
@@ -1493,6 +1731,8 @@
        "n_should_not": 83,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0.012,
        "false_trigger": 0.012,
        "precision": 0,
        "acted": 1
@@ -1514,6 +1754,8 @@
       "n_should_not": 1062,
       "recall": 0.8506,
       "wrong": 0.0201,
+      "wrong_all": 0.005,
+      "bad_acts_all": 0.0092,
       "false_trigger": 0.0056,
       "precision": 0.9579,
       "acted": 309
@@ -1524,6 +1766,8 @@
        "n_should_not": 0,
        "recall": 0.8869,
        "wrong": 0.0179,
+       "wrong_all": 0.0179,
+       "bad_acts_all": 0.0179,
        "false_trigger": null,
        "precision": 0.9803,
        "acted": 152
@@ -1533,6 +1777,8 @@
        "n_should_not": 40,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1542,6 +1788,8 @@
        "n_should_not": 465,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1551,6 +1799,8 @@
        "n_should_not": 348,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1560,6 +1810,8 @@
        "n_should_not": 122,
        "recall": 0.8214,
        "wrong": 0.0238,
+       "wrong_all": 0.0138,
+       "bad_acts_all": 0.0241,
        "false_trigger": 0.0246,
        "precision": 0.9517,
        "acted": 145
@@ -1569,6 +1821,8 @@
        "n_should_not": 4,
        "recall": 0.75,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": 1,
        "acted": 9
@@ -1578,6 +1832,8 @@
        "n_should_not": 83,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0.0361,
        "false_trigger": 0.0361,
        "precision": 0,
        "acted": 3
@@ -1599,6 +1855,8 @@
       "n_should_not": 1062,
       "recall": 0.7443,
       "wrong": 0.0172,
+      "wrong_all": 0.0043,
+      "bad_acts_all": 0.0085,
       "false_trigger": 0.0056,
       "precision": 0.9557,
       "acted": 271
@@ -1609,6 +1867,8 @@
        "n_should_not": 0,
        "recall": 0.7798,
        "wrong": 0.0179,
+       "wrong_all": 0.0179,
+       "bad_acts_all": 0.0179,
        "false_trigger": null,
        "precision": 0.9776,
        "acted": 134
@@ -1618,6 +1878,8 @@
        "n_should_not": 40,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1627,6 +1889,8 @@
        "n_should_not": 465,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1636,6 +1900,8 @@
        "n_should_not": 348,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1645,6 +1911,8 @@
        "n_should_not": 122,
        "recall": 0.7143,
        "wrong": 0.0179,
+       "wrong_all": 0.0103,
+       "bad_acts_all": 0.0207,
        "false_trigger": 0.0246,
        "precision": 0.9524,
        "acted": 126
@@ -1654,6 +1922,8 @@
        "n_should_not": 4,
        "recall": 0.6667,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": 1,
        "acted": 8
@@ -1663,6 +1933,8 @@
        "n_should_not": 83,
        "recall": null,
        "wrong": null,
+       "wrong_all": 0,
+       "bad_acts_all": 0.0361,
        "false_trigger": 0.0361,
        "precision": 0,
        "acted": 3
@@ -1692,6 +1964,8 @@
       "n_should_not": 22,
       "recall": 0,
       "wrong": 0,
+      "wrong_all": 0,
+      "bad_acts_all": 0,
       "false_trigger": 0,
       "precision": null,
       "acted": 0
@@ -1703,6 +1977,8 @@
        "n_should_not": 22,
        "recall": 0,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1712,6 +1988,8 @@
        "n_should_not": 71,
        "recall": 0,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -1749,6 +2027,8 @@
       "n_should_not": 22,
       "recall": 0.1495,
       "wrong": 0.0374,
+      "wrong_all": 0.031,
+      "bad_acts_all": 0.0388,
       "false_trigger": 0.0455,
       "precision": 0.7619,
       "acted": 21
@@ -1760,6 +2040,8 @@
        "n_should_not": 22,
        "recall": 0.1495,
        "wrong": 0.0374,
+       "wrong_all": 0.031,
+       "bad_acts_all": 0.0388,
        "false_trigger": 0.0455,
        "precision": 0.7619,
        "acted": 21
@@ -1769,6 +2051,8 @@
        "n_should_not": 71,
        "recall": 0.0267,
        "wrong": 0.016,
+       "wrong_all": 0.0135,
+       "bad_acts_all": 0.0135,
        "false_trigger": 0,
        "precision": 0.625,
        "acted": 16
@@ -1806,6 +2090,8 @@
       "n_should_not": 22,
       "recall": 0.1589,
       "wrong": 0.0374,
+      "wrong_all": 0.031,
+      "bad_acts_all": 0.031,
       "false_trigger": 0,
       "precision": 0.8095,
       "acted": 21
@@ -1817,6 +2103,8 @@
        "n_should_not": 22,
        "recall": 0.1589,
        "wrong": 0.0374,
+       "wrong_all": 0.031,
+       "bad_acts_all": 0.031,
        "false_trigger": 0,
        "precision": 0.8095,
        "acted": 21
@@ -1826,6 +2114,8 @@
        "n_should_not": 71,
        "recall": 0.0963,
        "wrong": 0.0642,
+       "wrong_all": 0.0539,
+       "bad_acts_all": 0.0719,
        "false_trigger": 0.1127,
        "precision": 0.5294,
        "acted": 68
@@ -1863,6 +2153,8 @@
       "n_should_not": 22,
       "recall": 0.514,
       "wrong": 0.0093,
+      "wrong_all": 0.0078,
+      "bad_acts_all": 0.0233,
       "false_trigger": 0.0909,
       "precision": 0.9483,
       "acted": 58
@@ -1874,6 +2166,8 @@
        "n_should_not": 22,
        "recall": 0.514,
        "wrong": 0.0093,
+       "wrong_all": 0.0078,
+       "bad_acts_all": 0.0233,
        "false_trigger": 0.0909,
        "precision": 0.9483,
        "acted": 58
@@ -1883,6 +2177,8 @@
        "n_should_not": 71,
        "recall": 0.1738,
        "wrong": 0.115,
+       "wrong_all": 0.0966,
+       "bad_acts_all": 0.1281,
        "false_trigger": 0.1972,
        "precision": 0.5328,
        "acted": 122
@@ -1920,6 +2216,8 @@
       "n_should_not": 22,
       "recall": 0.8785,
       "wrong": 0.0093,
+      "wrong_all": 0.0078,
+      "bad_acts_all": 0.0078,
       "false_trigger": 0,
       "precision": 0.9895,
       "acted": 95
@@ -1931,6 +2229,8 @@
        "n_should_not": 22,
        "recall": 0.8785,
        "wrong": 0.0093,
+       "wrong_all": 0.0078,
+       "bad_acts_all": 0.0078,
        "false_trigger": 0,
        "precision": 0.9895,
        "acted": 95
@@ -1940,6 +2240,8 @@
        "n_should_not": 71,
        "recall": 0.246,
        "wrong": 0.1337,
+       "wrong_all": 0.1124,
+       "bad_acts_all": 0.1416,
        "false_trigger": 0.1831,
        "precision": 0.5935,
        "acted": 155
@@ -1977,6 +2279,8 @@
       "n_should_not": 22,
       "recall": 0.7477,
       "wrong": 0.0093,
+      "wrong_all": 0.0078,
+      "bad_acts_all": 0.0078,
       "false_trigger": 0,
       "precision": 0.9877,
       "acted": 81
@@ -1988,6 +2292,8 @@
        "n_should_not": 22,
        "recall": 0.7477,
        "wrong": 0.0093,
+       "wrong_all": 0.0078,
+       "bad_acts_all": 0.0078,
        "false_trigger": 0,
        "precision": 0.9877,
        "acted": 81
@@ -1997,6 +2303,8 @@
        "n_should_not": 71,
        "recall": 0.1684,
        "wrong": 0.0508,
+       "wrong_all": 0.0427,
+       "bad_acts_all": 0.0607,
        "false_trigger": 0.1127,
        "precision": 0.7,
        "acted": 90
@@ -2034,6 +2342,8 @@
       "n_should_not": 22,
       "recall": 0.8318,
       "wrong": 0.028,
+      "wrong_all": 0.0233,
+      "bad_acts_all": 0.0233,
       "false_trigger": 0,
       "precision": 0.9674,
       "acted": 92
@@ -2045,6 +2355,8 @@
        "n_should_not": 22,
        "recall": 0.8318,
        "wrong": 0.028,
+       "wrong_all": 0.0233,
+       "bad_acts_all": 0.0233,
        "false_trigger": 0,
        "precision": 0.9674,
        "acted": 92
@@ -2054,6 +2366,8 @@
        "n_should_not": 71,
        "recall": 0.238,
        "wrong": 0.131,
+       "wrong_all": 0.1101,
+       "bad_acts_all": 0.1438,
        "false_trigger": 0.2113,
        "precision": 0.5817,
        "acted": 153
@@ -2091,6 +2405,8 @@
       "n_should_not": 22,
       "recall": 0.4673,
       "wrong": 0.0093,
+      "wrong_all": 0.0078,
+      "bad_acts_all": 0.0078,
       "false_trigger": 0,
       "precision": 0.9804,
       "acted": 51
@@ -2102,6 +2418,8 @@
        "n_should_not": 22,
        "recall": 0.4673,
        "wrong": 0.0093,
+       "wrong_all": 0.0078,
+       "bad_acts_all": 0.0078,
        "false_trigger": 0,
        "precision": 0.9804,
        "acted": 51
@@ -2111,6 +2429,8 @@
        "n_should_not": 71,
        "recall": 0.3717,
        "wrong": 0.0909,
+       "wrong_all": 0.0764,
+       "bad_acts_all": 0.0966,
        "false_trigger": 0.1268,
        "precision": 0.7637,
        "acted": 182
@@ -2148,6 +2468,8 @@
       "n_should_not": 22,
       "recall": 0.8037,
       "wrong": 0.0187,
+      "wrong_all": 0.0155,
+      "bad_acts_all": 0.0155,
       "false_trigger": 0,
       "precision": 0.9773,
       "acted": 88
@@ -2159,6 +2481,8 @@
        "n_should_not": 22,
        "recall": 0.8037,
        "wrong": 0.0187,
+       "wrong_all": 0.0155,
+       "bad_acts_all": 0.0155,
        "false_trigger": 0,
        "precision": 0.9773,
        "acted": 88
@@ -2168,6 +2492,8 @@
        "n_should_not": 71,
        "recall": 0.2112,
        "wrong": 0.123,
+       "wrong_all": 0.1034,
+       "bad_acts_all": 0.1348,
        "false_trigger": 0.1972,
        "precision": 0.5683,
        "acted": 139
@@ -2205,6 +2531,8 @@
       "n_should_not": 22,
       "recall": 0,
       "wrong": 0,
+      "wrong_all": 0,
+      "bad_acts_all": 0,
       "false_trigger": 0,
       "precision": null,
       "acted": 0
@@ -2216,6 +2544,8 @@
        "n_should_not": 22,
        "recall": 0,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -2225,6 +2555,8 @@
        "n_should_not": 71,
        "recall": 0,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -2263,6 +2595,8 @@
       "n_should_not": 22,
       "recall": 0,
       "wrong": 0,
+      "wrong_all": 0,
+      "bad_acts_all": 0,
       "false_trigger": 0,
       "precision": null,
       "acted": 0
@@ -2274,6 +2608,8 @@
        "n_should_not": 22,
        "recall": 0,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -2283,6 +2619,8 @@
        "n_should_not": 71,
        "recall": 0,
        "wrong": 0,
+       "wrong_all": 0,
+       "bad_acts_all": 0,
        "false_trigger": 0,
        "precision": null,
        "acted": 0
@@ -2319,6 +2657,8 @@
       "n_should_not": 22,
       "recall": 0.1495,
       "wrong": 0.0374,
+      "wrong_all": 0.031,
+      "bad_acts_all": 0.0388,
       "false_trigger": 0.0455,
       "precision": 0.7619,
       "acted": 21
@@ -2329,6 +2669,8 @@
        "n_should_not": 22,
        "recall": 0.1495,
        "wrong": 0.0374,
+       "wrong_all": 0.031,
+       "bad_acts_all": 0.0388,
        "false_trigger": 0.0455,
        "precision": 0.7619,
        "acted": 21
@@ -2350,6 +2692,8 @@
       "n_should_not": 22,
       "recall": 0.514,
       "wrong": 0.0093,
+      "wrong_all": 0.0078,
+      "bad_acts_all": 0.0233,
       "false_trigger": 0.0909,
       "precision": 0.9483,
       "acted": 58
@@ -2360,6 +2704,8 @@
        "n_should_not": 22,
        "recall": 0.514,
        "wrong": 0.0093,
+       "wrong_all": 0.0078,
+       "bad_acts_all": 0.0233,
        "false_trigger": 0.0909,
        "precision": 0.9483,
        "acted": 58
@@ -2381,6 +2727,8 @@
       "n_should_not": 22,
       "recall": 0.8785,
       "wrong": 0.0093,
+      "wrong_all": 0.0078,
+      "bad_acts_all": 0.0078,
       "false_trigger": 0,
       "precision": 0.9895,
       "acted": 95
@@ -2391,6 +2739,8 @@
        "n_should_not": 22,
        "recall": 0.8785,
        "wrong": 0.0093,
+       "wrong_all": 0.0078,
+       "bad_acts_all": 0.0078,
        "false_trigger": 0,
        "precision": 0.9895,
        "acted": 95
@@ -2412,6 +2762,8 @@
       "n_should_not": 22,
       "recall": 0.8318,
       "wrong": 0.028,
+      "wrong_all": 0.0233,
+      "bad_acts_all": 0.0233,
       "false_trigger": 0,
       "precision": 0.9674,
       "acted": 92
@@ -2422,6 +2774,8 @@
        "n_should_not": 22,
        "recall": 0.8318,
        "wrong": 0.028,
+       "wrong_all": 0.0233,
+       "bad_acts_all": 0.0233,
        "false_trigger": 0,
        "precision": 0.9674,
        "acted": 92
@@ -2443,6 +2797,8 @@
       "n_should_not": 22,
       "recall": 0.8505,
       "wrong": 0.0374,
+      "wrong_all": 0.031,
+      "bad_acts_all": 0.0388,
       "false_trigger": 0.0455,
       "precision": 0.9479,
       "acted": 96
@@ -2453,6 +2809,8 @@
        "n_should_not": 22,
        "recall": 0.8505,
        "wrong": 0.0374,
+       "wrong_all": 0.031,
+       "bad_acts_all": 0.0388,
        "false_trigger": 0.0455,
        "precision": 0.9479,
        "acted": 96
@@ -2474,6 +2832,8 @@
       "n_should_not": 22,
       "recall": 0.8131,
       "wrong": 0.0561,
+      "wrong_all": 0.0465,
+      "bad_acts_all": 0.0543,
       "false_trigger": 0.0455,
       "precision": 0.9255,
       "acted": 94
@@ -2484,6 +2844,8 @@
        "n_should_not": 22,
        "recall": 0.8131,
        "wrong": 0.0561,
+       "wrong_all": 0.0465,
+       "bad_acts_all": 0.0543,
        "false_trigger": 0.0455,
        "precision": 0.9255,
        "acted": 94
