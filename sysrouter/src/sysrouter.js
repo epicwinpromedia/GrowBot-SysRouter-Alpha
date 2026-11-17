@@ -76,10 +76,13 @@ export function createRouter(opts) {
   const log = typeof opts.log === 'function' ? opts.log : () => {};
   const now = opts.now || (() => Date.now());
   const flags = opts.flags || { off: false, routes: {} };
-  const actions = dict(), providers = dict(), routes = dict(), gates = dict(), held = dict(), last = dict(), seqOf = dict(), spend = dict(), lastPick = dict(), flight = dict(), health = dict(), paid = dict();
+  const actions = dict(), providers = dict(), routes = dict(), gates = dict(), held = dict(), last = dict(), seqOf = dict(), spend = dict(), lastPick = dict(), flight = dict(), health = dict(), paid = dict(), streams = dict();
   // reliability limits, all overridable: a provider that fails BREAK.fails times in a row is left alone for BREAK.ms; hosted engines stop being asked once the session has spent maxUsd
   const BREAK = { fails: Math.max(1, +(opts.breaker && opts.breaker.fails) || 3), ms: Math.max(0, +(opts.breaker && opts.breaker.ms) || 30000) }, maxUsd = opts.maxUsd >= 0 ? +opts.maxUsd : 0.25;
-  let sealed = false, seq = 0, depth = 0, usd = 0;
+  const maxHops = Number.isInteger(opts.maxHops) && opts.maxHops >= 0 ? opts.maxHops : 3;
+  let sealed = false, seq = 0, evSeq = 0, activeHop = -1, usd = 0;
+
+  streams['speech'] = { id: 'speech', tier: 'core', owner: '', types: { person: true, creature: true }, latest: null, watchers: [] };
 
   function row(r, why, x) {   // one journal row per decision (R-OBS-1). Never the words: the funnel's own "user" row holds their hash.
     const o = { r: r.id, tier: r.tier, mode: modeOf(r), why };
@@ -93,6 +96,40 @@ export function createRouter(opts) {
   const gateOf = (r, pid, model) => { if (!model) return null; const g = gates[r.id] || dict(); return g[pid + '@' + model] || null; };
 
   const assertOpen = () => { if (sealed) throw new Error('sysrouter: sealed'); };
+
+  function addStream(rawDecl, who) {
+    if (!rawDecl || typeof rawDecl !== 'object') throw new Error('sysrouter: bad stream');
+    const id = rawDecl.id, rt = rawDecl.types;
+    if (!ID.test(id || '')) throw new Error('sysrouter: bad stream id ' + id);
+    if (has(streams, id)) throw new Error('sysrouter: stream exists: ' + id);
+    const types = dict();
+    if (Array.isArray(rt)) { for (const t of rt) if (typeof t === 'string' && KEY.test(t)) types[t] = true; }
+    else if (rt && typeof rt === 'object') { for (const t of Object.keys(rt)) if (KEY.test(t) && !(t in Object.prototype)) types[t] = true; }
+    if (!Object.keys(types).length) throw new Error('sysrouter: stream ' + id + ' needs types');
+    streams[id] = { id, tier: who.tier, owner: who.name || '', types, latest: null, watchers: [] };
+    return id;
+  }
+  function emit(streamId, event) {
+    if (flags.off) return null;
+    const s = has(streams, streamId) ? streams[streamId] : null;
+    if (!s || !event || typeof event !== 'object' || typeof event.type !== 'string' || !has(s.types, event.type)) throw new Error('sysrouter: bad event for ' + streamId);
+    const hop = activeHop >= 0 ? activeHop + 1 : 0;
+    if (hop > maxHops) { row({ id: streamId, tier: s.tier, owner: s.owner, mode: 'live' }, 'hops', { stream: streamId, type: event.type, hop }); return null; }
+    const raw = event.data, data = typeof raw === 'string' ? (raw.length > 600 ? raw.slice(0, 600) : raw) : raw;
+    const ev = Object.freeze({ stream: streamId, type: event.type, data, t: now(), seq: ++evSeq, hop });
+    s.latest = ev;
+    const prevHop = activeHop; activeHop = hop;
+    try { for (const fn of s.watchers.slice()) { try { fn(ev); } catch (e) {} } }
+    finally { activeHop = prevHop; }
+    return ev;
+  }
+  const read = (streamId) => has(streams, streamId) ? streams[streamId].latest : null;
+  function watch(streamId, fn) {
+    if (!has(streams, streamId) || typeof fn !== 'function') throw new Error('sysrouter: bad watch ' + streamId);
+    const ws = streams[streamId].watchers;
+    ws.push(fn);
+    return () => { const i = ws.indexOf(fn); if (i >= 0) ws.splice(i, 1); };
+  }
 
   function action(id, a) {
     if (!ID.test(id) || !a || typeof a.run !== 'function') throw new Error('sysrouter: bad action ' + id);
@@ -276,9 +313,11 @@ export function createRouter(opts) {
   function hear(text, meta) {
     meta = meta || {};
     const out = { acted: [], done: null }, waits = [], from = meta.from === 'creature' ? 'creature' : 'person';
-    if (flags.off || typeof text !== 'string' || !text.trim() || depth > 1) { out.done = Promise.resolve(out); return out; }   // depth: an action that makes the creature speak may be heard once, never in a loop
-    const state = text.length > 600 ? text.slice(0, 600) : text, my = ++seq;
-    depth++;
+    if (flags.off || typeof text !== 'string' || !text.trim()) { out.done = Promise.resolve(out); return out; }
+    const ev = emit('speech', { type: from, data: text });
+    if (!ev) { out.done = Promise.resolve(out); return out; }
+    const state = ev.data, my = ++seq, prevHop = activeHop;
+    activeHop = ev.hop;
     try { for (const rid in routes) {
       const r = routes[rid];
       if (modeOf(r) === 'off' || (r.input !== 'both' && r.input !== from)) continue;
@@ -288,7 +327,7 @@ export function createRouter(opts) {
       const finish = (res) => { const o = act(r, res.d.pick, res.x); if (o.did) out.acted.push(o.act); };
       const p = resolve(r, req, fresh, finish);
       if (p) waits.push(p);
-    } } finally { depth--; }
+    } } finally { activeHop = prevHop; }
     out.done = Promise.all(waits).then(() => out);
     return out;
   }
@@ -306,8 +345,8 @@ export function createRouter(opts) {
   const list = () => Object.keys(routes).map((id) => ({ id, tier: routes[id].tier, owner: routes[id].owner, mode: modeOf(routes[id]), providers: routes[id].providers.slice(), on: Object.assign({}, routes[id].on) }));
   const port = Object.freeze({
     hear, replied,
-    read: () => null,
-    watch: () => () => {},
+    read,
+    watch,
     request: () => ({ did: 0, why: 'refused' }),
     list,
     extensions: () => [],
@@ -318,7 +357,8 @@ export function createRouter(opts) {
   });
 
   return {
-    action, provider, calibrate, extension, hear, replied,
+    action, provider, calibrate, extension, hear, replied, read, watch, emit,
+    stream: (decl) => { assertOpen(); return addStream(decl, { tier: 'system' }); },
     route: (spec) => { assertOpen(); return addRoute(spec, { tier: 'system' }); },
     core: (spec) => { if (sealed) throw new Error('sysrouter: core routes are registered before seal()'); return addRoute(spec, { tier: 'core' }); },
     unroute: (id) => { assertOpen(); const r = routes[id]; if (!r || r.tier === 'extension') return false; delete routes[id]; return true; },

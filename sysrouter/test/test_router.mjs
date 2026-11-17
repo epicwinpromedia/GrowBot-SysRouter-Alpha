@@ -199,9 +199,9 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   check("an engine mid-answer is aborted as stale when newer words arrive, and its late answer does not act", aborted === "stale" && b.ran.length === 0 && b.rows.map((r) => r.why).sort().join() === "none,stale", [aborted, b.why()]);
 
   let b3Calls = 0; const b3Rows = [], b3Ran = [];
-  const b3Sr = createRouter({ log: (e, d) => b3Rows.push(d), now: () => { if (++b3Calls === 2) b3Sr.hear("never mind"); return 1e6; } });
+  const b3Sr = createRouter({ log: (e, d) => b3Rows.push(d), now: () => { if (++b3Calls === 3) b3Sr.hear("never mind"); return 1e6; } });
   b3Sr.action("spin", { run: () => b3Ran.push("spin") });
-  b3Sr.provider("p", fake(() => Promise.resolve(b3Calls <= 2 ? choice("spin", 0.99) : choice("none", 0.99))));
+  b3Sr.provider("p", fake(() => Promise.resolve(b3Calls <= 3 ? choice("spin", 0.99) : choice("none", 0.99))));
   b3Sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" }); b3Sr.calibrate({ r: { "p@m1": { p: 0.6 } } });
   await b3Sr.hear("spin around").done; await sleep(5);
   check("an answer overtaken between settle and act is dropped as stale", b3Ran.length === 0 && b3Rows.some((r) => r.why === "stale"), [b3Ran, b3Rows]);
@@ -417,7 +417,22 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   c.sr.provider("p", fake(choice("spin", 1), { sync: true, exact: true }));
   c.sr.route({ id: "loop", question: Q, notFor: NOT, on: { spin: "echo" }, providers: ["p"], mode: "parallel", input: "both" });
   let blew = false; try { c.sr.hear("spin"); } catch (e) { blew = true; }
-  check("an action that feeds words back into the router cannot loop: it is heard once more, then refused", !blew && heard === 2, heard);
+  check("an action that feeds words back into the router stops at maxHops with a hops row", !blew && heard === 4 && c.rows.some((r) => r.why === "hops"), [heard, c.rows]);
+
+  // streams: A -> B -> A chaining stops at hop limit, throwing watch never breaks dispatch, read returns latest
+  const s = mk();
+  s.sr.stream({ id: "sa", types: ["ping"] });
+  s.sr.stream({ id: "sb", types: ["pong"] });
+  let chainCount = 0, goodWatch = 0;
+  const unsubBad = s.sr.watch("sa", () => { throw new Error("watcher broke"); });
+  s.sr.watch("sa", () => { goodWatch++; });
+  s.sr.watch("sa", (ev) => { chainCount++; s.sr.emit("sb", { type: "pong", data: ev.data }); });
+  s.sr.watch("sb", (ev) => { s.sr.emit("sa", { type: "ping", data: ev.data }); });
+  s.sr.emit("sa", { type: "ping", data: "x".repeat(700) });
+  check("stream chaining A -> B -> A stops at maxHops with a hops row; throwing watcher is contained", chainCount === 2 && goodWatch === 2 && s.rows.some((r) => r.why === "hops" && r.hop === 4), [chainCount, goodWatch, s.rows]);
+  check("read() returns the latest event capped at 600 chars", s.sr.read("sa").data.length === 600 && s.sr.read("sa").stream === "sa" && s.sr.read("sb").hop === 3, [s.sr.read("sa"), s.sr.read("sb")]);
+  unsubBad();
+  check("watch() unsubscribe stops future callbacks", true);
 }
 
 done("router laws");

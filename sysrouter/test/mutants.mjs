@@ -20,7 +20,7 @@ const MUTANTS = [
   ["probabilities are not range-checked", "const ok = (x) => typeof x === 'number' && x >= 0 && x <= 1;", "const ok = (x) => true;"],
   ["an answer about older words still acts", "fresh = () => seqOf[rid] === my;", "fresh = () => true;"],
   // the kill switch is enforced twice (hear() returns at once, and every route's mode reads "off"), so breaking it takes both edits
-  ["the kill switch is ignored", ["if (flags.off || typeof text !== 'string'", "const modeOf = (r) => flags.off ? 'off' : "], ["if (typeof text !== 'string'", "const modeOf = (r) => "]],
+  ["the kill switch is ignored", ["if (flags.off) return null;", "if (flags.off || typeof text !== 'string'", "const modeOf = (r) => flags.off ? 'off' : "], ["", "if (typeof text !== 'string'", "const modeOf = (r) => "]],
   ["a probability alone reaches a reserved action", "fail('reserved action needs exact providers, or addsRecall:true');", "void 0;"],
   ["an extension reaches a reserved action", "if (a.reserved && who.tier === 'extension') fail('extensions cannot reach reserved actions');", ""],
   ["an extension uses an action outside its grant", "if (who.grants && !who.grants.actions.includes(on[k])) fail('no grant for action ' + on[k]);", ""],
@@ -34,12 +34,12 @@ const MUTANTS = [
   ["the rate cap is ignored", "if (++s.n > r.perMin) { row(r, 'rate'); continue; }", ""],
   ["notFor is not required", "if (typeof spec.notFor !== 'string' || spec.notFor.trim().length < 12) fail(", "if (false) fail("],
   ["route collisions are allowed", "fail('collides with ' + rid);", "void 0;"],
-  ["an unlimited amount of text is sent to an engine", "text.length > 600 ? text.slice(0, 600) : text", "text"],
+  ["an unlimited amount of text is sent to an engine", "raw.length > 600 ? raw.slice(0, 600) : raw", "raw"],
   ["a reserved action can be added after seal()", "if (a.reserved && sealed) throw new Error('sysrouter: reserved actions are registered before seal()');", ""],
   ["an executor that throws escapes", "try { a.run({ route: r.id, pick, tier: r.tier }); } catch (e) { return row(r, 'act_error', x); }", "a.run({ route: r.id, pick, tier: r.tier });"],
   ["a failing engine is asked forever (no circuit breaker)", "if (h.until > t0) return skip('open');", ""],
   ["the spend cap is ignored", "if (paid[pid] && usd >= maxUsd) return skip('budget');", ""],
-  ["an action can loop words back into the router without limit", "|| !text.trim() || depth > 1)", "|| !text.trim())"],
+  ["an action can loop words back into the router without limit", "const hop = activeHop >= 0 ? activeHop + 1 : 0;", "const hop = 0;"],
   ["an option may be named like a built-in object member", "KEY.test(k) && !(k in Object.prototype) && ", "KEY.test(k) && "],
   ["a registered question can be edited afterwards by its author", "Object.freeze(Object.assign({}, q.criteria));", "q.criteria;"],
   ["a registered answer table can be edited afterwards by its author", "on: Object.freeze(Object.assign(dict(), on)),", "on: rawSpec.on,"],
@@ -56,7 +56,8 @@ const MUTANTS = [
   ["the system lane registers after seal", "const assertOpen = () => { if (sealed) throw new Error('sysrouter: sealed'); };", "const assertOpen = () => {};"],
   ["the port exposes `route`", "const port = Object.freeze({", "const port = Object.freeze({ route: (spec) => addRoute(spec, { tier: 'system' }),"],
   ["a failed cascade step writes no row", "if (k === rest.length - 1 || res.why !== 'abstain') row(r, res.why, res.x);", "if (k === rest.length - 1) row(r, res.why, res.x);"],
-  ["a readers match is requested again", "if (x.p && providers[x.p] && providers[x.p].inFunnel) {", "if (false) {"]
+  ["a readers match is requested again", "if (x.p && providers[x.p] && providers[x.p].inFunnel) {", "if (false) {"],
+  ["an event past the hop limit is dispatched", "if (hop > maxHops) {", "if (false) {"]
 ];
 
 const dir = mkdtempSync(tmpdir() + "/sysrouter-mutants-");
