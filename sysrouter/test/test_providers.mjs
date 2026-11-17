@@ -4,6 +4,7 @@
 // (test/golden/vendor-replies.json). No network is used by this test.
 
 import { readFileSync } from "node:fs";
+import { Worker } from "node:worker_threads";
 import { httpProvider } from "../src/s1-http.js";
 import { chatProvider } from "../src/s1-chat.js";
 import { readersProvider, ftPick } from "../src/s1-readers.js";
@@ -13,6 +14,7 @@ import { softReflexRoute, softReflexes, SOFT_ACTS, MAX_SOFT } from "../src/soft-
 import { registerWake, WAKE_ROUTE } from "../src/wakeword.js";
 import { registerExpress, EXPRESS_ROUTE, REACTIONS } from "../src/expressive.js";
 import { createRouter, readAnswer } from "../src/sysrouter.js";
+import { workerEngine } from "../src/worker-engine.js";
 import { model, ROOT } from "../bench/lib.mjs";
 import { check, done, rng } from "./t.mjs";
 
@@ -115,5 +117,43 @@ for (const name of ["jev", "clef", "clef-flash"]) {
   for (let i = 1; i < MAX_SOFT; i++) soft.add({ when: "someone says thing number " + i + " aloud", not: "ordinary talk and questions", act: "beep" });
   check("soft reflexes are capped at " + MAX_SOFT, soft.add({ when: "one more rule than allowed", not: "ordinary talk and questions", act: "beep" }) === "" && sr.list().filter((r) => r.owner === "creature").length === MAX_SOFT);
   check("…and a removed rule frees its slot", soft.remove("soft.2") === true && soft.add({ when: "a replacement rule goes here", not: "ordinary talk and questions", act: "hum" }) === "soft.2");
+}
+
+// ---- workerEngine against node:worker_threads (1D.7) ----
+{
+  const wCode = `
+    const { parentPort } = require('node:worker_threads');
+    let aborted = 0;
+    parentPort.on('message', (m) => {
+      if (m.abort) { aborted++; parentPort.postMessage({ id: 99999, ok: true, output: [1] }); return; }
+      if (m.input === 'slow') { setTimeout(() => parentPort.postMessage({ id: m.id, ok: true, output: [1, 2], model: 'w1' }), 60); return; }
+      if (m.input === 'bad') { parentPort.postMessage({ id: m.id, ok: true, output: 'not-an-array', model: 'w1' }); return; }
+      if (m.primitive === 'embed') { parentPort.postMessage({ id: m.id, ok: true, output: [String(m.input).length, 1], model: 'w1' }); return; }
+      if (m.primitive === 'choice') { parentPort.postMessage({ id: m.id, ok: true, output: { type: 'choice', choice: 'spin', probabilities: { spin: 0.99, none: 0.01 } }, model: 'w1', usd: 0.0001 }); return; }
+      parentPort.postMessage({ id: m.id, ok: false, error: 'unsupported' });
+    });
+  `;
+  const w = new Worker(wCode, { eval: true });
+  const eng = workerEngine(w, { primitives: { embed: {}, choice: {} }, model: "w1" });
+  const eRes = await eng.ask({ primitive: "embed", input: "hello" });
+  check("workerEngine: embed round trip returns checked vector and model", Array.isArray(eRes.output) && eRes.output[0] === 5 && eRes.model === "w1", eRes);
+  let badErr = "";
+  try { await eng.ask({ primitive: "embed", input: "bad" }); } catch (e) { badErr = e.message; }
+  check("workerEngine: malformed output is rejected by primitive checker", /bad_answer/.test(badErr), badErr);
+  const ctl = new AbortController();
+  const slowP = eng.ask({ primitive: "embed", input: "slow" }, { signal: ctl.signal });
+  setTimeout(() => ctl.abort("timeout"), 10);
+  let abortErr = "";
+  try { await slowP; } catch (e) { abortErr = e.message; }
+  check("workerEngine: abort sends abort message and rejects", /abort/.test(abortErr), abortErr);
+
+  const ran = [], sr = createRouter({});
+  sr.action("spin", { run: () => ran.push("spin") });
+  sr.provider("w_eng", eng);
+  sr.route({ id: "w_r", question: { type: "choice", instructions: "pick", criteria: { spin: "spin", none: "none" } }, notFor: "ordinary talk", on: { spin: "spin" }, providers: ["w_eng"], mode: "live" });
+  sr.calibrate({ w_r: { "w_eng@w1": { p: 0.9 } } });
+  await sr.hear("spin").done;
+  check("workerEngine works as a router choice provider", ran.join() === "spin" && sr.spent() === 0.0001, [ran, sr.spent()]);
+  await w.terminate();
 }
 done("providers and registrations");
