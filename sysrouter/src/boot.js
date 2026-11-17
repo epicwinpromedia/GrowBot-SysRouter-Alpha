@@ -35,13 +35,22 @@ export async function boot(w, opts) {
   const wake = [], express = [];
   if (typeof w._ftWords === 'function') { sr.provider('readers', readersProvider((t) => ftPick(w._ftWords(t)))); wake.push('readers'); }
   const [mw, me, gates] = await Promise.all([json('wake.ngram.json'), json('express.ngram.json'), json('gates.json')]);
-  if (mw) { sr.provider('ngram-wake', ngramProvider(mw)); wake.push('ngram-wake'); }
-  if (me) { sr.provider('ngram-express', ngramProvider(me)); express.push('ngram-express'); }
+  if (mw) { sr.provider('ngram-fuzzy', ngramProvider(mw)); wake.push('ngram-fuzzy'); }
+  if (me) { sr.provider('ngram-emote', ngramProvider(me)); express.push('ngram-emote'); }
   // A hosted engine is asked only when the person supplied a lane for it (their own server,
   // or their own OpenRouter key: keys.js) AND asked for it with ?s1=<model>. No lane, no call.
   const hosted = (() => { try { const q = new URLSearchParams(w.location.search).get('s1'); if (q !== null) store.gb_s1 = q; return String(store.gb_s1 || ''); } catch (e) { return ''; } })();
-  const send = hosted ? keyring(browserEnv(store), { origin: w.location.origin }).sender('systemone') : null;
-  if (send && /^[a-z0-9~_.\/-]{3,64}$/i.test(hosted)) { sr.provider('hosted', httpProvider({ model: hosted, send })); wake.push('hosted'); express.push('hosted'); }
+  const send = hosted ? keyring(browserEnv(store), { origin: w.location.origin, fetch: opts.fetch }).sender('systemone') : null;
+  let hostedModel = '', explicitHost = '';
+  if (send && /^[a-z0-9~_.\/@-]{3,80}$/i.test(hosted)) {
+    const at = hosted.indexOf('@');
+    hostedModel = at > 0 ? hosted.slice(0, at) : hosted;
+    explicitHost = at > 0 ? hosted.slice(at + 1) : '';
+    const pinHost = explicitHost || (/^(cloudflare|typesafe)\//.test(hostedModel) ? hostedModel.split('/')[0] : '');
+    const extra = pinHost && (send.lane === 'byok' || send.lane === 'house') ? { provider: { only: [pinHost] } } : undefined;
+    sr.provider('hosted', httpProvider({ model: hostedModel, send, extra }));
+    wake.push('hosted'); express.push('hosted');
+  }
 
   if (wake.length) {
     const run = host.run || {}, r = {};
@@ -49,7 +58,16 @@ export async function boot(w, opts) {
     registerFuzzy(sr, r, wake);
   }
   if (express.length) registerEmote(sr, typeof host.react === 'function' ? host.react : (fields, id) => unwired(id)(), express);
-  if (gates) sr.calibrate(gates);
+  if (gates) {
+    const cal = {};
+    for (const rk in gates) {
+      cal[rk] = Object.assign({}, gates[rk]);
+      if (explicitHost && cal[rk]['hosted@' + hostedModel + '@' + explicitHost]) {
+        cal[rk]['hosted@' + hostedModel] = cal[rk]['hosted@' + hostedModel + '@' + explicitHost];
+      }
+    }
+    sr.calibrate(cal);
+  }
   sr.seal();
   w.SysRouter = sr.port();
   log('sysroute', { why: 'boot', routes: sr.list().map((x) => x.id + ':' + x.mode + ':' + x.providers.join('>')).join(' ') });

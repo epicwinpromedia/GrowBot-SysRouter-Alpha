@@ -193,7 +193,7 @@ for (const name of ["jev", "clef", "clef-flash"]) {
 {
   const cmdCalls = [], runCalls = [];
   const wModel = JSON.stringify(model("wake.ngram"));
-  const fakeFetch = async (url) => ({ ok: true, json: async () => url.includes("wake.ngram") ? JSON.parse(wModel) : url.includes("gates.json") ? { wake: { "ngram-wake@wake.ngram-v1": { p: 0.51 } } } : null });
+  const fakeFetch = async (url) => ({ ok: true, json: async () => url.includes("wake.ngram") ? JSON.parse(wModel) : url.includes("gates.json") ? { fuzzy: { "ngram-fuzzy@wake.ngram-v1": { p: 0.51 } } } : null });
   const w1 = { location: { search: "?sysrouter=1&sysroute=wake:live", origin: "http://localhost" }, localStorage: {}, SysRouterHost: { command: (k, by) => cmdCalls.push([k, by]), run: { halt: () => runCalls.push("run_halt") } } };
   const p1 = await boot(w1, { fetch: fakeFetch });
   await p1.hear("please stop right now").done;
@@ -250,5 +250,42 @@ for (const name of ["jev", "clef", "clef-flash"]) {
   const okGateRes = await c2Sr.invoke("emote_comp", "yay!");
   check("2B.2: composed emote capability gates on head model id, publishes to emote, and reacts", !noGateRes.ok && noGateRes.why === "no_gate" && okGateRes.ok && Array.isArray(c2Vec) && c2Vec[0] === 0.9 && c2Sr.read("emote").data === "happy" && c2Reacted === "feel_happy", [noGateRes, okGateRes, c2Vec, c2Reacted]);
   check("2B.2: both paths share the exact 6-label set", Object.keys(EMOTE.question.criteria).sort().join() === "alert,calm,curious,happy,sad,scared");
+}
+
+// ---- 3A.2 (#15): boot.js pins OpenRouter host and reads host-specific gate ----
+{
+  const gates = {
+    fuzzy: {
+      "hosted@cloudflare/clef": { p: 0.88 },
+      "hosted@cloudflare/clef@primeintellect": { p: 0.70 },
+      "hosted@typesafe/jev-1.14": { p: 0.64 }
+    }
+  };
+  const cases = [
+    { s1: "cloudflare/clef", wantModel: "cloudflare/clef", wantOnly: "cloudflare", p: 0.75, wantAct: false },
+    { s1: "typesafe/jev-1.14", wantModel: "typesafe/jev-1.14", wantOnly: "typesafe", p: 0.75, wantAct: true },
+    { s1: "cloudflare/clef@primeintellect", wantModel: "cloudflare/clef", wantOnly: "primeintellect", p: 0.75, wantAct: true }
+  ];
+  for (const c of cases) {
+    const bodies = []; let acted = 0;
+    const f = async (url, init) => {
+      if (url.includes("gates.json")) return { ok: true, json: async () => gates };
+      if (url.includes(".json")) return { ok: false };
+      const body = JSON.parse(init.body);
+      bodies.push(body);
+      return { ok: true, json: async () => ({ model: body.model, answers: { q: { type: "choice", choice: "halt", probabilities: { halt: c.p, none: 1 - c.p } } }, usage: { input_tokens: 10 } }) };
+    };
+    const w = {
+      location: { search: "?sysrouter=1&sysroute=fuzzy:live&s1=" + encodeURIComponent(c.s1), origin: "https://growbot.dev" },
+      localStorage: { pb_byok: "sk-or-test-key" },
+      SysRouterHost: { command: () => { acted++; } }
+    };
+    const port = await boot(w, { fetch: f });
+    await port.hear("stop now").done;
+    const b = bodies[0];
+    check("3A.2: ?s1=" + c.s1 + " sends model=" + c.wantModel + " and provider.only=[" + c.wantOnly + "] and applies host gate",
+      b && b.model === c.wantModel && b.provider && Array.isArray(b.provider.only) && b.provider.only[0] === c.wantOnly && (acted > 0) === c.wantAct,
+      { b, acted });
+  }
 }
 done("providers and registrations");
