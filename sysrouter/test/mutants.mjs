@@ -23,11 +23,11 @@ const MUTANTS = [
   ["the kill switch is ignored", ["if (flags.off) return null;", "if (flags.off || typeof text !== 'string'", "const modeOf = (r) => flags.off ? 'off' : "], ["", "if (typeof text !== 'string'", "const modeOf = (r) => "]],
   ["a probability alone reaches a reserved action", "fail('reserved action needs exact providers, or addsRecall:true');", "void 0;"],
   ["an extension reaches a reserved action", "if (a.reserved && who.tier === 'extension') fail('extensions cannot reach reserved actions');", ""],
-  ["an extension uses an action outside its grant", "if (who.grants && !who.grants.actions.includes(on[k])) fail('no grant for action ' + on[k]);", ""],
+  ["an extension uses an action outside its grant", "if (who.grants && !who.grants.actions.includes(aid)) fail('no grant for action ' + aid);", ""],
   ["an extension uses a provider outside its grant", "if (!who.grants.providers.includes(pid)) fail('no grant for provider ' + pid);", "void 0;"],
   ["an extension removes a system route", "if (!r || (who.name || '') !== r.owner || r.tier !== who.tier) return false;", "if (!r) return false;"],
   ["a lower tier pre-empts a higher tier's hold", "if (h && h.until > t && h.tier < tier) return row(r, 'held', x);", ""],
-  ["a stop is subject to cooldown and holds", "if (!a.reserved) {\n      if (r.cooldownMs", "if (true) {\n      if (r.cooldownMs"],
+  ["a stop is subject to cooldown and holds", "if (!a.reserved) {\n      if (cd", "if (true) {\n      if (cd"],
   ["a stop does not clear holds", "const clearHolds = () => { for (const k in held) delete held[k]; };", "const clearHolds = () => {};"],
   ["a deterministic stop waits for a promise", "for (; i < r.providers.length && providers[r.providers[i]].sync; i++) {", "for (; false; i++) {"],
   ["a spent budget still asks the next engine", "if (signal.aborted) return skip(whyAbort());", ""],
@@ -36,7 +36,7 @@ const MUTANTS = [
   ["route collisions are allowed", "fail('collides with ' + rid);", "void 0;"],
   ["an unlimited amount of text is sent to an engine", "raw.length > 600 ? raw.slice(0, 600) : raw", "raw"],
   ["a reserved action can be added after seal()", "if (a.reserved && sealed) throw new Error('sysrouter: reserved actions are registered before seal()');", ""],
-  ["an executor that throws escapes", "try { a.run({ route: r.id, pick, tier: r.tier }); } catch (e) { return row(r, 'act_error', x); }", "a.run({ route: r.id, pick, tier: r.tier });"],
+  ["an executor that throws escapes", "try { if (a.run) a.run({ route: r.id, pick, tier: r.tier, args: checkedArgs }); } catch (e) { return row(r, 'act_error', x); }", "if (a.run) a.run({ route: r.id, pick, tier: r.tier, args: checkedArgs });"],
   ["a failing engine is asked forever (no circuit breaker)", "if (h.until > t0) return skip('open');", ""],
   ["the spend cap is ignored", "if (paid[pid] && usd >= maxUsd) return skip('budget');", ""],
   ["an action can loop words back into the router without limit", "const hop = activeHop >= 0 ? activeHop + 1 : 0;", "const hop = 0;"],
@@ -52,12 +52,13 @@ const MUTANTS = [
   ["a getter changes `on` after validation", "on: ro === undefined ? dict() : copyDict(ro),", "on: ro,"],
   ["an extension reaches a stop", "if (acts.some((id) => actions[id] && actions[id].reserved)) throw new Error('sysrouter: extensions cannot be granted reserved actions');", ""],
   ["a cost of $1 or more is not counted", "if (Number.isFinite(res.usd) && res.usd >= 0)", "if (typeof res.usd === 'number' && res.usd >= 0 && res.usd < 1)"],
-  ["a throwing action keeps its hold", "try { a.run({ route: r.id, pick, tier: r.tier }); } catch (e) { return row(r, 'act_error', x); }\n    last[r.id + '>' + aid] = t;\n    if (a.reserved) clearHolds();                                                        // a stop clears every hold, whoever owns it\n    else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };", "last[r.id + '>' + aid] = t;\n    if (a.reserved) clearHolds();                                                        // a stop clears every hold, whoever owns it\n    else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };\n    try { a.run({ route: r.id, pick, tier: r.tier }); } catch (e) { return row(r, 'act_error', x); }"],
+  ["a throwing action keeps its hold", "try { if (a.run) a.run({ route: r.id, pick, tier: r.tier, args: checkedArgs }); } catch (e) { return row(r, 'act_error', x); }\n    last[r.id + '>' + aid] = t;\n    if (a.reserved) clearHolds();                                                        // a stop clears every hold, whoever owns it\n    else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };", "last[r.id + '>' + aid] = t;\n    if (a.reserved) clearHolds();                                                        // a stop clears every hold, whoever owns it\n    else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };\n    try { if (a.run) a.run({ route: r.id, pick, tier: r.tier, args: checkedArgs }); } catch (e) { return row(r, 'act_error', x); }"],
   ["the system lane registers after seal", "const assertOpen = () => { if (sealed) throw new Error('sysrouter: sealed'); };", "const assertOpen = () => {};"],
   ["the port exposes `route`", "const port = Object.freeze({", "const port = Object.freeze({ route: (spec) => addRoute(spec, { tier: 'system' }),"],
   ["a failed cascade step writes no row", "if (k === rest.length - 1 || res.why !== 'abstain') row(r, res.why, res.x);", "if (k === rest.length - 1) row(r, res.why, res.x);"],
   ["a readers match is requested again", "if (x.p && providers[x.p] && providers[x.p].inFunnel) {", "if (false) {"],
-  ["an event past the hop limit is dispatched", "if (hop > maxHops) {", "if (false) {"]
+  ["an event past the hop limit is dispatched", "if (hop > maxHops) {", "if (false) {"],
+  ["out-of-range args reach the capability", "if (a.args) { const okArgs = checkArgs(a.args, checkedArgs); if (!okArgs) return row(r, 'bad_args', x); checkedArgs = okArgs; }", "if (false) {}"]
 ];
 
 const dir = mkdtempSync(tmpdir() + "/sysrouter-mutants-");

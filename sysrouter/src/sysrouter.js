@@ -30,6 +30,7 @@
 const TIERS = { core: 0, system: 1, extension: 2 };          // lower number = higher priority
 const MODES = ['shadow', 'live'], POLICIES = ['single', 'cascade', 'race'], TYPES = ['noul', 'choice', 'score'];
 const PRIMITIVES = ['noul', 'choice', 'score', 'generate', 'match', 'embed', 'query', 'sense', 'actuate'];
+const EXPOSE_TO = ['third-party', 'creature', 'person'], ARG_TYPES = ['number', 'string', 'boolean', 'enum'];
 const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 const ID = /^[a-z][a-z0-9_.-]{0,39}$/, KEY = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,39}$/, GATE = /^[a-z][A-Za-z0-9_.@\/:~-]{0,95}$/;
 const dict = () => Object.create(null);   // no prototype: a key named __proto__ or constructor is just a key (test_router "hostile keys")
@@ -171,12 +172,63 @@ export function createRouter(opts) {
     return () => { const i = ws.indexOf(fn); if (i >= 0) ws.splice(i, 1); };
   }
 
+  function checkArgs(schema, raw) {
+    if (!schema) return {};
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+    const out = {};
+    for (const k of Object.keys(schema)) {
+      const d = schema[k], v = has(raw, k) ? raw[k] : undefined;
+      if (d.type === 'number') { if (typeof v !== 'number' || !Number.isFinite(v) || (d.min !== undefined && v < d.min) || (d.max !== undefined && v > d.max)) return null; }
+      else if (d.type === 'string') { if (typeof v !== 'string' || (d.maxLen !== undefined && v.length > d.maxLen)) return null; }
+      else if (d.type === 'boolean') { if (typeof v !== 'boolean') return null; }
+      else if (d.type === 'enum') { if (typeof v !== 'string' || !d.values.includes(v)) return null; }
+      out[k] = v;
+    }
+    return out;
+  }
+
+  function addCommand(rawSpec, who) {
+    if (!rawSpec || typeof rawSpec !== 'object') throw new Error('sysrouter: bad command');
+    const id = rawSpec.id, cap = rawSpec.capability, run = rawSpec.run, rArgs = rawSpec.args, rExp = rawSpec.exposeTo;
+    const resource = rawSpec.resource ? String(rawSpec.resource) : '', holdMs = +rawSpec.holdMs || 0, cooldownMs = Math.max(0, +rawSpec.cooldownMs || 0), reserved = !!rawSpec.reserved;
+    if (!ID.test(id || '')) throw new Error('sysrouter: bad command ' + id);
+    if (has(actions, id)) throw new Error('sysrouter: action exists: ' + id);
+    if (reserved && sealed) throw new Error('sysrouter: reserved actions are registered before seal()');
+    if (who.tier !== 'extension') assertOpen();
+    if (typeof run !== 'function' && (typeof cap !== 'string' || !ID.test(cap))) throw new Error('sysrouter: command ' + id + ' needs capability or run');
+    const exposeTo = [];
+    if (rExp !== undefined) {
+      if (!Array.isArray(rExp)) throw new Error('sysrouter: bad exposeTo');
+      for (const e of rExp) { if (!EXPOSE_TO.includes(e)) throw new Error('sysrouter: bad exposeTo ' + e); if (!exposeTo.includes(e)) exposeTo.push(e); }
+    }
+    let args = null;
+    if (rArgs !== undefined && rArgs !== null) {
+      if (typeof rArgs !== 'object' || Array.isArray(rArgs)) throw new Error('sysrouter: bad args schema');
+      args = dict();
+      for (const k of Object.keys(rArgs)) {
+        if (!KEY.test(k) || (k in Object.prototype)) throw new Error('sysrouter: bad arg name ' + k);
+        const d = rArgs[k];
+        if (!d || typeof d !== 'object' || !ARG_TYPES.includes(d.type)) throw new Error('sysrouter: bad arg type ' + k);
+        const entry = { type: d.type };
+        if (d.type === 'number') { if (d.min !== undefined) entry.min = +d.min; if (d.max !== undefined) entry.max = +d.max; }
+        if (d.type === 'string' && d.maxLen !== undefined) entry.maxLen = Math.max(0, +d.maxLen);
+        if (d.type === 'enum') {
+          if (!Array.isArray(d.values) || !d.values.length || !d.values.every((v) => typeof v === 'string')) throw new Error('sysrouter: enum needs values');
+          entry.values = Object.freeze(d.values.slice());
+        }
+        args[k] = Object.freeze(entry);
+      }
+    }
+    actions[id] = { id, tier: who.tier, owner: who.name || '', run: typeof run === 'function' ? run : null, capability: typeof cap === 'string' ? cap : '', args, exposeTo: Object.freeze(exposeTo), resource, holdMs, cooldownMs, reserved };
+    return id;
+  }
+
   function action(id, a) {
     if (!ID.test(id) || !a || typeof a.run !== 'function') throw new Error('sysrouter: bad action ' + id);
     if (has(actions, id)) throw new Error('sysrouter: action exists: ' + id);
     if (a.reserved && sealed) throw new Error('sysrouter: reserved actions are registered before seal()');
     assertOpen();
-    actions[id] = { run: a.run, resource: a.resource || '', holdMs: +a.holdMs || 0, reserved: !!a.reserved };
+    return addCommand({ id, run: a.run, resource: a.resource, holdMs: a.holdMs, reserved: a.reserved, exposeTo: a.exposeTo }, { tier: 'system' });
   }
   function provider(id, p) {
     assertOpen();
@@ -242,21 +294,25 @@ export function createRouter(opts) {
     if (policy === 'single' && ps.length !== 1) fail('single takes one provider');
     if (spec.on === null) fail('bad on');
     const on = spec.on, keys = q.type === 'noul' ? ['true', 'false'] : q.type === 'choice' ? Object.keys(q.criteria) : q.criteria.map((_, i) => String(i));
+    const onArgs = dict();
     for (const k of Object.keys(on)) {
       if (!keys.includes(k)) fail('on.' + k + ' is not an answer');
-      if (typeof on[k] !== 'string' || !has(actions, on[k])) fail('unknown action ' + on[k]);
-      const a = actions[on[k]];
+      const rawEntry = on[k], aid = typeof rawEntry === 'string' ? rawEntry : (rawEntry && typeof rawEntry === 'object' && typeof rawEntry.command === 'string' ? rawEntry.command : '');
+      if (!aid || !has(actions, aid)) fail('unknown action ' + aid);
+      on[k] = aid;
+      if (rawEntry && typeof rawEntry === 'object' && rawEntry.args !== undefined) onArgs[k] = copyDict(rawEntry.args);
+      const a = actions[aid];
       // a reserved action (stop, halt) is reachable only through an exact provider chain: a probability may never be the only thing between words and a stop, in either direction (R-SAFE-1)
       if (a.reserved && !(who.tier === 'core' || ps.every((pid) => providers[pid].exact) || spec.addsRecall === true)) fail('reserved action needs exact providers, or addsRecall:true');
       if (a.reserved && who.tier === 'extension') fail('extensions cannot reach reserved actions');
-      if (who.grants && !who.grants.actions.includes(on[k])) fail('no grant for action ' + on[k]);
+      if (who.grants && !who.grants.actions.includes(aid)) fail('no grant for action ' + aid);
     }
     if (who.grants) for (const pid of ps.concat(sh)) if (!who.grants.providers.includes(pid)) fail('no grant for provider ' + pid);
     for (const rid in routes) {   // collisions (R-REG-5): two acting routes may not both claim one answer of one identical question
       const o = routes[rid]; if (o.question.instructions === q.instructions && Object.keys(on).some((k) => has(o.on, k) && o.on[k] !== on[k])) fail('collides with ' + rid);
     }
     routes[spec.id] = { id: spec.id, tier: who.tier, owner: who.name || '', question: Object.freeze({ type: q.type, instructions: q.instructions, criteria }),
-      on: Object.freeze(Object.assign(dict(), on)), providers: ps.slice(), shadow: sh.slice(), policy, mode, notFor: spec.notFor,
+      on: Object.freeze(Object.assign(dict(), on)), onArgs, providers: ps.slice(), shadow: sh.slice(), policy, mode, notFor: spec.notFor,
       budgetMs: Math.max(20, Math.min(10000, +spec.budgetMs || 1500)), cooldownMs: Math.max(0, +spec.cooldownMs || 0),
       input: spec.input === 'creature' || spec.input === 'both' ? spec.input : 'person', agree: typeof spec.agree === 'string' ? spec.agree : '', perMin: who.grants ? who.grants.perMin : 0 };
     return spec.id;
@@ -274,7 +330,7 @@ export function createRouter(opts) {
     return Object.freeze({ route: (spec) => addRoute(spec, who), unroute: (id) => dropRoute(id, who), grants: () => JSON.parse(JSON.stringify(who.grants)) });
   }
 
-  function act(r, pick, x) {
+  function act(r, pick, x, rawArgs) {
     const aid = has(r.on, pick) ? r.on[pick] : '', mode = modeOf(r);
     if (!aid) return row(r, 'none', x);
     const a = actions[aid], t = now(), tier = TIERS[r.tier];
@@ -286,12 +342,15 @@ export function createRouter(opts) {
       x.did = 0;
       return row(r, 'readers_acted', x);
     }
+    let checkedArgs = rawArgs !== undefined ? rawArgs : (r.onArgs && has(r.onArgs, pick) ? r.onArgs[pick] : undefined);
+    if (a.args) { const okArgs = checkArgs(a.args, checkedArgs); if (!okArgs) return row(r, 'bad_args', x); checkedArgs = okArgs; }
+    const cd = a.cooldownMs || r.cooldownMs;
     if (!a.reserved) {
-      if (r.cooldownMs && t - (last[r.id + '>' + aid] || -1e15) < r.cooldownMs) return row(r, 'cooldown', x);   // per action: a debounce against the same thing twice, never a block on a different command
+      if (cd && t - (last[r.id + '>' + aid] || -1e15) < cd) return row(r, 'cooldown', x);   // per action: a debounce against the same thing twice, never a block on a different command
       const h = a.resource && held[a.resource];
       if (h && h.until > t && h.tier < tier) return row(r, 'held', x);                 // a lower tier never pre-empts what a higher tier holds (R-TRUST-2)
     }
-    try { a.run({ route: r.id, pick, tier: r.tier }); } catch (e) { return row(r, 'act_error', x); }
+    try { if (a.run) a.run({ route: r.id, pick, tier: r.tier, args: checkedArgs }); } catch (e) { return row(r, 'act_error', x); }
     last[r.id + '>' + aid] = t;
     if (a.reserved) clearHolds();                                                        // a stop clears every hold, whoever owns it
     else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };
@@ -410,7 +469,7 @@ export function createRouter(opts) {
   });
 
   return {
-    action, provider, calibrate, extension, hear, replied, read, watch, emit,
+    action, command: (spec) => addCommand(spec, { tier: 'system' }), provider, calibrate, extension, hear, replied, read, watch, emit,
     stream: (decl) => { assertOpen(); return addStream(decl, { tier: 'system' }); },
     route: (spec) => { assertOpen(); return addRoute(spec, { tier: 'system' }); },
     core: (spec) => { if (sealed) throw new Error('sysrouter: core routes are registered before seal()'); return addRoute(spec, { tier: 'core' }); },

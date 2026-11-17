@@ -445,6 +445,18 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   check("read() returns the latest event capped at 600 chars", s.sr.read("sa").data.length === 600 && s.sr.read("sa").stream === "sa" && s.sr.read("sb").hop === 3, [s.sr.read("sa"), s.sr.read("sb")]);
   unsubBad();
   check("watch() unsubscribe stops future callbacks", true);
+
+  // command() & args schema validation (1D.3)
+  const cm = mk(); let gotArgs = null;
+  cm.sr.command({ id: "siren.on", run: (ctx) => { gotArgs = ctx.args; }, args: { seconds: { type: "number", min: 1, max: 10 }, tone: { type: "enum", values: ["chirp", "wail"] } }, exposeTo: ["person", "creature"] });
+  cm.sr.provider("p", fake(choice("spin", 1), { sync: true, exact: true }));
+  cm.sr.route({ id: "bad_args_r", question: Q, notFor: NOT, on: { spin: { command: "siren.on", args: { seconds: 99, tone: "chirp" } } }, providers: ["p"], mode: "live" });
+  cm.sr.hear("spin");
+  check("out-of-range command args log bad_args and nothing runs", gotArgs === null && cm.rows[0].why === "bad_args", [gotArgs, cm.rows]);
+  cm.sr.route({ id: "good_args_r", question: { type: "choice", instructions: "good q", criteria: Q.criteria }, notFor: NOT, on: { spin: { command: "siren.on", args: { seconds: 3, tone: "wail" } } }, providers: ["p"], mode: "live" });
+  cm.sr.hear("spin");
+  check("valid command args pass checked args to command", gotArgs && gotArgs.seconds === 3 && gotArgs.tone === "wail", gotArgs);
+  throws("bad exposeTo is refused", () => cm.sr.command({ id: "bad_exp", run() {}, exposeTo: ["internet"] }), /exposeTo/);
 }
 
 done("router laws");
