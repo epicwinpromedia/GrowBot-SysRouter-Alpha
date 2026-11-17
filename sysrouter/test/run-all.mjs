@@ -16,13 +16,14 @@ const TESTS = [
   ["fuzz_router.mjs", "20,000 random utterances through random routers"],
   ["fuzz_readers.mjs", "30,000 hostile strings through the readers"],
   ["../integration/apply.mjs", "the integration's anchors still match app/", ["--check"]],
+  ["../tools/doccheck.mjs", "doc counts match actual files, lines, and mutants"],
   ["mutants.mjs", "every deliberately broken router must be caught", [], true]
 ];
 let failed = 0;
 for (const [file, what, args, slow] of TESTS) {
   if (slow && quick) continue;
   const t = Date.now(), r = spawnSync(process.execPath, [here + file, ...(args || [])], { encoding: "utf8" }), ok = r.status === 0;
-  const last = r.stdout.trim().split("\n").filter((l) => /checks passed|anchors ok/.test(l)).pop() || "";
+  const last = r.stdout.trim().split("\n").filter((l) => /checks passed|anchors ok|doccheck:/.test(l)).pop() || "";
   console.log((ok ? "PASS " : "FAIL ") + what.padEnd(64) + ((Date.now() - t) / 1000).toFixed(1).padStart(6) + " s   " + last.replace(/^.*?: /, ""));
   if (!ok) { failed++; console.log(r.stdout.split("\n").filter((l) => l.includes("FAIL")).slice(0, 8).join("\n")); if (r.stderr) console.log(r.stderr.slice(0, 600)); }
 }

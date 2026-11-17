@@ -19,5 +19,7 @@ jobs:
           node-version: 22
       - name: No keys in the tree
         run: node sysrouter/tools/keyscan.mjs
+      - name: Doc counts match code
+        run: node sysrouter/tools/doccheck.mjs
       - name: Tests
         run: node sysrouter/test/run-all.mjs
