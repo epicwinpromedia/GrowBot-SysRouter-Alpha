@@ -87,6 +87,10 @@ for (const name of ["jev", "clef", "clef-flash"]) {
   check("zero-shot: the nearest option DESCRIPTION wins, no training", a.choice === "halt" && !!readAnswer(small, a), a);
   const head = { id: "h", classes: ["halt", "follow", "none"], temp: 1, b: [0, 0, 0], W: [[5, 0, 0, 0], [0, 5, 0, 0], [0, 0, 5, 0]] };
   check("a trained head answers its own route and abstains on another", (await embedProvider({ embed: async (t) => vec(t), head }).ask({ state: "track me", questions: { q: small } })).answers.q.choice === "follow" && (await embedProvider({ embed: async (t) => vec(t), head }).ask({ state: "x", questions: { q: Q } })).answers.q.abstain === true);
+  let embeds = 0; const ctl = new AbortController();
+  const aborter = embedProvider({ embed: async (t) => { embeds++; if (embeds === 1) ctl.abort(); return vec(t); } });
+  let embedAborted = false; try { await aborter.ask({ state: "please halt", questions: { q: small } }, { signal: ctl.signal }); } catch (e) { embedAborted = true; }
+  check("embed aborts between steps when ctx.signal is aborted", embedAborted && embeds === 1, [embedAborted, embeds]);
 }
 
 // ---- the two co-processors and soft reflexes register cleanly on a real router ----

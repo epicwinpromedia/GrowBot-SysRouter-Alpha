@@ -97,8 +97,15 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
 {
   const a = mk(); a.sr.provider("slow", fake(() => new Promise(() => {})));
   a.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["slow"], mode: "parallel", budgetMs: 30 }); a.sr.calibrate({ r: { slow: { p: 0.6 } } });
-  const t0 = Date.now(); a.sr.hear("spin"); await sleep(60);
+  const t0 = Date.now(), outA = a.sr.hear("spin");
   check("a provider that never answers does not hold the caller: hear() returned at once", Date.now() - t0 < 200);
+  await outA.done;
+  check("a provider that never resolves still settles out.done at the deadline", Date.now() - t0 < 80 && a.ran.length === 0 && a.why() === "timeout", [Date.now() - t0, a.why()]);
+  const a2 = mk(); a2.sr.provider("late", fake(async () => { await sleep(60); return choice("spin", 0.99); }));
+  a2.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["late"], mode: "parallel", budgetMs: 20 }); a2.sr.calibrate({ r: { late: { p: 0.6 } } });
+  const t2 = Date.now(); await a2.sr.hear("spin").done;
+  await sleep(60);
+  check("a provider ignoring ctx.signal that resolves after budgetMs runs nothing and logs timeout", Date.now() - t2 < 200 && a2.ran.length === 0 && a2.why() === "timeout", [a2.ran, a2.why()]);
   // the fake ignores the abort signal, like a hung socket; an honest provider rejects on abort (next block)
   const b = mk(); b.sr.provider("net", fake((req, ctx) => new Promise((_, rej) => ctx.signal.addEventListener("abort", () => rej(new Error("aborted"))))));
   b.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["net"], mode: "parallel", budgetMs: 30 }); b.sr.calibrate({ r: { net: { p: 0.6 } } });

@@ -62,8 +62,11 @@ export function embedProvider(cfg) {
   const id = head ? head.id : (cfg.id || 'minilm-zeroshot'), temp = head ? head.temp : (cfg.temp || 0.05);
   return {
     model: id, types: ['choice', 'noul'], embed,
-    async ask(req) {
+    async ask(req, ctx) {
+      const sig = ctx && ctx.signal, check = () => { if (sig && sig.aborted) throw new Error('aborted'); };
+      check();
       const q = req.questions.q, v = await embed(String(req.state));
+      check();
       const keys = q.type === 'noul' ? ['true', 'false'] : Object.keys(q.criteria);
       let z;
       if (head) {
@@ -72,7 +75,7 @@ export function embedProvider(cfg) {
         return answer(q, head.classes, softmax(z), id);
       }
       z = [];
-      for (const k of keys) { const p = await embed(String(q.criteria[k])); let s = 0; for (let j = 0; j < v.length; j++) s += p[j] * v[j]; z.push(s / temp); }
+      for (const k of keys) { check(); const p = await embed(String(q.criteria[k])); check(); let s = 0; for (let j = 0; j < v.length; j++) s += p[j] * v[j]; z.push(s / temp); }
       return answer(q, keys, softmax(z), id);
     }
   };

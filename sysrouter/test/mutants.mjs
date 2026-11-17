@@ -31,7 +31,7 @@ const MUTANTS = [
   ["a stop is subject to cooldown and holds", "if (!a.reserved) {\n      if (r.cooldownMs", "if (true) {\n      if (r.cooldownMs"],
   ["a stop does not clear holds", "if (a.reserved) for (const k in held) delete held[k];", "if (false) {}"],
   ["a deterministic stop waits for a promise", "for (; i < r.providers.length && providers[r.providers[i]].sync; i++) {", "for (; false; i++) {"],
-  ["a spent budget still asks the next engine", "if (signal.aborted) return skip(signal.reason === 'stale' ? 'stale' : 'timeout');", ""],
+  ["a spent budget still asks the next engine", "if (signal.aborted) return skip(whyAbort());", ""],
   ["the rate cap is ignored", "if (++s.n > r.perMin) { row(r, 'rate'); continue; }", ""],
   ["notFor is not required", "if (typeof spec.notFor !== 'string' || spec.notFor.trim().length < 12) fail(", "if (false) fail("],
   ["route collisions are allowed", "fail('collides with ' + rid);", "void 0;"],
@@ -46,7 +46,8 @@ const MUTANTS = [
   ["a registered answer table can be edited afterwards by its author", "on: Object.freeze(Object.assign(dict(), on)),", "on,"],
   ["engines still working on older words are not told to stop", "if (flight[rid]) flight[rid].abort('stale');", ""],
   ["an engine's reported name goes into the journal unchecked", ".replace(/[^\\w.\\/:@~-]/g, '')", ""],
-  ["a confident \"nothing\" does not end a cascade", "          if (res.d) { finish(res); return true; }", "          if (res.d && has(r.on, res.d.pick)) { finish(res); return true; }"]
+  ["a confident \"nothing\" does not end a cascade", "          if (res.d) { finish(res); return true; }", "          if (res.d && has(r.on, res.d.pick)) { finish(res); return true; }"],
+  ["a late answer past the budget acts", "return Promise.race([p, aborted]).finally(() => signal.removeEventListener('abort', onAbort)).then(\n      (res) => signal.aborted ? { d: null, x: { p: pid, ms: Math.round(now() - t0) }, why: whyAbort() } : settle(r, pid, res, t0),", "return p.then(\n      (res) => settle(r, pid, res, t0),"]
 ];
 
 const dir = mkdtempSync(tmpdir() + "/sysrouter-mutants-");
