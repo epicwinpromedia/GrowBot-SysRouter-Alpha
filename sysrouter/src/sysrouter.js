@@ -117,7 +117,7 @@ export function createRouter(opts) {
   const log = typeof opts.log === 'function' ? opts.log : () => {};
   const now = opts.now || (() => Date.now());
   const flags = opts.flags || { off: false, routes: {} };
-  const actions = dict(), providers = dict(), routes = dict(), gates = dict(), held = dict(), last = dict(), seqOf = dict(), spend = dict(), lastPick = dict(), flight = dict(), health = dict(), paid = dict(), streams = dict();
+  const actions = dict(), providers = dict(), routes = dict(), capabilities = dict(), gates = dict(), held = dict(), last = dict(), seqOf = dict(), spend = dict(), lastPick = dict(), flight = dict(), health = dict(), paid = dict(), streams = dict();
   // reliability limits, all overridable: a provider that fails BREAK.fails times in a row is left alone for BREAK.ms; hosted engines stop being asked once the session has spent maxUsd
   const BREAK = { fails: Math.max(1, +(opts.breaker && opts.breaker.fails) || 3), ms: Math.max(0, +(opts.breaker && opts.breaker.ms) || 30000) }, maxUsd = opts.maxUsd >= 0 ? +opts.maxUsd : 0.25;
   const maxHops = Number.isInteger(opts.maxHops) && opts.maxHops >= 0 ? opts.maxHops : 3;
@@ -452,6 +452,108 @@ export function createRouter(opts) {
       row(r, 'agree', { a: lp, brain: typeof reply[r.agree] === 'string' ? reply[r.agree].slice(0, 24) : '', ok: reply[r.agree] === lp ? 1 : 0 }); }
   }
 
+  function addCapability(rawSpec, who) {
+    if (!rawSpec || typeof rawSpec !== 'object') throw new Error('sysrouter: bad capability');
+    const id = rawSpec.id, rawSteps = rawSpec.steps, rawBeh = rawSpec.behavior;
+    const capPolicy = rawSpec.policy || 'single', budgetMs = Math.max(20, Math.min(10000, +rawSpec.budgetMs || 1500));
+    const rawMode = rawSpec.mode || 'shadow', mode = rawMode === 'parallel' ? 'live' : rawMode;
+    const addsRecall = !!rawSpec.addsRecall, agree = typeof rawSpec.agree === 'string' ? rawSpec.agree : '';
+    if (!ID.test(id || '')) throw new Error('sysrouter: bad capability id ' + id);
+    if (has(capabilities, id)) throw new Error('sysrouter: capability exists: ' + id);
+    if (!MODES.includes(mode) || !POLICIES.includes(capPolicy)) throw new Error('sysrouter: bad mode or policy');
+    if (!Array.isArray(rawSteps) || !rawSteps.length || rawSteps.length > 8) throw new Error('sysrouter: capability needs 1-8 steps');
+    const steps = [];
+    for (const st of rawSteps) {
+      if (!st || typeof st !== 'object' || !PRIMITIVES.includes(st.primitive)) throw new Error('sysrouter: bad capability step');
+      const prim = st.primitive, eng = (st.engines || st.providers || []).slice(), pol = st.policy || capPolicy;
+      if (!eng.length || eng.length > 4 || !POLICIES.includes(pol)) throw new Error('sysrouter: bad step engines/policy');
+      if (pol === 'single' && eng.length !== 1) throw new Error('sysrouter: single takes one engine');
+      for (const pid of eng) {
+        if (!has(providers, pid)) throw new Error('sysrouter: unknown provider ' + pid);
+        if (!has(providers[pid].primitives, prim) && !providers[pid].types.includes(prim)) throw new Error(pid + ' cannot run ' + prim);
+        if (who.grants && !who.grants.providers.includes(pid)) throw new Error('sysrouter: no grant for provider ' + pid);
+      }
+      let question = null;
+      if (TYPES.includes(prim) || prim === 'match') {
+        const rq = st.question || { type: prim === 'match' ? 'choice' : prim, instructions: st.instructions || id, criteria: st.criteria };
+        const qt = rq.type, crit = rq.criteria;
+        if (!TYPES.includes(qt) || typeof rq.instructions !== 'string' || !rq.instructions.trim()) throw new Error('sysrouter: bad step question');
+        const cCopy = Array.isArray(crit) ? Object.freeze(crit.slice()) : Object.freeze(Object.assign({}, copyDict(crit)));
+        question = Object.freeze({ type: qt, instructions: rq.instructions, criteria: cCopy });
+      }
+      steps.push(Object.freeze({ primitive: prim, engines: Object.freeze(eng), policy: pol, question, out: st.out ? copyDict(st.out) : null }));
+    }
+    const beh = { publish: '', publishType: '', request: null, onArgs: dict() };
+    if (rawBeh && typeof rawBeh === 'object') {
+      if (rawBeh.publish) {
+        if (!has(streams, rawBeh.publish)) throw new Error('sysrouter: unknown stream ' + rawBeh.publish);
+        beh.publish = rawBeh.publish;
+        const ts = Object.keys(streams[beh.publish].types);
+        beh.publishType = rawBeh.publishType && has(streams[beh.publish].types, rawBeh.publishType) ? rawBeh.publishType : ts[0];
+      }
+      if (rawBeh.request && typeof rawBeh.request === 'object') {
+        const reqMap = dict();
+        for (const k of Object.keys(rawBeh.request)) {
+          const entry = rawBeh.request[k], aid = typeof entry === 'string' ? entry : (entry && typeof entry === 'object' ? entry.command : '');
+          if (!aid || !has(actions, aid)) throw new Error('sysrouter: unknown action ' + aid);
+          const a = actions[aid];
+          if (a.reserved && who.tier === 'extension') throw new Error('sysrouter: extensions cannot reach reserved actions');
+          if (who.grants && !who.grants.actions.includes(aid)) throw new Error('sysrouter: no grant for action ' + aid);
+          reqMap[k] = aid;
+          if (entry && typeof entry === 'object' && entry.args !== undefined) beh.onArgs[k] = copyDict(entry.args);
+        }
+        beh.request = Object.freeze(reqMap);
+      }
+    }
+    capabilities[id] = { id, tier: who.tier, owner: who.name || '', steps: Object.freeze(steps), policy: capPolicy, budgetMs, mode, addsRecall, agree, behavior: beh };
+    return id;
+  }
+
+  async function resolveCapability(cap, input, modeOverride) {
+    const r = { id: cap.id, tier: cap.tier, owner: cap.owner, mode: modeOverride || cap.mode, on: cap.behavior.request || dict(), onArgs: cap.behavior.onArgs, cooldownMs: 0, agree: cap.agree };
+    const ctl = new AbortController(), timer = setTimeout(() => ctl.abort('timeout'), cap.budgetMs);
+    let cur = input, finalDecision = null;
+    try {
+      for (let k = 0; k < cap.steps.length; k++) {
+        const st = cap.steps[k];
+        if (ctl.signal.aborted) { row(r, 'timeout', { step: k }); return { ok: false, why: 'timeout' }; }
+        if (st.question) {
+          const stepRoute = Object.assign({}, r, { question: st.question, providers: st.engines, shadow: [], policy: st.policy, budgetMs: cap.budgetMs });
+          const req = { state: typeof cur === 'string' ? cur : JSON.stringify(cur), input: cur, questions: { q: st.question } };
+          let res = null;
+          for (let j = 0; j < st.engines.length; j++) {
+            const pid = st.engines[j];
+            if (ctl.signal.aborted) { res = { d: null, x: { p: pid, ms: 0 }, why: 'timeout' }; break; }
+            res = providers[pid].sync
+              ? (() => { const t0 = now(); try { return settle(stepRoute, pid, providers[pid].ask(req, { route: cap.id, signal: ctl.signal }), t0); } catch (e) { return { d: null, x: { p: pid }, why: 'error' }; } })()
+              : await askAsync(stepRoute, pid, req, ctl.signal);
+            if (res.d) break;
+            if (st.policy === 'single' || j === st.engines.length - 1 || res.why !== 'abstain') row(r, res.why, res.x);
+          }
+          if (!res || !res.d) return { ok: false, why: (res && res.why) || 'unsure' };
+          finalDecision = res; cur = res.d.pick;
+        } else {
+          const pid = st.engines[0], P = providers[pid], t0 = now();
+          let raw;
+          try {
+            const p = P.sync ? P.ask({ state: cur, input: cur, primitive: st.primitive, signal: ctl.signal }, { signal: ctl.signal, route: cap.id })
+              : Promise.race([Promise.resolve().then(() => P.ask({ state: cur, input: cur, primitive: st.primitive, signal: ctl.signal }, { signal: ctl.signal, route: cap.id })),
+                new Promise((_, rej) => ctl.signal.addEventListener('abort', () => rej(new Error('timeout')), { once: true }))]);
+            raw = await p;
+          } catch (e) { const why = ctl.signal.aborted ? 'timeout' : 'error'; row(r, why, { p: pid, ms: Math.round(now() - t0) }); return { ok: false, why }; }
+          if (ctl.signal.aborted) { row(r, 'timeout', { p: pid, ms: Math.round(now() - t0) }); return { ok: false, why: 'timeout' }; }
+          const outVal = raw && typeof raw === 'object' && !Array.isArray(raw) && has(raw, 'output') ? raw.output : raw;
+          const checked = readPrimitive(st.primitive, st, outVal);
+          if (checked === null) { row(r, 'bad_answer', { p: pid, ms: Math.round(now() - t0) }); return { ok: false, why: 'bad_answer' }; }
+          cur = checked;
+        }
+      }
+      if (cap.behavior.publish) emit(cap.behavior.publish, { type: cap.behavior.publishType, data: finalDecision ? finalDecision.d.pick : cur });
+      if (cap.behavior.request && finalDecision) act(r, finalDecision.d.pick, finalDecision.x);
+      return { ok: true, output: cur, decision: finalDecision ? finalDecision.d : null };
+    } finally { clearTimeout(timer); }
+  }
+
   const release = (resource) => { delete held[resource]; };
   const spent = () => usd;
   const list = () => Object.keys(routes).map((id) => ({ id, tier: routes[id].tier, owner: routes[id].owner, mode: modeOf(routes[id]), providers: routes[id].providers.slice(), on: Object.assign({}, routes[id].on) }));
@@ -471,6 +573,8 @@ export function createRouter(opts) {
   return {
     action, command: (spec) => addCommand(spec, { tier: 'system' }), provider, calibrate, extension, hear, replied, read, watch, emit,
     stream: (decl) => { assertOpen(); return addStream(decl, { tier: 'system' }); },
+    capability: (spec) => { assertOpen(); return addCapability(spec, { tier: 'system' }); },
+    invoke: (id, input, mode) => { const c = has(capabilities, id) ? capabilities[id] : null; if (!c) throw new Error('sysrouter: unknown capability ' + id); return resolveCapability(c, input, mode); },
     route: (spec) => { assertOpen(); return addRoute(spec, { tier: 'system' }); },
     core: (spec) => { if (sealed) throw new Error('sysrouter: core routes are registered before seal()'); return addRoute(spec, { tier: 'core' }); },
     unroute: (id) => { assertOpen(); const r = routes[id]; if (!r || r.tier === 'extension') return false; delete routes[id]; return true; },

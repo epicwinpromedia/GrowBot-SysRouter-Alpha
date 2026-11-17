@@ -457,6 +457,38 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   cm.sr.hear("spin");
   check("valid command args pass checked args to command", gotArgs && gotArgs.seconds === 3 && gotArgs.tone === "wail", gotArgs);
   throws("bad exposeTo is refused", () => cm.sr.command({ id: "bad_exp", run() {}, exposeTo: ["internet"] }), /exposeTo/);
+
+  // two-step capability: step 1 -> step 2 -> publish + request, shared budget (1D.4)
+  const cap = mk(); let step2Saw = null;
+  cap.sr.stream({ id: "moods", types: ["pick"] });
+  cap.sr.provider("emb", { primitives: { embed: {} }, ask: async (req) => { await sleep(10); return { model: "e1", output: [req.input.length, 0.5] }; } });
+  cap.sr.provider("head", { primitives: { choice: {} }, ask: async (req) => { step2Saw = req.input; return choice("spin", 0.99); } });
+  cap.sr.capability({
+    id: "two_step",
+    steps: [
+      { primitive: "embed", engines: ["emb"] },
+      { primitive: "choice", engines: ["head"], instructions: "pick mood", criteria: { spin: "happy", none: "none" } }
+    ],
+    budgetMs: 200, mode: "live",
+    behavior: { publish: "moods", request: { spin: "spin" } }
+  });
+  cap.sr.calibrate({ two_step: { "head@m1": { p: 0.9 } } });
+  const r1 = await cap.sr.invoke("two_step", "hello!");
+  check("two-step capability passes step 1 output to step 2, publishes, and requests", r1.ok && Array.isArray(step2Saw) && step2Saw[0] === 6 && cap.sr.read("moods").data === "spin" && cap.ran.join() === "spin", [r1, step2Saw, cap.ran]);
+
+  let step2Ran = false;
+  cap.sr.provider("slow_emb", { primitives: { embed: {} }, ask: async () => { await sleep(60); return [1, 2]; } });
+  cap.sr.provider("step2_chk", { primitives: { choice: {} }, ask: async () => { step2Ran = true; return choice("spin", 0.99); } });
+  cap.sr.capability({
+    id: "budget_cap",
+    steps: [
+      { primitive: "embed", engines: ["slow_emb"] },
+      { primitive: "choice", engines: ["step2_chk"], instructions: "pick", criteria: { spin: "s", none: "n" } }
+    ],
+    budgetMs: 25, mode: "live", behavior: { request: { spin: "spin" } }
+  });
+  const r2 = await cap.sr.invoke("budget_cap", "hi");
+  check("spent budget in step 1 skips step 2 with timeout", !r2.ok && r2.why === "timeout" && !step2Ran && cap.rows.some((r) => r.r === "budget_cap" && r.why === "timeout"), [r2, step2Ran, cap.rows]);
 }
 
 done("router laws");
