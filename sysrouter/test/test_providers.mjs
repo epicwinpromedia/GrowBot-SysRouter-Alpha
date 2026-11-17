@@ -15,6 +15,7 @@ import { registerWake, WAKE_ROUTE } from "../src/wakeword.js";
 import { registerExpress, EXPRESS_ROUTE, REACTIONS } from "../src/expressive.js";
 import { createRouter, readAnswer } from "../src/sysrouter.js";
 import { workerEngine } from "../src/worker-engine.js";
+import { boot } from "../src/boot.js";
 import { model, ROOT } from "../bench/lib.mjs";
 import { check, done, rng } from "./t.mjs";
 
@@ -186,5 +187,21 @@ for (const name of ["jev", "clef", "clef-flash"]) {
   unwatch();
   check("mock siren attachment: IR sense -> trigger -> siren.on -> actuate with checked args", ack && ack.seconds === 5 && sRows.some((r) => r.r === "ir_siren" && r.why === "acted" && r.act === "siren.on"), [ack, sRows]);
   await sw.terminate();
+}
+
+// ---- boot() host contract: SysRouterHost.command(kind, by) with run fallback (2A.1) ----
+{
+  const cmdCalls = [], runCalls = [];
+  const wModel = JSON.stringify(model("wake.ngram"));
+  const fakeFetch = async (url) => ({ ok: true, json: async () => url.includes("wake.ngram") ? JSON.parse(wModel) : url.includes("gates.json") ? { wake: { "ngram-wake@wake.ngram-v1": { p: 0.51 } } } : null });
+  const w1 = { location: { search: "?sysrouter=1&sysroute=wake:live", origin: "http://localhost" }, localStorage: {}, SysRouterHost: { command: (k, by) => cmdCalls.push([k, by]), run: { halt: () => runCalls.push("run_halt") } } };
+  const p1 = await boot(w1, { fetch: fakeFetch });
+  await p1.hear("please stop right now").done;
+  check("boot: SysRouterHost.command(kind, by) is called when defined", cmdCalls.length === 1 && cmdCalls[0][0] === "halt" && cmdCalls[0][1] === "sysrouter" && runCalls.length === 0, [cmdCalls, runCalls]);
+
+  const w2 = { location: { search: "?sysrouter=1&sysroute=wake:live", origin: "http://localhost" }, localStorage: {}, SysRouterHost: { run: { halt: () => runCalls.push("run_halt") } } };
+  const p2 = await boot(w2, { fetch: fakeFetch });
+  await p2.hear("please stop right now").done;
+  check("boot: falls back to SysRouterHost.run[kind] when command is absent", runCalls.join() === "run_halt", runCalls);
 }
 done("providers and registrations");

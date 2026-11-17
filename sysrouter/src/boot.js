@@ -43,7 +43,11 @@ export async function boot(w, opts) {
   const send = hosted ? keyring(browserEnv(store), { origin: w.location.origin }).sender('systemone') : null;
   if (send && /^[a-z0-9~_.\/-]{3,64}$/i.test(hosted)) { sr.provider('hosted', httpProvider({ model: hosted, send })); wake.push('hosted'); express.push('hosted'); }
 
-  if (wake.length) { const run = host.run || {}, r = {}; for (const k in WAKE_ROUTE.on) r[k] = typeof run[k] === 'function' ? run[k] : unwired(k); registerWake(sr, r, wake); }
+  if (wake.length) {
+    const run = host.run || {}, r = {};
+    for (const k in WAKE_ROUTE.on) r[k] = typeof host.command === 'function' ? () => host.command(k, 'sysrouter') : (typeof run[k] === 'function' ? run[k] : unwired(k));
+    registerWake(sr, r, wake);
+  }
   if (express.length) registerExpress(sr, typeof host.react === 'function' ? host.react : (fields, id) => unwired(id)(), express);
   if (gates) sr.calibrate(gates);
   sr.seal();
