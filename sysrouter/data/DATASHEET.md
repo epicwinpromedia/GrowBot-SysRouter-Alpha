@@ -29,7 +29,7 @@ Brit's own documented reader cases (42, each quoted from a comment in `next.html
 Each row is `tune` or `held` by a hash of its **original** text, so a line and its transcribed variants are always on the same side.
 
 - **`tune`**: the on-device models are trained here, and every gate is fitted here. Trained models are gated on out-of-fold scores (`bench/train.mjs`), since a model is over-confident on rows it was trained on.
-- **`held`**: every number in `RESULTS.md` is from here.
+- **`held`**: every number in `results/TABLES.md` is from here.
 
 ## Limits. Read before quoting a number.
 

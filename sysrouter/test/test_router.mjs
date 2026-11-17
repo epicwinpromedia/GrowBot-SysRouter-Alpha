@@ -1,4 +1,4 @@
-// test_router.mjs — the router's laws, one block per law (sysrouter/SPEC.md §2).
+// test_router.mjs — the router's laws, one block per law (sysrouter/SPEC.md §3).
 //   node sysrouter/test/test_router.mjs
 // Each block names the requirement it proves. Providers here are fakes that return exactly
 // what the test tells them to: the subject under test is the router, not an engine.
