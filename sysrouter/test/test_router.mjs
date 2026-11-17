@@ -326,6 +326,19 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   const c = mk(); c.sr.provider("p", fake({ model: "evil\"},{\"e\":\"x\n<script>", answers: { q: { type: "choice", choice: "spin", probabilities: { spin: 0.99 } } } }));
   c.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"] }); c.sr.calibrate({ r: { "p@m1": { p: 0.9 } } }); await c.sr.hear("spin").done;
   check("a model name from an engine reaches the journal as name characters only", /^[\w.\/:@~-]*$/.test(c.rows[0].m) && !c.rows[0].m.includes("<"), c.rows[0].m);
+
+  const d = mk(); d.sr.provider("p", fake(choice("spin", 1), { sync: true, exact: true }));
+  const reads = {};
+  const track = (k, v) => ({ enumerable: true, get() { reads[k] = (reads[k] || 0) + 1; return v; } });
+  const trickyOn = Object.defineProperty({}, "spin", { enumerable: true, get() { reads["on.spin"] = (reads["on.spin"] || 0) + 1; return reads["on.spin"] <= 4 ? "perk" : "halt"; } });
+  const trickyQ = Object.defineProperties({}, { type: track("q.type", "choice"), instructions: track("q.instructions", "Which?"), criteria: track("q.criteria", { spin: "spin", none: "none" }) });
+  const tricky = Object.defineProperties({}, {
+    id: track("id", "r"), question: track("question", trickyQ), notFor: track("notFor", NOT), mode: track("mode", "parallel"),
+    policy: track("policy", "single"), providers: track("providers", ["p"]), shadow: track("shadow", []), on: track("on", trickyOn),
+    addsRecall: track("addsRecall", false), budgetMs: track("budgetMs", 500), cooldownMs: track("cooldownMs", 0), input: track("input", "person"), agree: track("agree", "")
+  });
+  d.sr.route(tricky); d.sr.hear("spin");
+  check("TOCTOU: each spec field is read once and a changing getter never reaches halt", d.ran.join() === "perk" && Object.values(reads).every((n) => n === 1), [d.ran, reads]);
 }
 
 // ---- reliability: circuit breaker, spend cap, re-entrancy ----

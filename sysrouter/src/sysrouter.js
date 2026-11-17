@@ -109,11 +109,25 @@ export function createRouter(opts) {
       for (const k of Object.keys(table[rid])) { const g = table[rid][k]; if (GATE.test(k) && g && g.p > 0.5 && g.p <= 1) gates[rid][k] = { p: +g.p, pn: g.pn > 0.5 && g.pn <= 1 ? +g.pn : +g.p, margin: +g.margin || 0 }; } }
   }
 
+  const copyDict = (o) => { if (!o || typeof o !== 'object' || Array.isArray(o)) return null; const d = dict(); for (const k of Object.keys(o)) d[k] = o[k]; return d; };
+
   // Registration is DATA: no function crosses this line, so the same call works from a Worker
   // or an iframe by message (R-TRUST-5). `who` is set by the loader, never read from the spec.
-  function addRoute(spec, who) {
-    const fail = (m) => { throw new Error('sysrouter: route ' + (spec && spec.id) + ': ' + m); };
-    if (!spec || !ID.test(spec.id || '')) fail('bad id');
+  function addRoute(rawSpec, who) {
+    if (!rawSpec || typeof rawSpec !== 'object') throw new Error('sysrouter: route ' + (rawSpec && rawSpec.id) + ': bad id');
+    const rq = rawSpec.question, rcrit = rq && typeof rq === 'object' ? rq.criteria : null;
+    const rp = rawSpec.providers, rs = rawSpec.shadow, ro = rawSpec.on;
+    const spec = {
+      id: rawSpec.id,
+      question: rq && typeof rq === 'object' ? { type: rq.type, instructions: rq.instructions, criteria: Array.isArray(rcrit) ? rcrit.slice() : copyDict(rcrit) } : null,
+      notFor: rawSpec.notFor, mode: rawSpec.mode, policy: rawSpec.policy,
+      providers: Array.isArray(rp) ? rp.slice() : rp,
+      shadow: Array.isArray(rs) ? rs.slice() : rs,
+      on: ro === undefined ? dict() : copyDict(ro),
+      addsRecall: rawSpec.addsRecall, budgetMs: rawSpec.budgetMs, cooldownMs: rawSpec.cooldownMs, input: rawSpec.input, agree: rawSpec.agree
+    };
+    const fail = (m) => { throw new Error('sysrouter: route ' + spec.id + ': ' + m); };
+    if (!ID.test(spec.id || '')) fail('bad id');
     if (has(routes, spec.id)) fail('exists');
     const q = spec.question;
     if (!q || !TYPES.includes(q.type) || typeof q.instructions !== 'string' || !q.instructions.trim()) fail('question needs type and instructions');
@@ -128,10 +142,11 @@ export function createRouter(opts) {
     const mode = spec.mode || 'shadow', policy = spec.policy || 'single';
     if (!MODES.includes(mode) || !POLICIES.includes(policy)) fail('bad mode or policy');
     const ps = spec.providers || [], sh = spec.shadow || [];
-    if (!ps.length || ps.length > 4 || sh.length > 4) fail('1-4 providers');
+    if (!Array.isArray(ps) || !Array.isArray(sh) || !ps.length || ps.length > 4 || sh.length > 4) fail('1-4 providers');
     for (const pid of ps.concat(sh)) { if (!has(providers, pid)) fail('unknown provider ' + pid); if (!providers[pid].types.includes(q.type)) fail(pid + ' cannot answer ' + q.type); }
     if (policy === 'single' && ps.length !== 1) fail('single takes one provider');
-    const on = spec.on || {}, keys = q.type === 'noul' ? ['true', 'false'] : q.type === 'choice' ? Object.keys(q.criteria) : q.criteria.map((_, i) => String(i));
+    if (spec.on === null) fail('bad on');
+    const on = spec.on, keys = q.type === 'noul' ? ['true', 'false'] : q.type === 'choice' ? Object.keys(q.criteria) : q.criteria.map((_, i) => String(i));
     for (const k of Object.keys(on)) {
       if (!keys.includes(k)) fail('on.' + k + ' is not an answer');
       if (typeof on[k] !== 'string' || !has(actions, on[k])) fail('unknown action ' + on[k]);
