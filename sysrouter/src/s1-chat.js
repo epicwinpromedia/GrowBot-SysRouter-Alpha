@@ -20,14 +20,18 @@ export function chatProvider(cfg) {
       const q = req.questions.q, keys = q.type === 'noul' ? ['true', 'false'] : Object.keys(q.criteria);
       if (keys.length > LETTERS.length) throw new Error('s1-chat: too many options');
       const lines = keys.map((k, i) => LETTERS[i] + ') ' + (q.type === 'noul' ? (k === 'true' ? 'yes: ' : 'no: ') : k + ': ') + String(q.criteria[k]));
-      const body = { model, temperature: 0, max_tokens: 1, logprobs: true, top_logprobs: Math.min(20, keys.length + 4), usage: { include: true },
+      // 1117, measured on llama-3.1-8b (Groq): with the bare words as the user message, about one line in six was ANSWERED instead of
+      // classified ("Once upon a", "The ocean is"). The words are now quoted as data, and two tokens are allowed so that a sentence
+      // which merely starts with a listed letter ("I think") cannot pass as that letter.
+      const body = { model, temperature: 0, max_tokens: 2, logprobs: true, top_logprobs: Math.min(20, keys.length + 4), usage: { include: true },
         messages: [
-          { role: 'system', content: q.instructions + '\nAnswer with ONE letter and nothing else.\n' + lines.join('\n') },
-          { role: 'user', content: String(req.state) }] };
+          { role: 'system', content: 'You are a classifier. You never reply to the text you are given; you only label it.\n' + q.instructions + '\nAnswer with ONE letter and nothing else.\n' + lines.join('\n') },
+          { role: 'user', content: 'Text to label: ' + JSON.stringify(String(req.state)) + '\nLetter:' }] };
       if (cfg.extra) Object.assign(body, cfg.extra);
       const r = await cfg.send(body, ctx && ctx.signal), ch = r && r.choices && r.choices[0];
       if (!ch) throw new Error('s1-chat: no choice');
-      const said = String((ch.message && ch.message.content) || '').trim().toUpperCase().charAt(0), at = LETTERS.indexOf(said);
+      // exactly one listed letter, or it is not an answer. An empty reply is NOT option A, and a sentence is not its first letter (test_providers.mjs, 2026-11-17)
+      const m = /^([A-Z])[).:]?$/.exec(String((ch.message && ch.message.content) || '').trim().toUpperCase()), at = m ? LETTERS.indexOf(m[1]) : -1;
       if (at < 0 || at >= keys.length) throw new Error('s1-chat: not an option');
       const pr = {}; let sum = 0;
       const top = ch.logprobs && ch.logprobs.content && ch.logprobs.content[0] && ch.logprobs.content[0].top_logprobs;

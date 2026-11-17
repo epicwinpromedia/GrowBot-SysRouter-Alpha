@@ -1,0 +1,66 @@
+// mutants.mjs — do the tests have teeth? Each mutant is the router with ONE law deliberately
+// broken. The test suite must FAIL on every one of them. A mutant that survives means a law
+// could be broken without anyone noticing, which makes the passing tests worth less.
+//   node sysrouter/test/mutants.mjs
+// The mutated router is written to a temporary copy; nothing in the repository is changed.
+
+import { readFileSync, writeFileSync, mkdtempSync, mkdirSync, symlinkSync, readdirSync, copyFileSync, rmSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { tmpdir } from "node:os";
+import { ROOT } from "../bench/lib.mjs";
+import { check, done } from "./t.mjs";
+
+const SRC = readFileSync(ROOT + "src/sysrouter.js", "utf8");
+// [the law that is broken, the exact text to find, what to put instead]
+const MUTANTS = [
+  ["a shadow route acts", "if (mode === 'shadow') return row(r, 'shadow', x);", ""],
+  ["a model with no fitted gate acts", "if (!g) return { d: null, x, why: 'no_gate' };", "if (!g) return { d, x, why: '' };"],
+  ["the gate is ignored", "if (d.p < (has(r.on, d.pick) ? g.p : g.pn) || d.p - d.second < g.margin)", "if (false)"],
+  ["an option the route never listed is accepted", "if (typeof pick !== 'string' || !has(q.criteria, pick)) return null;", "if (typeof pick !== 'string') return null;"],
+  ["probabilities are not range-checked", "const ok = (x) => typeof x === 'number' && x >= 0 && x <= 1;", "const ok = (x) => true;"],
+  ["an answer about older words still acts", "fresh = () => seqOf[rid] === my;", "fresh = () => true;"],
+  // the kill switch is enforced twice (hear() returns at once, and every route's mode reads "off"), so breaking it takes both edits
+  ["the kill switch is ignored", ["if (flags.off || typeof text !== 'string' || !text.trim())", "const modeOf = (r) => flags.off ? 'off' : (flags.routes[r.id] || r.mode);"], ["if (typeof text !== 'string' || !text.trim())", "const modeOf = (r) => (flags.routes[r.id] || r.mode);"]],
+  ["a probability alone reaches a reserved action", "fail('reserved action needs exact providers, or addsRecall:true');", "void 0;"],
+  ["an extension reaches a reserved action", "if (a.reserved && spec.addsRecall && who.tier === 'extension') fail('extensions cannot reach reserved actions');", ""],
+  ["an extension uses an action outside its grant", "if (who.grants && !who.grants.actions.includes(on[k])) fail('no grant for action ' + on[k]);", ""],
+  ["an extension uses a provider outside its grant", "if (!who.grants.providers.includes(pid)) fail('no grant for provider ' + pid);", "void 0;"],
+  ["an extension pre-empts the brain", "if (who.grants && mode === 'preempt') fail('extensions cannot pre-empt the brain');", ""],
+  ["an extension removes a system route", "if (!r || (who.name || '') !== r.owner || r.tier !== who.tier) return false;", "if (!r) return false;"],
+  ["a lower tier pre-empts a higher tier's hold", "if (h && h.until > t && h.tier < tier) return row(r, 'held', x);", ""],
+  ["a stop is subject to cooldown and holds", "if (!a.reserved) {\n      if (r.cooldownMs", "if (true) {\n      if (r.cooldownMs"],
+  ["a stop does not clear holds", "if (a.reserved) for (const k in held) delete held[k];", "if (false) {}"],
+  ["a deterministic stop waits for a promise", "for (; i < r.providers.length && providers[r.providers[i]].sync; i++) {", "for (; false; i++) {"],
+  ["a spent budget still asks the next engine", "if (signal.aborted) return Promise.resolve({ d: null, x: { p: pid, ms: 0 }, why: 'timeout' });", ""],
+  ["the rate cap is ignored", "if (++s.n > r.perMin) { row(r, 'rate'); continue; }", ""],
+  ["notFor is not required", "if (typeof spec.notFor !== 'string' || spec.notFor.trim().length < 12) fail(", "if (false) fail("],
+  ["route collisions are allowed", "fail('collides with ' + rid);", "void 0;"],
+  ["an unlimited amount of text is sent to an engine", "text.length > 600 ? text.slice(0, 600) : text", "text"],
+  ["a reserved action can be added after seal()", "if (a.reserved && sealed) throw new Error('sysrouter: reserved actions are registered before seal()');", ""],
+  ["an executor that throws escapes", "try { a.run({ route: r.id, pick, tier: r.tier }); } catch (e) { return row(r, 'act_error', x); }", "a.run({ route: r.id, pick, tier: r.tier });"],
+  ["a confident \"nothing\" does not end a cascade", "          if (res.d) { finish(res); return true; }", "          if (res.d && has(r.on, res.d.pick)) { finish(res); return true; }"]
+];
+
+const dir = mkdtempSync(tmpdir() + "/sysrouter-mutants-");
+for (const e of readdirSync(ROOT)) if (e !== "src" && e !== "node_modules") symlinkSync(ROOT + e, dir + "/" + e);
+mkdirSync(dir + "/src"); for (const f of readdirSync(ROOT + "src")) copyFileSync(ROOT + "src/" + f, dir + "/src/" + f);
+// node resolves an imported file to its real path, so the tests must be real files beside the mutated src
+rmSync(dir + "/test"); mkdirSync(dir + "/test"); for (const f of readdirSync(ROOT + "test")) if (f.endsWith(".mjs")) copyFileSync(ROOT + "test/" + f, dir + "/test/" + f); else symlinkSync(ROOT + "test/" + f, dir + "/test/" + f);
+rmSync(dir + "/bench"); mkdirSync(dir + "/bench"); for (const f of readdirSync(ROOT + "bench")) copyFileSync(ROOT + "bench/" + f, dir + "/bench/" + f);
+
+const SUITE = [["test/test_router.mjs"], ["test/test_providers.mjs"], ["test/fuzz_router.mjs", "8000"]];
+const runs = (file) => { for (const [t, ...a] of SUITE) { const r = spawnSync(process.execPath, [dir + "/" + t, ...a], { cwd: dir, encoding: "utf8", timeout: 120000 }); if (r.status !== 0) return t.replace("test/", ""); } return ""; };
+
+writeFileSync(dir + "/src/sysrouter.js", SRC);
+check("the unmutated router passes in the temporary copy (the harness itself is sound)", runs() === "");
+let killed = 0;
+for (const [law, find, put] of MUTANTS) {
+  const finds = [].concat(find), puts = [].concat(put);
+  if (!finds.every((f) => SRC.includes(f))) { check("mutant applies: " + law, false, "text not found in src/sysrouter.js (the source moved: update this mutant)"); continue; }
+  writeFileSync(dir + "/src/sysrouter.js", finds.reduce((src, f, i) => src.replace(f, puts[i]), SRC));
+  const by = runs();
+  if (check("caught — " + law, by !== "", "SURVIVED: no test noticed")) { killed++; console.log("  caught by " + by.padEnd(22) + " " + law); }
+}
+rmSync(dir, { recursive: true, force: true });
+console.log("  " + killed + " of " + MUTANTS.length + " deliberately broken routers were caught");
+done("mutation check");

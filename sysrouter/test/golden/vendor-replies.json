@@ -1,0 +1,298 @@
+{
+ "_": "Raw replies recorded from live calls through OpenRouter on 2026-11-17, state \"hey quit staring at me\", the wake question. Request ids removed.",
+ "jev": {
+  "model": "typesafe/jev-1.14-20261014",
+  "answers": {
+   "q": {
+    "type": "choice",
+    "choice": "unfollow",
+    "probabilities": {
+     "halt": 0.01,
+     "still": 0,
+     "follow": 0,
+     "unfollow": 0.99,
+     "walk_forward": 0,
+     "walk_back": 0,
+     "spin": 0,
+     "sing": 0,
+     "none": 0
+    },
+    "confidence": 0.99
+   }
+  },
+  "usage": {
+   "input_tokens": 600,
+   "output_tokens": 88,
+   "cost": 0,
+   "is_byok": true,
+   "cost_details": {
+    "upstream_inference_cost": 0.0000252,
+    "upstream_inference_prompt_cost": 0.0000252,
+    "upstream_inference_completions_cost": 0
+   }
+  },
+  "provider": "TypeSafe"
+ },
+ "clef": {
+  "model": "cloudflare/clef",
+  "answers": {
+   "q": {
+    "type": "choice",
+    "choice": "unfollow",
+    "probabilities": {
+     "halt": 0.2008,
+     "still": 0.0032,
+     "follow": 0.0035,
+     "unfollow": 0.7792,
+     "walk_forward": 0.0019,
+     "walk_back": 0.0034,
+     "spin": 0.0016,
+     "sing": 0.0015,
+     "none": 0.0049
+    },
+    "confidence": 0.6035
+   }
+  },
+  "usage": {
+   "input_tokens": 436,
+   "output_tokens": 0,
+   "cost": 0.00010464,
+   "is_byok": false,
+   "cost_details": {
+    "upstream_inference_cost": 0.00010464,
+    "upstream_inference_prompt_cost": 0.00010464,
+    "upstream_inference_completions_cost": 0
+   }
+  },
+  "provider": "Cloudflare"
+ },
+ "clef-flash": {
+  "model": "cloudflare/clef-flash",
+  "answers": {
+   "q": {
+    "type": "choice",
+    "choice": "unfollow",
+    "probabilities": {
+     "halt": 0.03,
+     "still": 0.0041,
+     "follow": 0.005,
+     "unfollow": 0.9399,
+     "walk_forward": 0.0037,
+     "walk_back": 0.0041,
+     "spin": 0.0029,
+     "sing": 0.0034,
+     "none": 0.0069
+    },
+    "confidence": 0.87
+   }
+  },
+  "usage": {
+   "input_tokens": 436,
+   "output_tokens": 0,
+   "cost": 0.000016568,
+   "is_byok": false,
+   "cost_details": {
+    "upstream_inference_cost": 0.000016568,
+    "upstream_inference_prompt_cost": 0.000016568,
+    "upstream_inference_completions_cost": 0
+   }
+  },
+  "provider": "Cloudflare"
+ },
+ "llama8b-groq": {
+  "object": "chat.completion",
+  "created": 1794885615,
+  "model": "meta-llama/llama-3.1-8b-instruct",
+  "provider": "Groq",
+  "system_fingerprint": "fp_020e283281",
+  "service_tier": "flex",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "length",
+    "native_finish_reason": "length",
+    "message": {
+     "role": "assistant",
+     "content": "D",
+     "refusal": null,
+     "reasoning": null
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 302,
+   "completion_tokens": 1,
+   "total_tokens": 303,
+   "cost": 0.00001518,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00001518,
+    "upstream_inference_prompt_cost": 0.0000151,
+    "upstream_inference_completions_cost": 8e-8
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "llama8b-logprobs": {
+  "object": "chat.completion",
+  "created": 1794885615,
+  "model": "meta-llama/llama-3.1-8b-instruct",
+  "provider": "CoreWeave",
+  "system_fingerprint": "vllm-0.22.1.dev0+g0b3ba88f1.d20260529-25c7fbc0",
+  "service_tier": null,
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": {
+     "content": [
+      {
+       "token": "D",
+       "bytes": [
+        68
+       ],
+       "logprob": -0.13139009475708008,
+       "top_logprobs": [
+        {
+         "token": "D",
+         "bytes": [
+          68
+         ],
+         "logprob": -0.13139009475708008
+        },
+        {
+         "token": "B",
+         "bytes": [
+          66
+         ],
+         "logprob": -2.63139009475708
+        },
+        {
+         "token": "A",
+         "bytes": [
+          65
+         ],
+         "logprob": -3.63139009475708
+        },
+        {
+         "token": "C",
+         "bytes": [
+          67
+         ],
+         "logprob": -4.25639009475708
+        },
+        {
+         "token": "E",
+         "bytes": [
+          69
+         ],
+         "logprob": -5.00639009475708
+        },
+        {
+         "token": "I",
+         "bytes": [
+          73
+         ],
+         "logprob": -6.75639009475708
+        },
+        {
+         "token": "F",
+         "bytes": [
+          70
+         ],
+         "logprob": -7.13139009475708
+        },
+        {
+         "token": "H",
+         "bytes": [
+          72
+         ],
+         "logprob": -7.13139009475708
+        },
+        {
+         "token": "G",
+         "bytes": [
+          71
+         ],
+         "logprob": -7.13139009475708
+        },
+        {
+         "token": "(D",
+         "bytes": [
+          40,
+          68
+         ],
+         "logprob": -9.881389617919922
+        },
+        {
+         "token": "J",
+         "bytes": [
+          74
+         ],
+         "logprob": -9.881389617919922
+        },
+        {
+         "token": "K",
+         "bytes": [
+          75
+         ],
+         "logprob": -11.006389617919922
+        },
+        {
+         "token": "(B",
+         "bytes": [
+          40,
+          66
+         ],
+         "logprob": -11.443889617919922
+        }
+       ]
+      }
+     ],
+     "refusal": null
+    },
+    "finish_reason": "length",
+    "native_finish_reason": "length",
+    "message": {
+     "role": "assistant",
+     "content": "D",
+     "refusal": null,
+     "reasoning": null
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 302,
+   "completion_tokens": 1,
+   "total_tokens": 303,
+   "cost": 0.00006666,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00006666,
+    "upstream_inference_prompt_cost": 0.00006644,
+    "upstream_inference_completions_cost": 2.2e-7
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ }
+}

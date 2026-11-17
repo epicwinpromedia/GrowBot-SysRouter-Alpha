@@ -105,6 +105,13 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   await b.sr.hear("spin").done;
   check("past the route's budget: timeout, nothing ran", b.ran.length === 0 && b.why() === "timeout", b.why());
 
+  // found by fuzz_router.mjs on 2026-11-17: a cascade whose first engine spent the whole budget asked the next one after the deadline, and never settled
+  const b2 = mk(); const hang = () => fake((req, ctx) => new Promise((_, rej) => ctx.signal.addEventListener("abort", () => rej(new Error("aborted"))))); let late = 0;
+  b2.sr.provider("h1", hang()); b2.sr.provider("h2", fake(() => { late++; return new Promise(() => {}); }));
+  b2.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["h1", "h2"], policy: "cascade", mode: "parallel", budgetMs: 30 }); b2.sr.calibrate({ r: { h1: { p: 0.6 }, h2: { p: 0.6 } } });
+  const settled = await Promise.race([b2.sr.hear("spin").done.then(() => true), sleep(400).then(() => false)]);
+  check("a spent budget ends the cascade: it settles, and the next engine is never asked", settled && late === 0 && b2.why() === "timeout", [settled, late, b2.why()]);
+
   const c = mk(); c.sr.provider("boom", fake(() => { throw new Error("down"); })); c.sr.provider("boom2", fake(() => Promise.reject(new Error("503"))));
   c.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["boom", "boom2"], policy: "cascade", mode: "parallel" });
   await c.sr.hear("spin").done;

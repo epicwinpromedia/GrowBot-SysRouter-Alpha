@@ -100,8 +100,8 @@ export function createRouter(opts) {
     if (has(providers, id)) throw new Error('sysrouter: provider exists: ' + id);
     providers[id] = { ask: p.ask, sync: !!p.sync, exact: !!p.exact, model: String(p.model || ''), types: p.types || TYPES };
   }
-  function calibrate(table) {   // { routeId: { 'providerId' or 'providerId@model': { p, margin } } }
-    for (const rid in table) { gates[rid] = gates[rid] || {}; for (const k in table[rid]) { const g = table[rid][k]; if (g && g.p > 0.5 && g.p <= 1) gates[rid][k] = { p: +g.p, margin: +g.margin || 0 }; } }
+  function calibrate(table) {   // { routeId: { 'providerId' or 'providerId@model': { p, pn, margin } } }
+    for (const rid in table) { gates[rid] = gates[rid] || {}; for (const k in table[rid]) { const g = table[rid][k]; if (g && g.p > 0.5 && g.p <= 1) gates[rid][k] = { p: +g.p, pn: g.pn > 0.5 ? +g.pn : +g.p, margin: +g.margin || 0 }; } }
   }
 
   // Registration is DATA: no function crosses this line, so the same call works from a Worker
@@ -158,11 +158,11 @@ export function createRouter(opts) {
     x.act = aid;
     if (mode === 'shadow') return row(r, 'shadow', x);
     if (!a.reserved) {
-      if (r.cooldownMs && t - (last[r.id] || -1e15) < r.cooldownMs) return row(r, 'cooldown', x);
+      if (r.cooldownMs && t - (last[r.id + '>' + aid] || -1e15) < r.cooldownMs) return row(r, 'cooldown', x);   // per action: a debounce against the same thing twice, never a block on a different command
       const h = a.resource && held[a.resource];
       if (h && h.until > t && h.tier < tier) return row(r, 'held', x);                 // a lower tier never pre-empts what a higher tier holds (R-TRUST-2)
     }
-    last[r.id] = t;
+    last[r.id + '>' + aid] = t;
     if (a.reserved) for (const k in held) delete held[k];                               // a stop clears every hold, whoever owns it
     else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };
     try { a.run({ route: r.id, pick, tier: r.tier }); } catch (e) { return row(r, 'act_error', x); }
@@ -183,13 +183,15 @@ export function createRouter(opts) {
     const d = readAnswer(r.question, raw);
     if (!d) return { d: null, x, why: 'bad_answer' };
     x.a = d.pick; x.pr = Math.round(d.p * 1000) / 1000;
-    const g = P.exact ? { p: 0, margin: 0 } : gateOf(r, pid, res.model || P.model);
+    const g = P.exact ? { p: 0, pn: 0, margin: 0 } : gateOf(r, pid, res.model || P.model);
     if (!g) return { d: null, x, why: 'no_gate' };
-    if (d.p < g.p || d.p - d.second < g.margin) return { d: null, x, why: 'unsure' };
+    // an answer that triggers nothing has its own gate (pn): how sure "nothing was asked" must be before a cascade stops there instead of asking the next engine
+    if (d.p < (has(r.on, d.pick) ? g.p : g.pn) || d.p - d.second < g.margin) return { d: null, x, why: 'unsure' };
     return { d, x, why: '' };
   }
   function askAsync(r, pid, req, signal) {
     const t0 = now();
+    if (signal.aborted) return Promise.resolve({ d: null, x: { p: pid, ms: 0 }, why: 'timeout' });   // the budget is spent: nobody else is asked (found by test/fuzz_router.mjs: a second engine asked after the deadline never settled)
     return Promise.resolve().then(() => providers[pid].ask(req, { signal, route: r.id })).then((res) => settle(r, pid, res, t0), (e) => ({ d: null, x: { p: pid, ms: Math.round(now() - t0) }, why: signal.aborted ? 'timeout' : 'error' }));
   }
 
