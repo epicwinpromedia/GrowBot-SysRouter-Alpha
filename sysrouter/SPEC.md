@@ -65,21 +65,21 @@ The chain composes. A behavior can be a request for another command, or an event
 
 Sharing names across lanes is deliberate. "Capability" names an open class; letting a developer register new capabilities grants access to the class, never to Brit's members of it.
 
-### 2.3 The names in the built code [built names; renames are §16 work]
+### 2.3 The names in the built code [built]
 
-| v2 term | v1 code name | What the code has today |
+| v2 term | v1 alias (still accepted) | What the code has |
 |---|---|---|
-| Engine | `provider` (`sr.provider`) | Engines that answer the decision primitives |
+| Engine | `provider` (`sr.provider`) | Engines that answer primitives (`noul`, `choice`, `score`, `generate`, `match`, `embed`, `query`, `sense`, `actuate`) |
 | Decision primitive | `question.type` | `noul`, `choice`, `score` |
-| Capability + command + trigger, fused | `route` (`sr.route`) | One decision primitive, its engines and policy, the speech stream as its trigger source (`input`), and a table from answers to commands (`on`) |
-| Command whose capability is in Brit's layer | `action` (`sr.action`) | A function the page registers (`run`), with an optional resource hold |
+| Stream | `hear(text, {from})` | `sr.stream`, `sr.emit`, `port.read`, `port.watch` (built-in `speech` and `body.sense`) |
+| Command | `action` (`sr.action`) | `sr.command` with `args` schema and `exposeTo` (`person`, `creature`, `third-party`) |
+| Capability + trigger | `route` (`sr.route`) | `sr.capability` (composed `steps`, `behavior: { publish, request }`) and `sr.trigger` (`stream`, `person`, `creature`), plus `sr.route` |
 | Brit's stop commands | `reserved` actions | Registered before `seal()` |
-| Stream | `hear(text, {from})` | One stream (transcribed words), tagged `person` or `creature` |
-| System lane | tiers `core` and `system` | |
-| Third-party lane | tier `extension`, `sr.extension()` facade | |
-| Permission | `grants` | Which actions and providers, and a rate cap |
-| Fuzzy commands | route `wake`, `src/wakeword.js` | |
-| Emote | route `express`, `src/expressive.js` | |
+| System lane | tiers `core` and `system` | Sealed at `seal()`; `boot.js` publishes only `sr.port()` |
+| Third-party lane | tier `extension` | `port.install()`, `port.extensions()`, `port.uninstall()`, `sr.extension()` |
+| Permission | `grants` | `permissions` (`streams`, `actions`, `providers`, `engines`, `reqPerMin`, `hosts`, `usdPerDay`) |
+| Fuzzy commands | `wake` flag alias | `fuzzy`, `src/fuzzy.js` |
+| Emote | `express` flag alias | `emote`, `src/emote.js` |
 
 ## 3. The laws
 
@@ -92,10 +92,10 @@ Every built law has a passing test and a deliberately broken router ("mutant") t
 | L3 | **No gate, no action.** A probabilistic engine with no fitted gate for this capability and this exact model version never acts, even at p = 1. Gates are data. | [built] | R-RT-6 | `test_router` "no fitted gate" |
 | L4 | **Fail to today.** Timeout, error, malformed reply, missing key, low confidence: nothing is requested, the row says why, and GrowBot behaves as it does without the router. Nothing the router does can throw into Brit's code. | [built] | R-SAFE-3 | `test_router` "fail to today"; `test_funnel` "hear() throws" |
 | L5 | **The person's newest words decide.** A decision about older words that lands after newer words is dropped (`stale`). | [built] | funnel convention | `test_router` "newest words" |
-| L6 | **Requests, never control.** The router reaches Brit's layer only by requesting a command he exposed, through the same path his own reader uses for that command (§9.2). What happens next is his. | [differs]: the request goes through a function the page names, but not yet through his whole command path, and the double-fire rule is not built (§16) | R-BND-3 | — |
-| L7 | **Never pre-empt; never call `think()`.** The router has no mode that skips, delays or replaces anything in Brit's layer, and no path to `think()`. | [differs]: the code still has a `preempt` mode (§16). It has no path to `think()` [built]. | R-BND-1, R-BND-4 | — |
+| L6 | **Requests, never control.** The router reaches Brit's layer only by requesting a command he exposed, through the same path his own reader uses for that command (§9.2). What happens next is his. | [built] (`boot.js` `SysRouterHost.command`, `readers_acted` guard; page proposal `apply-command`) | R-BND-3 | `test_providers`, `test_funnel` |
+| L7 | **Never pre-empt; never call `think()`.** The router has no mode that skips, delays or replaces anything in Brit's layer, and no path to `think()`. | [built] (`preempt` removed; no path to `think()`) | R-BND-1, R-BND-4 | `test_router` |
 | L8 | **Stops are Brit's.** His stop commands are registered before `seal()`. A probability alone never reaches them: only an exact engine chain, or a capability marked `addsRecall`, which can request a stop his readers missed and can never block or delay one. A third-party trigger can never reach them. | [built] | R-SAFE-1 | `test_router` "stop is code"; `test_readers_regression` part 3 |
-| L9 | **Privilege is possession.** A lane's power is the reference the loader holds. Registrations never declare their own lane. | [built] for registration; [differs]: the page publishes the system reference on `window` (§16) | R-TRUST-1 | `test_router` "tiers and grants" |
+| L9 | **Privilege is possession.** A lane's power is the reference the loader holds. Registrations never declare their own lane. | [built] (`seal()` closes system lane; `boot.js` publishes `sr.port()`) | R-TRUST-1 | `test_router` "tiers and grants" |
 | L10 | **The kill switch is total.** `?sysrouter=0` (persisted): no engine is asked, nothing is requested, no row is written. | [built] | R-SAFE-4 | `test_router` "kill switch" |
 | L11 | **The words never enter a row.** A journal row carries capability, engine, answer, probability, timing and cost, never the text. | [built] | R-OBS-2 | `test_router` "observability"; fuzz invariant |
 
@@ -114,7 +114,7 @@ A decision primitive asks one question, in the request shape TypeSafe Jev, Cloud
 
 Every field is checked before use (`readAnswer`, [built]). A pick outside the options, a probability outside 0..1, a non-number, or a prototype key (`__proto__`, `constructor`) is `bad_answer`. An engine may also return `{ abstain: true }`, meaning "my rules do not cover this". That lets a cascade continue and is never a confident no.
 
-### 4.2 Other primitives [specified]
+### 4.2 Other primitives [built]
 
 The class is open: an engine declares each primitive it provides, with its input type, output type and output checks. Members named so far:
 
@@ -334,7 +334,7 @@ Brit defines `SysRouterHost.run`, one entry per command he exposes. Today `boot.
 - it shows a toast;
 - and the words still reach the brain turn.
 
-A fuzzy "stop" must produce exactly the same. The contract is therefore that Brit factors that branch into one function his reader also calls, for example `_applyCommand(kind, by)`, and exposes that. Today the `halt` entry is wired to `_bodyHalt` alone (`boot.js`, `wakeword.js`), which is a partial copy.
+A fuzzy "stop" must produce exactly the same. The contract is therefore that Brit factors that branch into one function his reader also calls, for example `_applyCommand(kind, by)`, and exposes `SysRouterHost.command(kind, by)` (`boot.js`, `src/fuzzy.js`, `integration/proposals/apply-command.mjs`). Today `boot.js` falls back to `SysRouterHost.run[kind]` if `command` is not defined.
 
 **No double requests.** When his reader already matched the words (the `readers` engine answered exactly), his funnel has already acted. The router then requests nothing and writes `why: "readers_acted"`. It requests only what his readers missed. [specified]
 
@@ -377,9 +377,9 @@ One row per decision, written through `logEv("sysroute", …)` in the journal's 
 | `a`, `pr` | the answer and its probability (3 decimals) |
 | `ms`, `tok`, `usd` | time to answer, input tokens, cost of the call |
 | `act`, `did` | the command the answer maps to, and `1` if it was requested |
-| `why` | `acted`, `shadow`, `none`, `unsure`, `no_gate`, `abstain`, `bad_answer`, `timeout`, `error`, `stale`, `open` (circuit breaker), `budget` (spend cap), `cooldown`, `held`, `rate`, `act_error`, `shadow_arm`, `agree`, `boot`, `unwired`; the code still also writes `preempt` ([differs]); `readers_acted` and `hops` are [specified] |
+| `why` | `acted`, `shadow`, `none`, `unsure`, `no_gate`, `abstain`, `bad_answer`, `timeout`, `error`, `stale`, `open` (circuit breaker), `budget` (spend cap), `cooldown`, `held`, `rate`, `act_error`, `shadow_arm`, `agree`, `boot`, `unwired`, `lost`, `readers_acted`, `hops`, `bad_args`, `refused` |
 
-`sr.replied(reply)` writes one `agree` row per capability that set `agree`. The row holds what the fast engine picked, what the brain's reply said, and whether they matched (R-OBS-3).
+`sr.replied(o, kind)` writes one `agree` row per capability that set `agree` on person events (`kind === 'event'`). The row holds what the fast engine picked, what the brain's reply said, and whether they matched (R-OBS-3).
 
 ## 11. Flags [built]
 
@@ -389,7 +389,7 @@ Read from the URL and persisted to `localStorage`, like `?bodysnd=0` and `?expre
 |---|---|
 | `?sysrouter=1` | boot the router (it is off until asked for) |
 | `?sysrouter=0` | off: the page behaves exactly as today |
-| `?sysroute=wake:parallel,express:off` | per trigger: `off`, `shadow`, `parallel` (v2: `live`). The code also accepts `preempt` ([differs]). |
+| `?sysroute=fuzzy:live,emote:off` | per trigger: `off`, `shadow`, `live` (`parallel` accepted as an alias for `live`) |
 | `?s1=cloudflare/clef-flash` | also ask this hosted engine, through a lane the person configured (§12) |
 
 ## 12. Keys [built]
@@ -428,7 +428,7 @@ Status: steps 1–2 [built], in shadow; step 3 [differs] (§9.2); step 4 [specif
 ### 13.2 Emote (ships)
 
 1. The person's words, or the creature's reply, arrive on the speech stream.
-2. The emote trigger calls `emote.read`. Today the capability is `choice` over the reply schema's emotion words plus `sad` (`src/expressive.js`). In v2 it is a tiny on-device sentiment model composed with `choice`.
+2. The emote trigger calls `emote.read`. `src/emote.js` supports both the composed 2-step capability (`embed` -> `choice`) and the one-step n-gram fallback.
 3. The behavior requests the expression output: Brit's expression path if he exposes it, or the developer's own display attachment.
 4. When the brain's reply lands, `replied()` logs whether the two agreed. The brain's reply still wins in Brit's layer, because the router never touches it.
 
@@ -502,18 +502,7 @@ Developers bring "their own models, their own primitives". A generative model is
 
 ## 16. Where the code differs from this specification
 
-Work to do. Each item is a code change. None changes a measured result.
-
-| # | Spec | Code today |
-|---|---|---|
-| D1 | No `preempt` mode (L7, §7.1) | `MODES` includes `preempt`; `hear()` returns `preempt`; tests and the fuzzer exercise it (`sysrouter.js:31`, `:181`, `:214`, `:224`; `test_router.mjs:236–241`; `fuzz_router.mjs`; `mutants.mjs:28`) |
-| D2 | The system reference is never published (§8.1) | `boot.js:50` sets `window.SysRouter` to the full router |
-| D3 | `seal()` closes the system lane (§8.1) | After `seal()`, `route`, `action`, `provider`, `calibrate` and `unroute` still work for whoever holds the router |
-| D4 | A command entry is Brit's whole command path (§9.2) | `halt` and `still` are wired to `_bodyHalt` alone |
-| D5 | No double requests (§9.2) | With `readers` first in the cascade, a literal stop is acted on by his funnel and, in `parallel` mode, requested again by the router |
-| D6 | Emote reads both speakers (§13.2) | `EXPRESS_ROUTE` sets no `input`, so it reads the person only |
-| D7 | v2 names (§2.3) | `wake`, `wakeword.js`, `provider`, `action`, `route`, `grants`, `parallel` |
-| D8 | Separate stream, command, capability and trigger registrations; composed steps; publish; `generate`; attachments; permissions UI; block list (§6–§9) | Not built |
+All Phase 2 items (D1–D8) are now `[built]` in `src/` and `integration/`. Remaining items are only the deliberate exclusions (`box` primitive without a verified shape, `when` conditions in §15.1, Bluetooth/serial attachments in §15.2) and Brit's optional page proposals (`integration/proposals/`).
 
 ## 17. What is deliberately not here
 

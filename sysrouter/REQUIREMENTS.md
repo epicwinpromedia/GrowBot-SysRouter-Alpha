@@ -16,21 +16,21 @@ These are **requirements, not a design.** They say what must be true and how it 
 
 | ID | Requirement | Status | Evidence |
 |---|---|---|---|
-| R-BND-1 | The router never changes, delays, intercepts, replaces or pre-empts anything in Brit's layer (embodiment, reflexes, senses, the creature agent). | differs: `preempt` mode (D1) | `SPEC.md` L7 |
-| R-BND-2 | The router reads only streams Brit's layer already produces, at the points he chooses to feed them. | built: person's words, brain reply. Specified: creature's words, sensor triggers. | `test_funnel` (the funnel's calls are identical with the router absent, null, in shadow, or throwing) |
-| R-BND-3 | The router reaches Brit's layer only by **requesting** a command he exposed. The request goes through the same path his own reader uses for that command, so every side effect is his. | differs: D4 | `SPEC.md` §9.2 |
-| R-BND-4 | The router never calls `think()`. It reads the brain's replies and publishes results his layer may read. | built for the first part; publishing is specified | `SPEC.md` §9.3 |
-| R-BND-5 | When Brit's reader already matched, the router requests nothing for those words. | differs: D5 | `SPEC.md` §9.2 |
-| R-BND-6 | Anything that needs a change in Brit's layer (the command path, the sensor tap, the creature's door) is a proposal he can decline. Declining it leaves everything else working. | specified | `INTEGRATION.md` |
+| R-BND-1 | The router never changes, delays, intercepts, replaces or pre-empts anything in Brit's layer (embodiment, reflexes, senses, the creature agent). | built (`preempt` removed) | `SPEC.md` L7, `test_router` |
+| R-BND-2 | The router reads only streams Brit's layer already produces, at the points he chooses to feed them. | built (person's words, brain reply, creature's words via `replied`, sensor triggers via `--with-sensors`) | `test_funnel` (identical calls with router absent, null, in shadow, or throwing; reply-handler and `fireReflex` slices) |
+| R-BND-3 | The router reaches Brit's layer only by **requesting** a command he exposed. The request goes through the same path his own reader uses for that command, so every side effect is his. | built (`boot.js` `SysRouterHost.command`, proposal `apply-command`) | `test_providers`, `test_funnel` |
+| R-BND-4 | The router never calls `think()`. It reads the brain's replies and publishes results his layer may read. | built (`port.read`, `port.watch`, `replied`) | `SPEC.md` §9.3, `test_router` |
+| R-BND-5 | When Brit's reader already matched, the router requests nothing for those words. | built (`why: "readers_acted"`) | `test_router`, mutant "a readers match is requested again" |
+| R-BND-6 | Anything that needs a change in Brit's layer (the command path, the sensor tap, the creature's door) is a proposal he can decline. Declining it leaves everything else working. | built (`integration/proposals/` and `--with-sensors` opt-in) | `INTEGRATION.md`, `test_funnel` |
 
 ## R-RT — Routing
 
 | ID | Requirement | Status | Evidence |
 |---|---|---|---|
-| R-RT-1 | A capability names the **primitives** it uses and, for each, the **engine policy** (single, cascade, race, plus shadow engines). It never names a vendor in code; engines come from configuration. Decision primitives: `noul`, `choice`, `score`, `box`. Others include `generate`. | built: `noul`, `choice`, `score`, and all four policies. Specified: `box`, `generate`, composed steps. | `test_router` |
+| R-RT-1 | A capability names the **primitives** it uses and, for each, the **engine policy** (single, cascade, race, plus shadow engines). It never names a vendor in code; engines come from configuration. Decision primitives: `noul`, `choice`, `score`, `box`. Others include `generate`. | built: `noul`, `choice`, `score`, `generate`, `match`, `embed`, `query`, `sense`, `actuate`, composed steps, and all four policies. Specified: `box` (excluded in Phase 2). | `test_router`, `test_providers` |
 | R-RT-2 | Engines include, at minimum: Brit's regex readers (unchanged, the baseline), Jev, Clef / Clef-flash, an on-device model, and a small generative model used as a decision engine. Adding an engine never requires editing a capability. | built | `test_providers`; `bench/arms.json` |
-| R-RT-3 | System Two in GrowBot is Brit's `think()` path and its three funding lanes. The router consumes it and never calls it (R-BND-4). A developer's own generative engine is a separate engine registered like any other. | built for consuming; specified for third-party generative engines | `SPEC.md` §4.2, §14.5 |
-| R-RT-4 | Trigger modes are **off**, **shadow** (decide and log, request nothing) and **live** (request the command; everything else carries on). Shadow is the default for every new trigger. There is no pre-empt mode. | built: off, shadow, live (as `parallel`). Differs: `preempt` still exists (D1). | `test_router` |
+| R-RT-3 | System Two in GrowBot is Brit's `think()` path and its three funding lanes. The router consumes it and never calls it (R-BND-4). A developer's own generative engine is a separate engine registered like any other. | built (`generate` primitive) | `test_router`, `SPEC.md` §4.2, §14.5 |
+| R-RT-4 | Trigger modes are **off**, **shadow** (decide and log, request nothing) and **live** (request the command; everything else carries on). Shadow is the default for every new trigger. There is no pre-empt mode. | built (`off`, `shadow`, `live`, with `parallel` alias; `preempt` removed) | `test_router` |
 | R-RT-5 | Capabilities run outside the brain's single-flight queue: they can decide while `think()` is in flight. | built | `test_funnel` (thinking state) |
 | R-RT-6 | Thresholds belong to the (engine, model version, capability) combination, are fitted on held-out data, and never live in capability logic. | built | `models/gates.json`; `test_router` "no fitted gate" |
 | R-RT-7 | A circuit breaker stops asking an engine that keeps failing. A spend cap stops asking engines that charge once the session limit is reached. | built | `test_router` |
@@ -39,22 +39,22 @@ These are **requirements, not a design.** They say what must be true and how it 
 
 | ID | Requirement | Status | Evidence |
 |---|---|---|---|
-| R-REG-1 | One registration contract for both lanes, covering **streams, engines, capabilities, commands and triggers**. Registrations are data; a lane is assigned by the loader. | built: decision capability fused with its trigger and command table (`route`), engines (`provider`), commands (`action`). Specified: separate registrations. | `SPEC.md` §2.3, §7 |
-| R-REG-2 | A capability's answer can only select **registered commands**. A command whose capability is in Brit's layer runs through his existing executors and clamps, never a new path to the body. | built for selection; differs for the path (D4) | `test_router` "select, never author" |
-| R-REG-3 | The first two capabilities to ship: **fuzzy commands** (the speech stream → `choice` over the commands Brit exposed → a request for one of them) and **emote** (the person's words and the creature's replies → a sentiment primitive composed with `choice` → an expression output). A third, the **siren attachment**, is documented as a worked design. | built in shadow: fuzzy commands (as `wake`), emote with the person's words and a single `choice` step (as `express`). Differs: D6. Specified: composed steps; the siren. | `SPEC.md` §13 |
+| R-REG-1 | One registration contract for both lanes, covering **streams, engines, capabilities, commands and triggers**. Registrations are data; a lane is assigned by the loader. | built (`stream`, `provider`, `capability`, `command`, `trigger`, plus `route`) | `test_router`, `SPEC.md` §2.3, §7 |
+| R-REG-2 | A capability's answer can only select **registered commands**. A command whose capability is in Brit's layer runs through his existing executors and clamps, never a new path to the body. | built (`boot.js` `SysRouterHost.command`) | `test_router` "select, never author", `test_providers` |
+| R-REG-3 | The first two capabilities to ship: **fuzzy commands** (the speech stream → `choice` over the commands Brit exposed → a request for one of them) and **emote** (the person's words and the creature's replies → a sentiment primitive composed with `choice` → an expression output). A third, the **siren attachment**, is documented as a worked design. | built in shadow: `fuzzy` (`src/fuzzy.js`), `emote` (`src/emote.js`, reads both speakers, composed 2-step + n-gram fallback), mock siren attachment. | `test_providers`, `SPEC.md` §13 |
 | R-REG-4 | Meaning-based triggers can sit beside Brit's 11 sensor triggers. The creature can write its own soft reaction rules through the same whitelist-clamped path it uses today (`scratchpad.reflex`). | built in shadow (`soft-reflex.js`). Proposal: the branch in Brit's reply handler that applies them. | `test_providers` |
-| R-REG-5 | Registration-time validation: collisions, overly broad criteria (a required "not for" description, plus a check on a held-out negative set), rate limits, argument declarations on commands. | built except argument declarations (specified) | `test_router` |
-| R-REG-6 | A capability can be composed of several primitive steps, each answered by its own engines, and its behavior is to publish an event, request a command, or actuate an attachment. | specified | `SPEC.md` §7.3 |
+| R-REG-5 | Registration-time validation: collisions, overly broad criteria (a required "not for" description, plus a check on a held-out negative set), rate limits, argument declarations on commands. | built (including `args` schema validation) | `test_router`, mutant "out-of-range args reach the capability" |
+| R-REG-6 | A capability can be composed of several primitive steps, each answered by its own engines, and its behavior is to publish an event, request a command, or actuate an attachment. | built | `test_router`, `test_providers` |
 
 ## R-STR — Streams and events (new in v2)
 
 | ID | Requirement | Status | Evidence |
 |---|---|---|---|
-| R-STR-1 | Streams are registered and named. Each declares its event types and what an event's data holds. | specified | `SPEC.md` §6 |
-| R-STR-2 | Only discrete events enter the router. Raw signals at sensor or motor rate become events in their own detector first. | specified (today's single stream is already discrete) | `SPEC.md` §6.2 |
-| R-STR-3 | A capability can publish its results as a stream that other triggers, and Brit's layer, can read (chaining). | specified | `SPEC.md` §6.3, §9.3 |
-| R-STR-4 | Chains are finite: every event carries a hop count, and events past the limit are dropped with a row. | built: one-level re-entry guard. Specified: hop count. Open: the limit. | `SPEC.md` §6.3 |
-| R-STR-5 | A third-party trigger can read a stream only if the person granted it that stream. | specified | `SPEC.md` §8.3 |
+| R-STR-1 | Streams are registered and named. Each declares its event types and what an event's data holds. | built (`sr.stream`, `speech`, `body.sense`) | `test_router` |
+| R-STR-2 | Only discrete events enter the router. Raw signals at sensor or motor rate become events in their own detector first. | built (discrete events only; `sense` events) | `SPEC.md` §6.2 |
+| R-STR-3 | A capability can publish its results as a stream that other triggers, and Brit's layer, can read (chaining). | built (`behavior.publish`, `port.read`, `port.watch`) | `test_router` |
+| R-STR-4 | Chains are finite: every event carries a hop count, and events past the limit are dropped with a row. | built (`maxHops`, `why: "hops"`) | `test_router`, mutant "an event past the hop limit is dispatched" |
+| R-STR-5 | A third-party trigger can read a stream only if the person granted it that stream. | built | `test_router` |
 
 ## R-SAFE — Safety and security
 
@@ -81,12 +81,12 @@ These are **requirements, not a design.** They say what must be true and how it 
 |---|---|---|---|
 | R-TRUST-1 | Every registration carries a **lane**: the system lane (Brit's; tiers `core` and `system`) or the third-party lane (tier `extension`). The lane is assigned by whoever holds the reference used to register, never declared in the registration. | built | `test_router` "tiers and grants" |
 | R-TRUST-2 | The router arbitrates only between commands **it requests**. Among those, a third-party command never displaces a system command's hold, and Brit's stops clear every hold. Brit's layer arbitrates itself, and the router never claims to referee it. | built | `test_router`; `mutants.mjs` |
-| R-TRUST-3 | Third parties get **permissions**, not ambient access: which streams to read, which of Brit's exposed commands to request, which engines to call, which keys and budget. Brit sets the ceiling (what can be exposed). The person grants within it. Every install shows a confirmation, and every extension is listed with what it may do and can be removed. | built: actions, engines and rate cap. Specified: streams, keys, the visible list. | `SPEC.md` §8.3 |
+| R-TRUST-3 | Third parties get **permissions**, not ambient access: which streams to read, which of Brit's exposed commands to request, which engines to call, which keys and budget. Brit sets the ceiling (what can be exposed). The person grants within it. Every install shows a confirmation, and every extension is listed with what it may do and can be removed. | built (`port.install`, `port.extensions`, `port.uninstall`, `demo/index.html`) | `test_router`, `SPEC.md` §8.3 |
 | R-TRUST-4 | A third party cannot read or change other registrations, system-lane gates, stop commands or keys. It has per-extension rate and cost caps, and every decision is logged with its lane. | built | `test_router`; `fuzz_router` |
-| R-TRUST-5 | Isolation. **Decided:** third-party registrations are data, and code a third party brings (an engine, an attachment driver) runs in a dedicated Worker or behind a URL. In-page checks are a second line. | built: data-only registration. Specified: the Worker message protocol. | `results/browser.json` (Worker round trip); `SPEC.md` §8.4, §14.2 |
-| R-TRUST-6 | The system lane closes when the page has loaded, and the reference that registers in it is never published to the page. | differs: D2, D3 | `SPEC.md` §8.1 |
-| R-TRUST-7 | Brit can block third-party contributions with a list his server publishes, naming extensions and manifest hashes. The documents state that it is a curation tool, not a security boundary. | specified | `SPEC.md` §9.5 |
-| R-TRUST-8 | Attachments connect over the network by default, so they work from a Worker on every browser and never touch Brit's chip, firmware or relay channel. Direct WebUSB from a Worker is a Chromium-only option. | specified. Open: Bluetooth and serial (`SPEC.md` §15.2). | `SPEC.md` §8.5 (MDN compatibility data) |
+| R-TRUST-5 | Isolation. **Decided:** third-party registrations are data, and code a third party brings (an engine, an attachment driver) runs in a dedicated Worker or behind a URL. In-page checks are a second line. | built (`src/worker-engine.js`, data-only registrations) | `results/browser.json` (Worker round trip); `test_providers` |
+| R-TRUST-6 | The system lane closes when the page has loaded, and the reference that registers in it is never published to the page. | built (`seal()`, `boot.js` publishes `sr.port()`) | `test_router`, `mutants` |
+| R-TRUST-7 | Brit can block third-party contributions with a list his server publishes, naming extensions and manifest hashes. The documents state that it is a curation tool, not a security boundary. | built (`blockList`, `setBlockList`) | `test_router`, mutant "a blocked hash installs" |
+| R-TRUST-8 | Attachments connect over the network by default, so they work from a Worker on every browser and never touch Brit's chip, firmware or relay channel. Direct WebUSB from a Worker is a Chromium-only option. | built (`worker-engine.js` + mock siren `node:worker_threads` test). Open: Bluetooth and serial (`SPEC.md` §15.2). | `test_providers` |
 | R-TRUST-9 | The creature can use a third-party command only through a door Brit opens in his agent, and only for commands the person exposed to the creature. Without the door, the third-party lane may react to the creature's reply stream. | proposal | `SPEC.md` §9.4 |
 
 ## R-SEC — Secrets and keys (whole-system, not SysRouter-only)
