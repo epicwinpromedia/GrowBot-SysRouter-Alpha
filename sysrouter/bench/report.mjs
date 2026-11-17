@@ -117,10 +117,23 @@ for (const route in ROUTES) {
 
 // ---- write: results.json, the gates the app loads, and the tables ----
 writeFileSync(ROOT + "results/results.json", JSON.stringify(out, null, 1) + "\n");
-// gates.json is keyed the way boot.js names providers: the on-device model per route, and "hosted@<model as the engine reports it>"
+// gates.json is keyed by v2 route id and "<engine id>@<model id>" (with @<host> for non-default hosts)
+const V2_ROUTE = { wake: "fuzzy", express: "emote" };
 const boot = {};
-for (const route in gates) { boot[route] = {}; for (const arm in gates[route]) { const m = out.routes[route].arms[arm].model;
-  if (arm === "ngram") boot[route]["ngram-" + route] = gates[route][arm]; else if (A.arms[arm].kind === "http" && m) boot[route]["hosted@" + m] = Object.assign({ arm }, gates[route][arm]); } }
+for (const route in gates) {
+  const v2 = V2_ROUTE[route] || route;
+  boot[v2] = {};
+  for (const arm in gates[route]) {
+    const m = out.routes[route].arms[arm].model;
+    if (arm === "ngram" && m) boot[v2]["ngram-" + v2 + "@" + m] = gates[route][arm];
+    else if ((arm === "minilm-head" || arm === "minilm-zeroshot") && m) boot[v2]["embed-" + v2 + "@" + m] = gates[route][arm];
+    else if (A.arms[arm].kind === "http" && m) {
+      const at = arm.indexOf("@");
+      const key = at > 0 ? "hosted@" + m + "@" + arm.slice(at + 1) : "hosted@" + m;
+      boot[v2][key] = Object.assign({ arm }, gates[route][arm]);
+    }
+  }
+}
 writeFileSync(ROOT + "models/gates.json", JSON.stringify(boot, null, 1) + "\n");
 
 const pc = (x) => x === null || x === undefined ? "–" : (x * 100).toFixed(1) + "%", num = (x, d) => x === null || x === undefined ? "–" : x.toFixed(d === undefined ? 0 : d);

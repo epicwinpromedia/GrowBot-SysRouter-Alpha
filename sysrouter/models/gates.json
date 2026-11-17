@@ -1,29 +1,55 @@
 {
- "wake": {
-  "ngram-wake": {
-   "p": 0.9364,
-   "pn": 0.96
+ "fuzzy": {
+  "ngram-fuzzy@wake.ngram-v1": {
+   "p": 0.9349,
+   "pn": 0.9634
+  },
+  "embed-fuzzy@minilm-zeroshot": {
+   "p": 0.99,
+   "pn": 0.5001
+  },
+  "embed-fuzzy@wake.minilm-head-v1": {
+   "p": 0.9409,
+   "pn": 0.822
   },
   "hosted@typesafe/jev-1.14-20261014": {
    "arm": "jev",
-   "p": 0.6401,
-   "pn": 0.5001
+   "p": 0.9101,
+   "pn": 0.9701
   },
   "hosted@cloudflare/clef": {
-   "arm": "clef@primeintellect",
-   "p": 0.7002,
-   "pn": 0.5001
+   "arm": "clef",
+   "p": 0.8846,
+   "pn": 0.6256
   },
   "hosted@cloudflare/clef-flash": {
+   "arm": "clef-flash",
+   "p": 0.8794,
+   "pn": 0.5852
+  },
+  "hosted@cloudflare/clef@primeintellect": {
+   "arm": "clef@primeintellect",
+   "p": 0.8559,
+   "pn": 0.7375
+  },
+  "hosted@cloudflare/clef-flash@primeintellect": {
    "arm": "clef-flash@primeintellect",
-   "p": 0.8703,
-   "pn": 0.3921
+   "p": 0.9101,
+   "pn": 0.5848
   }
  },
- "express": {
-  "ngram-express": {
+ "emote": {
+  "ngram-emote@express.ngram-v1": {
    "p": 0.6697,
    "pn": 0.6862
+  },
+  "embed-emote@minilm-zeroshot": {
+   "p": 0.7037,
+   "pn": 0.7251
+  },
+  "embed-emote@express.minilm-head-v1": {
+   "p": 0.7875,
+   "pn": 0.5659
   },
   "hosted@typesafe/jev-1.14-20261014": {
    "arm": "jev",
@@ -31,11 +57,21 @@
    "pn": 0.5601
   },
   "hosted@cloudflare/clef": {
+   "arm": "clef",
+   "p": 0.7069,
+   "pn": 0.5796
+  },
+  "hosted@cloudflare/clef-flash": {
+   "arm": "clef-flash",
+   "p": 0.5241,
+   "pn": 0.4658
+  },
+  "hosted@cloudflare/clef@primeintellect": {
    "arm": "clef@primeintellect",
    "p": 0.5001,
    "pn": 0.51
   },
-  "hosted@cloudflare/clef-flash": {
+  "hosted@cloudflare/clef-flash@primeintellect": {
    "arm": "clef-flash@primeintellect",
    "p": 0.6162,
    "pn": 0.6177
