@@ -54,6 +54,7 @@ export function registerFuzzy(sr, run, providers, over) {
   if (Array.isArray(extra)) {
     for (const c of extra) {
       if (!c || !c.id || !c.description) continue;
+      if (Array.isArray(c.exposeTo) && !c.exposeTo.includes('person')) continue;
       criteria[c.id] = c.description;
       on[c.id] = c.id;
     }

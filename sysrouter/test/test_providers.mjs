@@ -212,5 +212,23 @@ for (const name of ["jev", "clef", "clef-flash"]) {
   await dynSr.hear("spin").done;
   check("2A.2: removing spin from host removes spin from fuzzy question", sawCrit && !sawCrit.includes("spin") && sawCrit.includes("halt") && sawCrit.includes("none") && dynSr.list()[0].id === "fuzzy", [sawCrit, dynSr.list()]);
   check("2A.2: ?sysroute=wake:live sets fuzzy live", p2.flags().routes.fuzzy === "live", p2.flags());
+
+  // 2A.3: third-party commands exposed to person join fuzzy option set
+  let sirenRan = 0, secretRan = 0;
+  const f3 = createRouter({});
+  f3.command({ id: "siren.on", run: () => { sirenRan++; }, exposeTo: ["person"] });
+  f3.command({ id: "siren.secret", run: () => { secretRan++; }, exposeTo: ["creature"] });
+  f3.provider("alarm_m", { ask: async (r) => ({ model: "m", answers: { q: { type: "choice", choice: /alarm/.test(r.state) && r.questions.q.criteria["siren.on"] ? "siren.on" : "none", probabilities: { "siren.on": 0.99, none: 0.01 } } } }) });
+  registerFuzzy(f3, { halt: () => {} }, ["alarm_m"], {
+    mode: "live",
+    extraCommands: [
+      { id: "siren.on", description: "Sound the siren alarm.", exposeTo: ["person"] },
+      { id: "siren.secret", description: "Secret command.", exposeTo: ["creature"] }
+    ]
+  });
+  f3.calibrate({ fuzzy: { "alarm_m@m": { p: 0.9 } } });
+  await f3.hear("sound the alarm").done;
+  const refSiren = f3.port().request("siren.secret", {}, { from: "person" });
+  check("2A.3: 'sound the alarm' runs siren.on when exposed to person, refuses unexposed command", sirenRan === 1 && secretRan === 0 && refSiren.why === "refused", [sirenRan, secretRan, refSiren]);
 }
 done("providers and registrations");
