@@ -12,6 +12,7 @@
 export function readersProvider(pick) {
   return {
     sync: true, exact: true, inFunnel: true, model: 'readers', types: ['choice', 'noul'],
+    primitives: { match: { in: 'text', out: 'key' }, choice: { in: 'text', out: 'choice' }, noul: { in: 'text', out: 'noul' } },
     ask(req) {
       const q = req.questions.q, k = pick(String(req.state), q);
       if (q.type === 'noul') return { model: 'readers', answers: { q: k === 'true' ? { type: 'noul', noul: 1 } : { abstain: true } } };

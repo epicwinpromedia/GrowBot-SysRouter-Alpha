@@ -29,6 +29,7 @@
 
 const TIERS = { core: 0, system: 1, extension: 2 };          // lower number = higher priority
 const MODES = ['shadow', 'live'], POLICIES = ['single', 'cascade', 'race'], TYPES = ['noul', 'choice', 'score'];
+const PRIMITIVES = ['noul', 'choice', 'score', 'generate', 'match', 'embed', 'query', 'sense', 'actuate'];
 const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 const ID = /^[a-z][a-z0-9_.-]{0,39}$/, KEY = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,39}$/, GATE = /^[a-z][A-Za-z0-9_.@\/:~-]{0,95}$/;
 const dict = () => Object.create(null);   // no prototype: a key named __proto__ or constructor is just a key (test_router "hostile keys")
@@ -69,6 +70,45 @@ export function readAnswer(q, a) {
   if (!ok(p)) return null;
   for (const k in pr) if (k !== pick && has(pr, k)) { if (!ok(pr[k]) || (q.type === 'choice' && !has(q.criteria, k))) return null; if (pr[k] > second) second = pr[k]; }
   return { pick, p, second };
+}
+
+export function readPrimitive(prim, spec, raw) {
+  if (prim === 'noul' || prim === 'choice' || prim === 'score' || prim === 'match') return readAnswer(spec, raw);
+  if (prim === 'generate') return typeof raw === 'string' ? (raw.length > 2000 ? raw.slice(0, 2000) : raw) : null;
+  if (prim === 'embed') return Array.isArray(raw) && raw.length > 0 && raw.every((v) => typeof v === 'number' && Number.isFinite(v)) ? raw.slice() : null;
+  if (prim === 'query') {
+    if (!Array.isArray(raw)) return null;
+    const schema = spec && spec.out && typeof spec.out === 'object' && !Array.isArray(spec.out) ? spec.out : null;
+    const out = [];
+    for (const item of raw) {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) return null;
+      const rec = {};
+      if (schema) {
+        for (const k of Object.keys(schema)) {
+          if (!KEY.test(k) || (k in Object.prototype) || !has(item, k)) return null;
+          const t = schema[k], v = item[k];
+          if (t === 'number' ? (typeof v !== 'number' || !Number.isFinite(v)) : typeof v !== t) return null;
+          rec[k] = v;
+        }
+      } else {
+        for (const k of Object.keys(item)) if (KEY.test(k) && !(k in Object.prototype)) rec[k] = item[k];
+      }
+      out.push(rec);
+    }
+    return out;
+  }
+  if (prim === 'sense') {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+    if (typeof raw.stream !== 'string' || !ID.test(raw.stream) || typeof raw.type !== 'string' || !KEY.test(raw.type)) return null;
+    const data = typeof raw.data === 'string' ? (raw.data.length > 600 ? raw.data.slice(0, 600) : raw.data) : raw.data;
+    return { stream: raw.stream, type: raw.type, data };
+  }
+  if (prim === 'actuate') {
+    if (typeof raw === 'boolean') return { ok: raw };
+    if (raw && typeof raw === 'object' && !Array.isArray(raw) && typeof raw.ok === 'boolean') return { ok: raw.ok };
+    return null;
+  }
+  return null;
 }
 
 export function createRouter(opts) {
@@ -142,7 +182,20 @@ export function createRouter(opts) {
     assertOpen();
     if (!ID.test(id) || !p || typeof p.ask !== 'function') throw new Error('sysrouter: bad provider ' + id);
     if (has(providers, id)) throw new Error('sysrouter: provider exists: ' + id);
-    providers[id] = { ask: p.ask, sync: !!p.sync, exact: !!p.exact, inFunnel: !!p.inFunnel, model: String(p.model || ''), types: p.types || TYPES };
+    const prims = dict();
+    if (p.primitives && typeof p.primitives === 'object' && !Array.isArray(p.primitives)) {
+      for (const k of Object.keys(p.primitives)) {
+        if (!PRIMITIVES.includes(k)) throw new Error('sysrouter: unknown primitive ' + k);
+        prims[k] = p.primitives[k] && typeof p.primitives[k] === 'object' ? Object.assign({}, p.primitives[k]) : {};
+      }
+      if (has(prims, 'match') && !has(prims, 'choice')) prims.choice = prims.match;
+    } else {
+      for (const k of (p.types || TYPES)) {
+        if (!PRIMITIVES.includes(k)) throw new Error('sysrouter: unknown primitive ' + k);
+        prims[k] = {};
+      }
+    }
+    providers[id] = { ask: p.ask, sync: !!p.sync, exact: !!p.exact, inFunnel: !!p.inFunnel, model: String(p.model || ''), types: Object.keys(prims), primitives: prims };
   }
   function calibrate(table) {   // { routeId: { 'providerId' or 'providerId@model': { p, pn, margin } } }
     assertOpen();

@@ -3,7 +3,7 @@
 // Each block names the requirement it proves. Providers here are fakes that return exactly
 // what the test tells them to: the subject under test is the router, not an engine.
 
-import { createRouter, readFlags, readAnswer } from "../src/sysrouter.js";
+import { createRouter, readFlags, readAnswer, readPrimitive } from "../src/sysrouter.js";
 import { check, throws, done, sleep } from "./t.mjs";
 
 const Q = { type: "choice", instructions: "Which command?", criteria: { halt: "stop", spin: "spin", none: "no command" } };
@@ -347,6 +347,18 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   const a = mk(); a.sr.provider("p", fake({ model: "m1", answers: { q: { type: "noul", noul: 0.97 } } }));
   a.sr.route({ id: "r", question: noul, notFor: NOT, on: { true: "perk" }, providers: ["p"], mode: "parallel" }); a.sr.calibrate({ r: { "p@m1": { p: 0.95 } } });
   await a.sr.hear("we won").done; check("a yes/no route acts on a confident yes", a.ran.join() === "perk");
+
+  // v2 primitive output checkers (1D.2)
+  check("generate: string capped at 2000, non-string -> null", readPrimitive("generate", {}, "x".repeat(2500)).length === 2000 && readPrimitive("generate", {}, 42) === null && readPrimitive("generate", {}, { text: "hi" }) === null);
+  check("match: delegates to readAnswer, malformed -> null", readPrimitive("match", Q, { choice: "spin", probabilities: { spin: 1 } }).pick === "spin" && readPrimitive("match", Q, { choice: "nope", probabilities: { nope: 1 } }) === null);
+  check("embed: finite number array, malformed -> null", readPrimitive("embed", {}, [0.1, -0.2]).length === 2 && readPrimitive("embed", {}, []) === null && readPrimitive("embed", {}, [1, NaN]) === null && readPrimitive("embed", {}, "vec") === null);
+  const qSpec = { out: { id: "string", score: "number" } };
+  check("query: array of records matching declared shape, malformed -> null", readPrimitive("query", qSpec, [{ id: "a", score: 0.9 }]).length === 1 && readPrimitive("query", qSpec, [{ id: "a", score: "bad" }]) === null && readPrimitive("query", qSpec, {}) === null);
+  check("sense: valid stream/type/data, malformed -> null", readPrimitive("sense", {}, { stream: "s1", type: "ir", data: "x".repeat(700) }).data.length === 600 && readPrimitive("sense", {}, { stream: "BAD!", type: "ir" }) === null);
+  check("actuate: boolean or { ok }, malformed -> null", readPrimitive("actuate", {}, true).ok === true && readPrimitive("actuate", {}, { ok: false }).ok === false && readPrimitive("actuate", {}, { ok: "yes" }) === null);
+  const pSr = mk();
+  pSr.sr.provider("gen", { primitives: { generate: { in: "text", out: "text" } }, ask: () => "hi" });
+  throws("unknown primitive is refused", () => pSr.sr.provider("badp", { primitives: { teleport: {} }, ask: () => null }), /unknown primitive/);
 }
 
 // ---- hostile keys: nothing a registration, a gates file or a reply can name reaches a prototype ----
