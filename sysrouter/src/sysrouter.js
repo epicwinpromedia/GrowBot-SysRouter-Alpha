@@ -245,6 +245,34 @@ export function createRouter(opts) {
     ).then(mark);
   }
 
+  function resolve(r, req, fresh, finish) {
+    const rid = r.id;
+    // 1. the leading sync providers, in order, in this tick
+    let i = 0, decided = false;
+    for (; i < r.providers.length && providers[r.providers[i]].sync; i++) {
+      const t0 = now(); let res;
+      try { res = settle(r, r.providers[i], providers[r.providers[i]].ask(req, { route: rid }), t0); } catch (e) { res = { d: null, x: { p: r.providers[i] }, why: 'error' }; }
+      if (res.d) { finish(res); decided = true; break; }
+      if (r.policy === 'single' || i === r.providers.length - 1 || res.why !== 'abstain') row(r, res.why, res.x);
+    }
+    const rest = decided ? [] : r.providers.slice(i);
+    if (!rest.length && !r.shadow.length) return null;
+    // 2. the async providers, outside the brain's single flight (R-RT-5), under the route's budget
+    if (flight[rid]) flight[rid].abort('stale');                                         // one flight per route: the engines still working on older words are told to stop
+    const ctl = flight[rid] = new AbortController(), sctl = new AbortController(), timer = setTimeout(() => { ctl.abort('timeout'); sctl.abort('timeout'); }, r.budgetMs);
+    const sh = r.shadow.map((pid) => askAsync(r, pid, req, sctl.signal).then((res) => { row(r, 'shadow_arm', Object.assign(res.x, { arm: res.why || 'ok' })); }));
+    let main;
+    if (r.policy === 'race') main = new Promise((done) => { let left = rest.length, won = false; if (!left) done();
+      rest.forEach((pid) => askAsync(r, pid, req, ctl.signal).then((res) => { if (res.d && !won) { won = true; if (fresh()) finish(res); else row(r, 'stale', res.x); ctl.abort('won'); } else if (!res.d && !won && res.why !== 'lost' && (left === 1 || res.why !== 'abstain')) row(r, res.why, res.x); if (!--left || won) done(); })); });   // first CONFIDENT answer wins, not first to arrive
+    else main = rest.reduce((chain, pid, k) => chain.then((got) => got ? got : askAsync(r, pid, req, ctl.signal).then((res) => {
+      if (!fresh()) { row(r, 'stale', res.x); return true; }
+      if (res.d) { finish(res); return true; }
+      if (k === rest.length - 1 || res.why !== 'abstain') row(r, res.why, res.x);     // every engine consulted writes a row except a non-final abstain
+      return false; })), Promise.resolve(false));
+    const end = () => { clearTimeout(timer); if (flight[rid] === ctl) delete flight[rid]; };
+    return Promise.all([main].concat(sh)).then(end, end);
+  }
+
   function hear(text, meta) {
     meta = meta || {};
     const out = { acted: [], done: null }, waits = [], from = meta.from === 'creature' ? 'creature' : 'person';
@@ -258,31 +286,8 @@ export function createRouter(opts) {
       seqOf[rid] = my;
       const req = { state, questions: { q: r.question } }, fresh = () => seqOf[rid] === my;
       const finish = (res) => { const o = act(r, res.d.pick, res.x); if (o.did) out.acted.push(o.act); };
-      // 1. the leading sync providers, in order, in this tick
-      let i = 0, decided = false;
-      for (; i < r.providers.length && providers[r.providers[i]].sync; i++) {
-        const t0 = now(); let res;
-        try { res = settle(r, r.providers[i], providers[r.providers[i]].ask(req, { route: rid }), t0); } catch (e) { res = { d: null, x: { p: r.providers[i] }, why: 'error' }; }
-        if (res.d) { finish(res); decided = true; break; }
-        if (r.policy === 'single' || i === r.providers.length - 1 || res.why !== 'abstain') row(r, res.why, res.x);
-      }
-      const rest = decided ? [] : r.providers.slice(i);
-      // 2. the async providers, outside the brain's single flight (R-RT-5), under the route's budget
-      if (rest.length || r.shadow.length) {
-        if (flight[rid]) flight[rid].abort('stale');                                         // one flight per route: the engines still working on older words are told to stop
-        const ctl = flight[rid] = new AbortController(), sctl = new AbortController(), timer = setTimeout(() => { ctl.abort('timeout'); sctl.abort('timeout'); }, r.budgetMs);
-        const sh = r.shadow.map((pid) => askAsync(r, pid, req, sctl.signal).then((res) => { row(r, 'shadow_arm', Object.assign(res.x, { arm: res.why || 'ok' })); }));
-        let main;
-        if (r.policy === 'race') main = new Promise((done) => { let left = rest.length, won = false; if (!left) done();
-          rest.forEach((pid) => askAsync(r, pid, req, ctl.signal).then((res) => { if (res.d && !won) { won = true; if (fresh()) finish(res); else row(r, 'stale', res.x); ctl.abort('won'); } else if (!res.d && !won && res.why !== 'lost' && (left === 1 || res.why !== 'abstain')) row(r, res.why, res.x); if (!--left || won) done(); })); });   // first CONFIDENT answer wins, not first to arrive
-        else main = rest.reduce((chain, pid, k) => chain.then((got) => got ? got : askAsync(r, pid, req, ctl.signal).then((res) => {
-          if (!fresh()) { row(r, 'stale', res.x); return true; }
-          if (res.d) { finish(res); return true; }
-          if (k === rest.length - 1 || res.why !== 'abstain') row(r, res.why, res.x);     // every engine consulted writes a row except a non-final abstain
-          return false; })), Promise.resolve(false));
-        const end = () => { clearTimeout(timer); if (flight[rid] === ctl) delete flight[rid]; };
-        waits.push(Promise.all([main].concat(sh)).then(end, end));
-      }
+      const p = resolve(r, req, fresh, finish);
+      if (p) waits.push(p);
     } } finally { depth--; }
     out.done = Promise.all(waits).then(() => out);
     return out;
