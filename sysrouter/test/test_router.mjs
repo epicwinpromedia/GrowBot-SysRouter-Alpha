@@ -144,6 +144,23 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   d.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "bad" }, providers: ["p"], mode: "parallel" });
   let threw = false; try { d.sr.hear("spin"); } catch (e) { threw = true; }
   check("an executor that throws is contained", !threw && d.why() === "act_error", d.why());
+  {
+    const h = mk(); let say = "spin";
+    h.sr.action("bad_legs", { resource: "legs", holdMs: 4000, run: () => { throw new Error("boom"); } });
+    h.sr.action("bad_stop", { reserved: true, run: () => { throw new Error("stop broke"); } });
+    h.sr.provider("p", fake(() => choice(say, 1), { sync: true, exact: true }));
+    const SQ = { type: "choice", instructions: "sys throw q", criteria: { spin: "spin", halt: "halt", perk: "perk", none: "none" } };
+    h.sr.route({ id: "sys", question: SQ, notFor: NOT, on: { spin: "bad_legs", halt: "bad_stop", perk: "spin" }, providers: ["p"], mode: "parallel" });
+    const ext = h.sr.extension("toy", { actions: ["perk"], providers: ["p"] });
+    const EQ = { type: "choice", instructions: "ext q", criteria: { spin: "spin", perk: "perk", none: "none" } };
+    ext.route({ id: "toy.perk", question: EQ, notFor: NOT, on: { spin: "perk", perk: "perk" }, providers: ["p"], mode: "parallel" });
+    h.sr.hear("spin");
+    check("a throwing system action leaves no hold: extension acts in the same tick", h.ran.join() === "perk" && h.rows.some((r) => r.r === "sys" && r.why === "act_error"), [h.ran, h.rows]);
+    h.clock.t += 5000; say = "perk"; h.sr.hear("ok");
+    say = "halt"; h.sr.hear("halt");
+    say = "spin"; h.ran.length = 0; h.sr.hear("spin");
+    check("a throwing stop clears nothing: system hold remains", h.ran.length === 0 && h.rows[h.rows.length - 1].why === "held", [h.ran, h.rows]);
+  }
   const e = mk({ off: false, routes: {} });
   let logThrew = false; const sr2 = createRouter({ log: () => { throw new Error("journal full"); } });
   sr2.action("spin", { run() {} }); sr2.provider("p", fake(choice("spin", 1), { sync: true, exact: true }));

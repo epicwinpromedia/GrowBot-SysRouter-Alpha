@@ -190,10 +190,10 @@ export function createRouter(opts) {
       const h = a.resource && held[a.resource];
       if (h && h.until > t && h.tier < tier) return row(r, 'held', x);                 // a lower tier never pre-empts what a higher tier holds (R-TRUST-2)
     }
+    try { a.run({ route: r.id, pick, tier: r.tier }); } catch (e) { return row(r, 'act_error', x); }
     last[r.id + '>' + aid] = t;
     if (a.reserved) for (const k in held) delete held[k];                               // a stop clears every hold, whoever owns it
     else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };
-    try { a.run({ route: r.id, pick, tier: r.tier }); } catch (e) { return row(r, 'act_error', x); }
     x.did = 1;
     return row(r, mode === 'preempt' ? 'preempt' : 'acted', x);
   }
