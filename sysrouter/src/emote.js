@@ -38,8 +38,9 @@ export const REACTIONS = {
 
 export function registerEmote(sr, react, providers, over) {
   over = over || {};
+  const isComposed = !!(over.embedEngine && over.headEngine);
   for (const id in REACTIONS) {
-    sr.command({ id, run: () => react(REACTIONS[id], id), resource: 'face', holdMs: 2500, exposeTo: ['person'] });
+    sr.command({ id, run: () => { if (!isComposed && typeof sr.emit === 'function') try { sr.emit('emote', { type: 'pick', data: Object.assign({ id }, REACTIONS[id]) }); } catch (e) {} react(REACTIONS[id], id); }, resource: 'face', holdMs: 2500, exposeTo: ['person'] });
   }
   if (!sr.read('emote')) {
     try { sr.stream({ id: 'emote', types: ['pick'] }); } catch (e) {}

@@ -2,6 +2,7 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
 <title>SysRouter bench</title>
 <!-- SysRouter bench page. Type what a person might say and see what each registered route
      decided, which engine decided it, how sure it was, how long it took, and the exact
@@ -19,6 +20,10 @@
   form { display: flex; gap: 8px; margin: 12px 0; } input { flex: 1; font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: transparent; color: inherit; }
   button { font: inherit; padding: 8px 14px; border: 1px solid var(--line); border-radius: 6px; background: transparent; color: inherit; cursor: pointer; }
   .tries { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; } .tries button { padding: 3px 9px; font-size: 13px; }
+  .panel { border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; margin: 12px 0; font-size: 13.5px; }
+  .panel h2 { font-size: 0.95rem; margin: 0 0 6px; }
+  .ext-row { display: flex; align-items: center; gap: 10px; padding: 4px 0; border-top: 1px solid var(--line); }
+  .ext-row button { padding: 2px 8px; font-size: 12px; margin-left: auto; }
   .wrap { overflow-x: auto; } table { border-collapse: collapse; width: 100%; font-size: 13.5px; } th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
   th { color: var(--dim); font-weight: 500; } td.num { font-variant-numeric: tabular-nums; } .acted { color: var(--ok); font-weight: 600; } .why { color: var(--dim); } .warn { color: var(--warn); }
   pre { font-size: 12px; overflow-x: auto; padding: 8px; border: 1px solid var(--line); border-radius: 6px; max-height: 14rem; }
@@ -27,6 +32,8 @@
 <p id="status">loading…</p>
 <form id="f"><input id="t" placeholder="say something to the creature" autocomplete="off" autofocus><button>hear</button></form>
 <div class="tries" id="tries"></div>
+<div class="panel"><h2>Published <code>emote</code> stream</h2><div id="emote-stream" class="why">waiting for speech…</div></div>
+<div class="panel"><h2>Extensions (<span id="ext-count">0</span>) <button id="install-siren" type="button" style="padding:3px 9px;font-size:12px;margin-left:8px">Install mock siren extension</button></h2><div id="extensions" class="why">none installed</div></div>
 <div class="wrap"><table><thead><tr><th>words</th><th>route</th><th>engine</th><th>answer</th><th>p</th><th>ms</th><th>outcome</th><th>action</th></tr></thead><tbody id="rows"></tbody></table></div>
 <p style="margin-top:14px">Journal rows, exactly as <code>logEv("sysroute", …)</code> would receive them (the words themselves are never in a row):</p>
 <pre id="journal"></pre>
@@ -42,11 +49,13 @@ import { registerEmote } from '../src/emote.js';
 
 const $ = (id) => document.getElementById(id), q = new URLSearchParams(location.search), mode = q.get('mode') === 'parallel' ? 'parallel' : 'shadow';
 const journal = [], acted = []; let current = '';
+const V2_WARN = new Set(['readers_acted', 'lost', 'hops', 'bad_args', 'refused', 'open', 'budget', 'rate']);
 const log = (e, d) => { journal.push(d); $('journal').textContent = journal.slice(-12).map((r) => JSON.stringify(r)).join('\n'); if (d.why !== 'boot') draw(d); };
 function draw(d) {
   const tr = document.createElement('tr'), cell = (v, c) => { const td = document.createElement('td'); td.textContent = v === undefined ? '' : v; if (c) td.className = c; tr.appendChild(td); };
+  const whyCls = d.did ? 'acted' : V2_WARN.has(d.why) ? 'warn' : d.why === 'shadow' ? '' : 'why';
   cell(current.length > 34 ? current.slice(0, 33) + '…' : current); cell(d.r); cell(d.p + (d.m && d.m !== d.p ? ' (' + d.m + ')' : '')); cell(d.a); cell(d.pr, 'num'); cell(d.ms, 'num');
-  cell(d.why, d.did ? 'acted' : d.why === 'shadow' ? '' : 'why'); cell(d.act ? d.act + (d.did ? ' ✓ ran' : ' (not run)') : '', d.did ? 'acted' : 'why');
+  cell(d.why, whyCls); cell(d.act ? d.act + (d.did ? ' ✓ ran' : ' (not run)') : '', d.did ? 'acted' : 'why');
   $('rows').prepend(tr);
 }
 
@@ -77,9 +86,52 @@ if (send) { sr.provider('hosted', httpProvider({ model: q.get('s1'), send })); w
 const say = (k) => () => acted.push(k);
 registerFuzzy(sr, Object.fromEntries(Object.keys(FUZZY.on).map((k) => [k, say(k)])), wake, { mode });
 registerEmote(sr, (fields, id) => acted.push(id), express, { mode });
-const g = { wake: {}, express: {} };                                                          // the fitted gates, re-keyed to this page's provider names
-for (const r of ['wake', 'express']) { g[r]['ngram-' + r] = gates[r]['ngram-' + r]; for (const k in gates[r]) if (k.startsWith('hosted@')) g[r][k] = gates[r][k]; }
+const g = { fuzzy: {}, emote: {}, wake: {}, express: {} };                                      // the fitted gates, re-keyed to this page's provider names
+for (const [v2, v1] of [['fuzzy', 'wake'], ['emote', 'express']]) {
+  const src = gates[v2] || gates[v1] || {};
+  g[v2] = Object.assign({}, src);
+  const ng = src['ngram-' + v2 + '@' + v1 + '.ngram-v1'] || src['ngram-' + v1];
+  if (ng) g[v2]['ngram-' + v1 + '@' + v1 + '.ngram-v1'] = ng;
+  const em = src['embed-' + v2 + '@' + v1 + '.minilm-head-v1'] || src['embed-' + v1];
+  if (em) g[v2]['embed-' + v1 + '@' + v1 + '.minilm-head-v1'] = em;
+}
 sr.calibrate(g); sr.seal();
+const port = sr.port();
+port.watch('emote', (ev) => { $('emote-stream').className = ''; $('emote-stream').textContent = JSON.stringify(ev); });
+
+function renderExtensions() {
+  const exts = port.extensions(), box = $('extensions');
+  $('ext-count').textContent = exts.length;
+  box.innerHTML = '';
+  if (!exts.length) { box.className = 'why'; box.textContent = 'none installed'; return; }
+  box.className = '';
+  for (const ext of exts) {
+    const row = document.createElement('div'); row.className = 'ext-row';
+    const info = document.createElement('span');
+    info.textContent = ext.name + ' (' + ext.hash.slice(0, 8) + '…) · permissions: ' + JSON.stringify(ext.permissions);
+    const btn = document.createElement('button'); btn.type = 'button'; btn.textContent = 'Uninstall';
+    btn.onclick = () => { port.uninstall(ext.name); renderExtensions(); };
+    row.appendChild(info); row.appendChild(btn); box.appendChild(row);
+  }
+}
+
+async function installMockSiren() {
+  if (port.extensions().some((e) => e.name === 'mock-siren')) return;
+  await port.install({
+    name: 'mock-siren',
+    commands: [{
+      id: 'siren.on',
+      description: 'Sound the mock siren for a short duration',
+      args: { seconds: { type: 'number', min: 1, max: 30 } },
+      exposeTo: ['person', 'creature'],
+      run: ({ args }) => { acted.push('siren.on:' + args.seconds); }
+    }]
+  }, { actions: ['siren.on'] });
+  renderExtensions();
+}
+$('install-siren').addEventListener('click', () => { installMockSiren().catch((e) => log('sysroute', { why: 'install_error', err: e.message })); });
+renderExtensions();
+
 $('status').textContent = 'mode: ' + mode + (mode === 'shadow' ? ' (decides and logs, runs nothing)' : ' (actions print; nothing moves)') + ' · ' + notes.join(' · ');
 
 function hear(text) { current = text; return sr.hear(text).done; }
@@ -87,6 +139,6 @@ $('f').addEventListener('submit', (e) => { e.preventDefault(); const v = $('t').
 for (const s of ['stop', 'hey quit staring at me', "let's stop by the store", 'twirl for me', 'we won the game', 'come a little closer', 'I lost my keys again', 'stop, look at me', 'watch out behind you']) {
   const b = document.createElement('button'); b.type = 'button'; b.textContent = s; b.onclick = () => hear(s); $('tries').appendChild(b);
 }
-window.__sr = { sr, hear, journal, acted, providers: { wake, express } };                     // for bench/browser.mjs
+window.__sr = { sr, port, hear, journal, acted, providers: { wake, express }, installMockSiren };  // for bench/browser.mjs
 </script>
 </html>
