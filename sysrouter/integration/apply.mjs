@@ -18,25 +18,32 @@ export const HUNKS = [
     line: '/*SYSROUTER{*/    try{ if(typeof SysRouter!=="undefined"&&SysRouter) SysRouter.replied(o,kind); }catch(_sr){}   /* 1117 SYSROUTER (shadow): one "agree" row per person event, plus creature say onto speech */\n/*}SYSROUTER*/' }
 ];
 
-export function patch(text) {
+export const SENSOR_HUNK = {
+  name: "sense", step: 1, before: false, anchor: 'function fireReflex(trig){',
+  line: '/*SYSROUTER{*/  try{ if(typeof SysRouter!=="undefined"&&SysRouter) SysRouter.sense(trig); }catch(_sr){}   /* 1117 SYSROUTER (optional --with-sensors): publish sensor trigger onto body.sense */\n/*}SYSROUTER*/'
+};
+
+export function patch(text, opts) {
+  const hunks = opts && opts.withSensors ? HUNKS.concat([SENSOR_HUNK]) : HUNKS;
   const lines = text.split("\n"), out = [], hit = {};
   for (const l of lines) {
-    const h = HUNKS.find((x) => l.startsWith(x.anchor) && !hit[x.name]);
+    const h = hunks.find((x) => l.startsWith(x.anchor) && !hit[x.name]);
     if (h && h.before) out.push(h.line);
     out.push(l);
     if (h && !h.before) out.push(h.line);
     if (h) hit[h.name] = out.length;
   }
-  const missing = HUNKS.filter((h) => !hit[h.name]).map((h) => h.name);
+  const missing = hunks.filter((h) => !hit[h.name]).map((h) => h.name);
   return { text: out.join("\n"), missing, at: hit };
 }
 
 if (process.argv[1] && process.argv[1].endsWith("apply.mjs")) {
-  const src = new URL("../../app/v3/next.html", import.meta.url), text = readFileSync(src, "utf8"), r = patch(text);
+  const withSensors = process.argv.includes("--with-sensors"), hunks = withSensors ? HUNKS.concat([SENSOR_HUNK]) : HUNKS;
+  const src = new URL("../../app/v3/next.html", import.meta.url), text = readFileSync(src, "utf8"), r = patch(text, { withSensors });
   if (r.missing.length) { console.log("FAIL anchors not found: " + r.missing.join(", ") + " (app/ moved: re-pin the anchors)"); process.exit(1); }
   const i = process.argv.indexOf("--out");
   if (i > 0) { writeFileSync(process.argv[i + 1], r.text); console.log("wrote patched copy to " + process.argv[i + 1]); }
-  if (process.argv.includes("--diff")) for (const h of HUNKS) console.log("@@ " + h.name + " (" + (h.before ? "before" : "after") + " the line starting: " + h.anchor.slice(0, 70) + ")\n" + h.line.split("\n").map((l) => "+" + l).join("\n") + "\n");
+  if (process.argv.includes("--diff")) for (const h of hunks) console.log("@@ " + h.name + " (" + (h.before ? "before" : "after") + " the line starting: " + h.anchor.slice(0, 70) + ")\n" + h.line.split("\n").map((l) => "+" + l).join("\n") + "\n");
   const added = r.text.split("\n").length - text.split("\n").length;
-  console.log("anchors ok: " + HUNKS.map((h) => h.name).join(", ") + "  (+" + added + " lines, 0 lines changed, 0 removed)");
+  console.log("anchors ok: " + hunks.map((h) => h.name).join(", ") + "  (+" + added + " lines, 0 lines changed, 0 removed)");
 }

@@ -99,4 +99,25 @@ check("the added cost stays under 1 ms at the 99th percentile on this machine", 
   }
   check("reply-handler slice calls SysRouter.replied(o, kind) on mood and no-mood turns for event and tick", seen.length === 4 && JSON.stringify(seen.map((x) => x.slice(0, 2))) === '[[false,"event"],[false,"tick"],[true,"event"],[true,"tick"]]', seen);
 }
+
+// fireReflex slice (2C.2, --with-sensors): calls SysRouter.sense(trig) with zero change to fireReflex's calls
+{
+  const withS = patch(original, { withSensors: true });
+  check("--with-sensors finds all 4 anchors", withS.missing.length === 0, withS.missing);
+  const fOrig = slice(original, "fireReflex"), fPatched = slice(withS.text, "fireReflex");
+  const runF = (src, trig, sr) => {
+    const calls = [], box = { calls, Date: { now: () => 1700000005000 }, paused: false, dreaming: false, recording: false, document: { hidden: false },
+      speakingUntil: 0, _motion: null, lastReflexSoundT: 0, _live: { scratch: { reflexes: [{ on: trig, sound: "chirp" }] } },
+      playSound: (s) => calls.push("playSound:" + s), logEv: (e) => calls.push("logEv:" + e) };
+    if (sr) box.SysRouter = sr;
+    vm.runInNewContext(src + "; fireReflex(" + JSON.stringify(trig) + ");", box);
+    return calls.join();
+  };
+  const port = live.sr.port();
+  let same = true;
+  for (const trig of ["loud", "fall", "poke"]) {
+    if (runF(fOrig, trig, undefined) !== runF(fPatched, trig, port)) same = false;
+  }
+  check("--with-sensors keeps fireReflex calls identical and publishes to body.sense", same && port.read("body.sense").data === "poke", [same, port.read("body.sense")]);
+}
 done("funnel integration");

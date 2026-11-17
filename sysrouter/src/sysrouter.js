@@ -97,6 +97,7 @@ export function createRouter(opts) {
   if (opts.blockList) setBlockList(opts.blockList);
 
   streams['speech'] = { id: 'speech', tier: 'core', owner: '', types: { person: true, creature: true }, latest: null, watchers: [] };
+  streams['body.sense'] = { id: 'body.sense', tier: 'core', owner: '', types: { trig: true }, latest: null, watchers: [] };
 
   function row(r, why, x) {   // one journal row per decision (R-OBS-1). Never the words: the funnel's own "user" row holds their hash.
     const o = { r: r.id, tier: r.tier, mode: modeOf(r), why };
@@ -644,6 +645,8 @@ export function createRouter(opts) {
 
   const extensions = () => Object.keys(installed).map((k) => ({ name: installed[k].name, hash: installed[k].hash, permissions: JSON.parse(JSON.stringify(installed[k].permissions)) }));
 
+  const sense = (trig) => (flags.off || typeof trig !== 'string' || !trig.trim()) ? null : emit('body.sense', { type: 'trig', data: trig });
+
   const release = (resource) => { delete held[resource]; };
   const spent = () => usd;
   const list = () => Object.keys(routes).map((id) => ({ id, tier: routes[id].tier, owner: routes[id].owner, mode: modeOf(routes[id]), providers: routes[id].providers.slice(), on: Object.assign({}, routes[id].on) }));
@@ -651,6 +654,7 @@ export function createRouter(opts) {
     hear, replied,
     read,
     watch,
+    sense,
     request,
     list,
     extensions,
