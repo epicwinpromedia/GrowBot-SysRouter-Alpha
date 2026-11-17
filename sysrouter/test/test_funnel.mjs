@@ -63,12 +63,12 @@ function realRouter(R) {
   sr.provider("readers", readersProvider((t) => ftPick(R(t)))); sr.provider("ngram-wake", ngramProvider(model("wake.ngram"))); sr.provider("ngram-express", ngramProvider(model("express.ngram")));
   registerFuzzy(sr, Object.fromEntries(Object.keys(FUZZY.on).map((k) => [k, () => acted.push(k)])), ["readers", "ngram-wake"]);
   registerEmote(sr, (f, id) => acted.push(id), ["ngram-express"]);
-  sr.calibrate({ wake: { "ngram-wake@wake.ngram-v1": { p: 0.6 } }, express: { "ngram-express@express.ngram-v1": { p: 0.6 } } }); sr.seal();
+  sr.calibrate({ fuzzy: { "ngram-wake@wake.ngram-v1": { p: 0.6 } }, emote: { "ngram-express@express.ngram-v1": { p: 0.6 } } }); sr.seal();
   return { sr, rows, acted };
 }
 
 const lines = [...new Set(dataset("wake").concat(dataset("express")).map((r) => r.text))], ft = sandbox(original, "idle")._ftWords;
-const live = realRouter(ft), conds = { "not on the page": undefined, "null (off)": null, "on, in shadow": live.sr, "hear() throws": { hear() { throw new Error("router broke"); } } };
+const live = realRouter(ft), conds = { "not on the page": undefined, "null (off)": null, "on, in shadow": live.sr.port(), "hear() throws": { hear() { throw new Error("router broke"); } } };
 const diff = Object.fromEntries(Object.keys(conds).map((k) => [k, 0])); let n = 0, firstDiff = null, threw = 0;
 for (const said of lines) for (const state of ["idle", "thinking", "paused"]) {
   const want = run(original, said, state, undefined); n++;
