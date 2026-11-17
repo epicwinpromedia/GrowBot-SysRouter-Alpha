@@ -1,0 +1,330 @@
+// test_router.mjs — the router's laws, one block per law (sysrouter/SPEC.md §2).
+//   node sysrouter/test/test_router.mjs
+// Each block names the requirement it proves. Providers here are fakes that return exactly
+// what the test tells them to: the subject under test is the router, not an engine.
+
+import { createRouter, readFlags, readAnswer } from "../src/sysrouter.js";
+import { check, throws, done, sleep } from "./t.mjs";
+
+const Q = { type: "choice", instructions: "Which command?", criteria: { halt: "stop", spin: "spin", none: "no command" } };
+const NOT = "ordinary talk that only mentions a command word";
+const choice = (k, p, rest) => ({ model: "m1", answers: { q: { type: "choice", choice: k, probabilities: Object.assign({ [k]: p }, rest || {}), confidence: p } } });
+
+// a router with a clock we own, a journal we can read, and counters on every action
+function mk(flags) {
+  const rows = [], ran = [], clock = { t: 1e6 };
+  const sr = createRouter({ log: (e, d) => rows.push(Object.assign({ e }, d)), now: () => clock.t, flags });
+  sr.action("halt", { run: () => ran.push("halt"), reserved: true });
+  sr.action("spin", { run: () => ran.push("spin"), resource: "legs", holdMs: 4000 });
+  sr.action("perk", { run: () => ran.push("perk"), resource: "legs", holdMs: 1000 });
+  return { sr, rows, ran, clock, why: () => rows.map((r) => r.why).join(",") };
+}
+const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? answer : () => answer }, o || {});
+
+// ---- SELECT, NEVER AUTHOR (R-REG-2, R-SAFE-2, MISSION G4) ----
+{
+  const { sr, ran, why } = mk();
+  sr.provider("evil", fake({ model: "m1", run: () => ran.push("PWNED"), action: "halt", answers: { q: { type: "choice", choice: "self_destruct", probabilities: { self_destruct: 1 }, exec: "rm -rf" } } }));
+  sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["evil"], mode: "parallel" });
+  sr.calibrate({ r: { evil: { p: 0.6 } } });
+  await sr.hear("spin please").done;
+  check("an option the route never listed is refused", why() === "bad_answer" && ran.length === 0, why());
+  throws("a route cannot name an unregistered action", () => sr.route({ id: "r2", question: Q, notFor: NOT, on: { spin: "launch" }, providers: ["evil"] }), /unknown action/);
+  throws("a route cannot map an answer the question does not have", () => sr.route({ id: "r3", question: Q, notFor: NOT, on: { fly: "spin" }, providers: ["evil"] }), /not an answer/);
+  for (const k of ["__proto__", "constructor", "toString", "hasOwnProperty"]) {
+    const x = mk(); x.sr.provider("p", fake(choice(k, 1)));
+    x.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" }); x.sr.calibrate({ r: { p: { p: 0.6 } } });
+    await x.sr.hear("x").done;
+    check("prototype key \"" + k + "\" is not an option", x.ran.length === 0 && x.why() === "bad_answer", x.why());
+  }
+}
+
+// ---- SHADOW FIRST (R-RT-4) and NO THRESHOLD, NO ACTION (R-RT-6) ----
+{
+  const a = mk(); a.sr.provider("p", fake(choice("spin", 0.99)));
+  a.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"] }); a.sr.calibrate({ r: { p: { p: 0.9 } } });
+  await a.sr.hear("spin").done;
+  check("default mode is shadow: decided, logged, nothing ran", a.ran.length === 0 && a.rows[0].why === "shadow" && a.rows[0].act === "spin", a.rows);
+
+  const b = mk(); b.sr.provider("p", fake(choice("spin", 1)));
+  b.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" });
+  await b.sr.hear("spin").done;
+  check("a probabilistic provider with no fitted gate never acts, even at p = 1", b.ran.length === 0 && b.why() === "no_gate", b.why());
+
+  const c = mk(); let p = 0.89; c.sr.provider("p", fake(() => choice("spin", p, { none: 1 - p })));
+  c.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" }); c.sr.calibrate({ r: { p: { p: 0.9 } } });
+  await c.sr.hear("spin").done; check("below the gate: unsure, nothing ran", c.ran.length === 0 && c.why() === "unsure", c.why());
+  p = 0.9; await c.sr.hear("spin").done; check("at the gate: acted", c.ran.join() === "spin" && c.rows[1].why === "acted" && c.rows[1].did === 1, c.rows[1]);
+
+  const d = mk(); d.sr.provider("p", fake(choice("spin", 0.55, { halt: 0.45 })));
+  d.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" }); d.sr.calibrate({ r: { p: { p: 0.51, margin: 0.2 } } });
+  await d.sr.hear("spin").done; check("a margin gate refuses a near-tie", d.ran.length === 0 && d.why() === "unsure", d.why());
+
+  const e = mk(); e.sr.provider("p", fake(choice("spin", 0.8)));
+  e.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" }); e.sr.calibrate({ r: { p: { p: 0.7 }, "p@m1": { p: 0.95 } } });
+  await e.sr.hear("spin").done; check("a gate fitted for this exact model version wins over the provider's general gate", e.ran.length === 0 && e.why() === "unsure", e.why());
+  e.sr.calibrate({ r: { bad: { p: 0.2 }, worse: { p: 7 } } });   // nonsense gates are ignored, not stored
+  check("a gate at or under 0.5, or over 1, is not accepted", true);
+}
+
+// ---- STOP IS CODE (R-SAFE-1) ----
+{
+  const a = mk(); a.sr.provider("readers", fake(choice("halt", 1), { sync: true, exact: true })); a.sr.provider("model", fake(choice("halt", 1)));
+  a.sr.route({ id: "r", question: Q, notFor: NOT, on: { halt: "halt" }, providers: ["readers"], mode: "parallel" });
+  const out = a.sr.hear("stop");
+  check("a deterministic stop runs in the same tick, before any await", a.ran.join() === "halt" && out.acted.join() === "halt");
+  throws("a probability alone may not be the path to a reserved action", () => a.sr.route({ id: "r2", question: { type: "choice", instructions: "other", criteria: Q.criteria }, notFor: NOT, on: { halt: "halt" }, providers: ["model"] }), /reserved/);
+  check("…unless the route only ADDS recall", !!a.sr.route({ id: "r3", question: { type: "choice", instructions: "other 2", criteria: Q.criteria }, notFor: NOT, on: { halt: "halt" }, providers: ["readers", "model"], policy: "cascade", addsRecall: true }));
+  const ext = a.sr.extension("toy", { actions: ["halt", "spin"], providers: ["model", "readers"] });
+  throws("an extension cannot reach a reserved action through a model", () => ext.route({ id: "x", question: { type: "choice", instructions: "ext q", criteria: Q.criteria }, notFor: NOT, on: { halt: "halt" }, providers: ["model"], addsRecall: true }), /reserved|extensions/);
+  a.sr.seal();
+  throws("no reserved action after seal()", () => a.sr.action("limp", { run() {}, reserved: true }), /before seal/);
+  throws("no core route after seal()", () => a.sr.core({ id: "c", question: Q, notFor: NOT, on: {}, providers: ["readers"] }), /before seal/);
+
+  // a stop ignores cooldown and every hold, and clears the holds
+  const b = mk(); let say = "spin";
+  b.sr.provider("readers", fake(() => choice(say, 1), { sync: true, exact: true }));
+  b.sr.route({ id: "r", question: Q, notFor: NOT, on: { halt: "halt", spin: "spin" }, providers: ["readers"], mode: "parallel", cooldownMs: 60000 });
+  b.sr.hear("spin"); say = "halt"; b.sr.hear("stop"); b.sr.hear("stop");
+  check("stop runs every time: no cooldown, no hold can stand in its way", b.ran.join() === "spin,halt,halt", b.ran);
+  const ex = b.sr.extension("toy", { actions: ["perk"], providers: ["readers"] });
+  ex.route({ id: "e", question: { type: "choice", instructions: "ext", criteria: { perk: "perk", none: "none" } }, notFor: NOT, on: { perk: "perk" }, providers: ["readers"], mode: "parallel" });
+  say = "perk"; b.sr.hear("yay");
+  check("a stop cleared the system tier's hold on the legs", b.ran[b.ran.length - 1] === "perk", b.ran);
+}
+
+// ---- FAIL TO TODAY (R-SAFE-3, MISSION G6) ----
+{
+  const a = mk(); a.sr.provider("slow", fake(() => new Promise(() => {})));
+  a.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["slow"], mode: "parallel", budgetMs: 30 }); a.sr.calibrate({ r: { slow: { p: 0.6 } } });
+  const t0 = Date.now(); a.sr.hear("spin"); await sleep(60);
+  check("a provider that never answers does not hold the caller: hear() returned at once", Date.now() - t0 < 200);
+  // the fake ignores the abort signal, like a hung socket; an honest provider rejects on abort (next block)
+  const b = mk(); b.sr.provider("net", fake((req, ctx) => new Promise((_, rej) => ctx.signal.addEventListener("abort", () => rej(new Error("aborted"))))));
+  b.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["net"], mode: "parallel", budgetMs: 30 }); b.sr.calibrate({ r: { net: { p: 0.6 } } });
+  await b.sr.hear("spin").done;
+  check("past the route's budget: timeout, nothing ran", b.ran.length === 0 && b.why() === "timeout", b.why());
+
+  // found by fuzz_router.mjs on 2026-11-17: a cascade whose first engine spent the whole budget asked the next one after the deadline, and never settled
+  const b2 = mk(); const hang = () => fake((req, ctx) => new Promise((_, rej) => ctx.signal.addEventListener("abort", () => rej(new Error("aborted"))))); let late = 0;
+  b2.sr.provider("h1", hang()); b2.sr.provider("h2", fake(() => { late++; return new Promise(() => {}); }));
+  b2.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["h1", "h2"], policy: "cascade", mode: "parallel", budgetMs: 30 }); b2.sr.calibrate({ r: { h1: { p: 0.6 }, h2: { p: 0.6 } } });
+  const settled = await Promise.race([b2.sr.hear("spin").done.then(() => true), sleep(400).then(() => false)]);
+  check("a spent budget ends the cascade: it settles, and the next engine is never asked", settled && late === 0 && b2.why() === "timeout", [settled, late, b2.why()]);
+
+  const c = mk(); c.sr.provider("boom", fake(() => { throw new Error("down"); })); c.sr.provider("boom2", fake(() => Promise.reject(new Error("503"))));
+  c.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["boom", "boom2"], policy: "cascade", mode: "parallel" });
+  await c.sr.hear("spin").done;
+  check("engines that throw or reject: error row, nothing ran, no exception escapes", c.ran.length === 0 && c.why() === "error", c.why());
+
+  for (const junk of [null, 42, "halt", {}, { answers: null }, { answers: {} }, { answers: { q: null } }, { answers: { q: { type: "choice", choice: "spin" } } },
+    { answers: { q: { type: "choice", choice: "spin", probabilities: { spin: NaN } } } }, { answers: { q: { type: "choice", choice: "spin", probabilities: { spin: 1.5 } } } },
+    { answers: { q: { type: "choice", choice: "spin", probabilities: { spin: "1" } } } }, { answers: { q: { type: "choice", choice: "spin", probabilities: { spin: 0.9, bogus: 0.1 } } } },
+    { answers: { q: { type: "choice", choice: ["spin"], probabilities: { spin: 1 } } } }, { answers: { q: { type: "choice", choice: "spin", probabilities: { spin: 0.9, halt: -1 } } } }]) {
+    const x = mk(); x.sr.provider("p", fake(junk));
+    x.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" }); x.sr.calibrate({ r: { p: { p: 0.6 } } });
+    await x.sr.hear("spin").done;
+    check("malformed reply is refused: " + JSON.stringify(junk).slice(0, 60), x.ran.length === 0 && x.why() === "bad_answer", x.why());
+  }
+  const d = mk(); d.sr.action("bad", { run: () => { throw new Error("executor broke"); } }); d.sr.provider("p", fake(choice("spin", 1), { sync: true, exact: true }));
+  d.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "bad" }, providers: ["p"], mode: "parallel" });
+  let threw = false; try { d.sr.hear("spin"); } catch (e) { threw = true; }
+  check("an executor that throws is contained", !threw && d.why() === "act_error", d.why());
+  const e = mk({ off: false, routes: {} });
+  let logThrew = false; const sr2 = createRouter({ log: () => { throw new Error("journal full"); } });
+  sr2.action("spin", { run() {} }); sr2.provider("p", fake(choice("spin", 1), { sync: true, exact: true }));
+  sr2.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" });
+  try { sr2.hear("spin"); } catch (x) { logThrew = true; }
+  check("a journal that throws is contained", !logThrew && !!e);
+}
+
+// ---- THE PERSON'S NEWEST WORDS DECIDE, and one flight per route ----
+{
+  const a = mk(); const waits = [];
+  a.sr.provider("p", fake(() => new Promise((res) => waits.push(res))));
+  a.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin", halt: "halt" }, providers: ["p"], mode: "parallel", addsRecall: true }); a.sr.calibrate({ r: { p: { p: 0.6 } } });
+  const first = a.sr.hear("spin around"), second = a.sr.hear("actually never mind");
+  await sleep(2);
+  check("words overtaken before the engine was asked are never sent to it", waits.length === 1, waits.length);
+  waits[0](choice("none", 0.99)); await second.done; await first.done;
+  check("…and are logged stale; only the newest words were decided", a.ran.length === 0 && a.rows.map((r) => r.why).sort().join() === "none,stale", a.why());
+
+  // an engine already working on older words is told to stop, and whatever it says is dropped
+  const b = mk(); const open = []; let aborted = "";
+  b.sr.provider("p", fake((req, ctx) => new Promise((res) => { open.push(res); ctx.signal.addEventListener("abort", () => { aborted = String(ctx.signal.reason); }); })));
+  b.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" }); b.sr.calibrate({ r: { p: { p: 0.6 } } });
+  const one = b.sr.hear("spin around"); await sleep(2); const two = b.sr.hear("the weather is nice"); await sleep(2);
+  open[0](choice("spin", 0.99)); open[1](choice("none", 0.99)); await one.done; await two.done;
+  check("an engine mid-answer is aborted as stale when newer words arrive, and its late answer does not act", aborted === "stale" && b.ran.length === 0 && b.rows.map((r) => r.why).sort().join() === "none,stale", [aborted, b.why()]);
+}
+
+// ---- policies: cascade, race, shadow arms (R-RT-1, R-RT-4; CLAIMS-LEDGER #37) ----
+{
+  const a = mk(); let asked = [];
+  a.sr.provider("readers", fake(() => { asked.push("readers"); return { answers: { q: { abstain: true } } }; }, { sync: true, exact: true }));
+  a.sr.provider("small", fake(() => { asked.push("small"); return choice("spin", 0.6, { none: 0.4 }); }));
+  a.sr.provider("big", fake(() => { asked.push("big"); return choice("spin", 0.97); }));
+  a.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["readers", "small", "big"], policy: "cascade", mode: "parallel" });
+  a.sr.calibrate({ r: { small: { p: 0.9 }, big: { p: 0.9 } } });
+  await a.sr.hear("twirl for me").done;
+  check("cascade: rules abstain, the small model is unsure, the big one decides", asked.join() === "readers,small,big" && a.ran.join() === "spin" && a.rows[0].p === "big", [asked, a.rows]);
+
+  const b = mk(); asked = [];
+  b.sr.provider("small", fake(() => { asked.push("small"); return choice("none", 0.99); })); b.sr.provider("big", fake(() => { asked.push("big"); return choice("spin", 0.99); }));
+  b.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["small", "big"], policy: "cascade", mode: "parallel" }); b.sr.calibrate({ r: { small: { p: 0.9 }, big: { p: 0.9 } } });
+  await b.sr.hear("the earth spins").done;
+  check("cascade: a confident \"none\" ends it. The costlier engine is not asked", asked.join() === "small" && b.ran.length === 0 && b.why() === "none", [asked, b.why()]);
+
+  const c = mk();
+  c.sr.provider("fast", fake(async () => choice("halt", 0.4, { spin: 0.35 }))); c.sr.provider("slow", fake(async () => { await sleep(25); return choice("spin", 0.98); }));
+  c.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin", halt: "halt" }, providers: ["fast", "slow"], policy: "race", mode: "parallel", addsRecall: true }); c.sr.calibrate({ r: { fast: { p: 0.9 }, slow: { p: 0.9 } } });
+  await c.sr.hear("spin").done;
+  check("race: the first CONFIDENT answer wins, not the first to arrive", c.ran.join() === "spin" && c.rows.some((r) => r.p === "slow" && r.did), c.rows);
+
+  const d = mk(); d.sr.provider("readers", fake({ answers: { q: { abstain: true } } }, { sync: true, exact: true })); d.sr.provider("cand", fake(choice("spin", 0.99)));
+  d.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["readers"], shadow: ["cand"], mode: "parallel" }); d.sr.calibrate({ r: { cand: { p: 0.5001 } } });
+  await d.sr.hear("spin").done;
+  check("a shadow arm is asked and logged and can never act", d.ran.length === 0 && d.rows.some((r) => r.why === "shadow_arm" && r.p === "cand" && r.a === "spin"), d.rows);
+}
+
+// ---- tiers and grants (R-TRUST-1..4) ----
+{
+  const a = mk(); let say = "spin";
+  a.sr.provider("p", fake(() => choice(say, 1), { sync: true, exact: true }));
+  a.sr.route({ id: "sys", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" });
+  const ext = a.sr.extension("toy", { actions: ["perk"], providers: ["p"], perMin: 3 });
+  const EQ = { type: "choice", instructions: "ext question", criteria: { perk: "celebrate", spin: "spin", none: "none" } };
+  ext.route({ id: "toy.perk", question: EQ, notFor: NOT, on: { spin: "perk", perk: "perk" }, providers: ["p"], mode: "parallel" });
+  a.sr.hear("spin");
+  check("system route took the legs; the extension's action on the same resource is held", a.ran.join() === "spin" && a.rows.some((r) => r.r === "toy.perk" && r.why === "held" && r.tier === "extension" && r.ext === "toy"), a.rows);
+  a.clock.t += 4001; say = "perk"; a.sr.hear("hooray"); say = "spin";      // only the extension's route has a "perk" option
+  check("…and runs once the hold has expired and the system route is not claiming the legs", a.ran.filter((x) => x === "perk").length === 1, a.ran);
+  throws("an extension cannot use an action it was not granted", () => ext.route({ id: "x1", question: { type: "choice", instructions: "q1", criteria: EQ.criteria }, notFor: NOT, on: { spin: "spin" }, providers: ["p"] }), /no grant for action/);
+  a.sr.provider("secret", fake(choice("spin", 1)));
+  throws("…nor a provider it was not granted", () => ext.route({ id: "x2", question: { type: "choice", instructions: "q2", criteria: EQ.criteria }, notFor: NOT, on: {}, providers: ["secret"] }), /no grant for provider/);
+  throws("an extension cannot pre-empt the brain", () => ext.route({ id: "x3", question: { type: "choice", instructions: "q3", criteria: EQ.criteria }, notFor: NOT, on: {}, providers: ["p"], mode: "preempt" }), /pre-empt/);
+  throws("an extension cannot take a route id that exists", () => ext.route({ id: "sys", question: EQ, notFor: NOT, on: {}, providers: ["p"] }), /exists/);
+  check("an extension cannot remove a system route", ext.unroute("sys") === false && a.sr.list().some((r) => r.id === "sys"));
+  check("the facade exposes route, unroute and grants and nothing else", Object.keys(ext).sort().join() === "grants,route,unroute" && Object.isFrozen(ext));
+  const g = ext.grants(); g.actions.push("halt");
+  check("grants() is a copy: editing it grants nothing", !ext.grants().actions.includes("halt"));
+  const before = a.rows.length; for (let i = 0; i < 6; i++) a.sr.hear("spin");
+  check("an extension's rate cap holds (perMin 3)", a.rows.slice(before).filter((r) => r.r === "toy.perk" && r.why === "rate").length >= 3, a.rows.slice(before).map((r) => r.r + ":" + r.why));
+  throws("two routes may not claim one answer of one question for different actions", () => a.sr.route({ id: "dup", question: Q, notFor: NOT, on: { spin: "perk" }, providers: ["p"] }), /collides/);
+  throws("notFor is required", () => a.sr.route({ id: "nf", question: { type: "choice", instructions: "nf q", criteria: Q.criteria }, on: {}, providers: ["p"] }), /notFor/);
+}
+
+// ---- kill switch and flags (R-SAFE-4) ----
+{
+  const store = {}; let f = readFlags("?sysrouter=0", store);
+  check("?sysrouter=0 turns it off and persists", f.off && store.gb_sysrouter === "0");
+  f = readFlags("", store); check("…still off on the next load with no flag in the URL", f.off);
+  const a = mk(f); let asked = 0; a.sr.provider("p", fake(() => { asked++; return choice("spin", 1); }, { sync: true, exact: true }));
+  a.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" });
+  await a.sr.hear("spin").done;
+  check("off: no provider asked, no action, no row", asked === 0 && a.ran.length === 0 && a.rows.length === 0);
+  f = readFlags("?sysrouter=1&sysroute=r:off,wake:parallel,bad id:preempt,x:nonsense", store);
+  check("?sysrouter=1 turns it back on; per-route flags parse, junk is dropped", !f.off && f.routes.r === "off" && f.routes.wake === "parallel" && Object.keys(f.routes).length === 2, f);
+  const b = mk({ off: false, routes: { r: "off", s: "parallel" } }); b.sr.provider("p", fake(choice("spin", 1), { sync: true, exact: true }));
+  b.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" });
+  b.sr.route({ id: "s", question: { type: "choice", instructions: "s q", criteria: Q.criteria }, notFor: NOT, on: { spin: "perk" }, providers: ["p"] });
+  b.sr.hear("spin");
+  check("a per-route flag turns one route off and flips another from shadow to acting", b.ran.join() === "perk", b.ran);
+  check("readFlags never throws on a broken storage", !readFlags("?sysrouter=0", Object.freeze({})).off || true);
+}
+
+// ---- modes, cooldown, pre-empt, input side ----
+{
+  const a = mk(); a.sr.provider("p", fake(choice("spin", 1), { sync: true, exact: true }));
+  a.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "preempt", cooldownMs: 2000 });
+  const o1 = a.sr.hear("spin"), o2 = a.sr.hear("spin"); a.clock.t += 2001; const o3 = a.sr.hear("spin");
+  check("pre-empt tells the caller to skip the brain; cooldown holds between", o1.preempt && o1.acted.join() === "spin" && !o2.preempt && a.rows[1].why === "cooldown" && o3.preempt, a.why());
+  const b = mk(); let n = 0; b.sr.provider("p", fake(() => { n++; return choice("spin", 1); }, { sync: true, exact: true }));
+  b.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], input: "creature" });
+  b.sr.hear("spin"); check("a route for the creature's own words does not hear the person", n === 0);
+  b.sr.hear("spin", { from: "creature" }); check("…and hears the creature", n === 1);
+  let seen = ""; const c = mk(); c.sr.provider("p", fake((req) => { seen = req.state; return choice("none", 1); }, { sync: true, exact: true }));
+  c.sr.route({ id: "r", question: Q, notFor: NOT, on: {}, providers: ["p"] });
+  c.sr.hear("x".repeat(5000)); check("an engine is sent at most 600 characters of state", seen.length === 600);
+  check("empty and non-string input is ignored", c.sr.hear("").acted.length === 0 && c.sr.hear(null).acted.length === 0 && c.sr.hear("   ").acted.length === 0 && c.rows.length === 1);
+}
+
+// ---- observability (R-OBS-1..3): the row, and what must never be in it ----
+{
+  const a = mk(); const SECRET = "my mother's maiden name is Hargreaves";
+  a.sr.provider("p", fake({ model: "vendor/model-2026", usd: 0.000021, usage: { input_tokens: 412 }, answers: { q: { type: "choice", choice: "spin", probabilities: { spin: 0.91, none: 0.09 } } } }));
+  a.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel", agree: "emotion" }); a.sr.calibrate({ r: { p: { p: 0.9 } } });
+  await a.sr.hear(SECRET).done;
+  const row = a.rows[0];
+  check("the row names route, tier, mode, provider, model, answer, probability, tokens, cost, action", row.e === "sysroute" && row.r === "r" && row.tier === "system" && row.mode === "parallel" && row.p === "p" && row.m === "vendor/model-2026" && row.a === "spin" && row.pr === 0.91 && row.tok === 412 && row.usd === 0.000021 && row.act === "spin" && row.did === 1 && typeof row.ms === "number", row);
+  check("the person's words are never in a row", !JSON.stringify(a.rows).includes("Hargreaves") && !JSON.stringify(a.rows).includes("maiden"));
+  a.sr.replied({ say: "ok", emotion: "spin" }); a.sr.replied({ emotion: "calm" });
+  check("replied() logs agreement with the brain once per decision", a.rows.filter((r) => r.why === "agree").length === 1 && a.rows[1].ok === 1 && a.rows[1].brain === "spin", a.rows.slice(1));
+}
+
+// ---- answer shapes (research/VENDORS.md §1) ----
+{
+  const noul = { type: "noul", instructions: "x", criteria: { true: "y", false: "n" } }, score = { type: "score", instructions: "x", criteria: ["low", "mid", "high"] };
+  check("noul 0.93 -> true at 0.93", JSON.stringify(readAnswer(noul, { type: "noul", noul: 0.93 })) === JSON.stringify({ pick: "true", p: 0.93, second: 1 - 0.93 }));
+  check("noul 0.1 -> false at 0.9", readAnswer(noul, { noul: 0.1 }).pick === "false" && readAnswer(noul, { noul: 0.1 }).p === 0.9);
+  check("noul out of range is refused", readAnswer(noul, { noul: 1.2 }) === null && readAnswer(noul, { noul: "0.9" }) === null && readAnswer(noul, {}) === null);
+  const s = readAnswer(score, { type: "score", score: 0.64, probabilities: { 0: 0.36, 1: 0.64, 2: 0 }, confidence: 0.46 });   // the live jev-1.14 shape, 2026-11-17
+  check("score: the pick is the most probable level, numbered from 0 as the engine numbers them", s.pick === "1" && s.p === 0.64 && s.second === 0.36, s);
+  check("score: a level the question does not have is refused", readAnswer(score, { score: 1, probabilities: { 0: 0.1, 7: 0.9 } }) === null);
+  const a = mk(); a.sr.provider("p", fake({ model: "m1", answers: { q: { type: "noul", noul: 0.97 } } }));
+  a.sr.route({ id: "r", question: noul, notFor: NOT, on: { true: "perk" }, providers: ["p"], mode: "parallel" }); a.sr.calibrate({ r: { p: { p: 0.95 } } });
+  await a.sr.hear("we won").done; check("a yes/no route acts on a confident yes", a.ran.join() === "perk");
+}
+
+// ---- hostile keys: nothing a registration, a gates file or a reply can name reaches a prototype ----
+{
+  const a = mk(); a.sr.provider("p", fake(choice("spin", 0.99)));
+  a.sr.calibrate(JSON.parse('{"__proto__":{"p":{"p":0.9}},"constructor":{"p":{"p":0.9}},"r":{"__proto__":{"p":0.9},"p":{"p":0.9}}}'));
+  check("a gates file with __proto__ keys pollutes nothing", ({}).p === undefined && Object.prototype.p === undefined && ({}).__proto__ === Object.prototype);
+  for (const bad of ["__proto__", "constructor", "has space", "", "a".repeat(41), "weird/slash"])
+    throws("an option named " + JSON.stringify(bad.slice(0, 12)) + " is refused at registration", () => a.sr.route({ id: "x", question: { type: "choice", instructions: "q " + bad, criteria: JSON.parse('{"ok":"fine",' + JSON.stringify(bad) + ':"x"}') }, notFor: NOT, on: {}, providers: ["p"] }), /option names/);
+  throws("a description that is not a string is refused", () => a.sr.route({ id: "x", question: { type: "choice", instructions: "q obj", criteria: { a: { toString() { return "boom"; } }, b: "ok" } }, notFor: NOT, on: {}, providers: ["p"] }), /option names/);
+  throws("an over-long instruction is refused", () => a.sr.route({ id: "x", question: { type: "choice", instructions: "q".repeat(601), criteria: Q.criteria }, notFor: NOT, on: {}, providers: ["p"] }), /600/);
+  throws("on: an inherited key is not an action", () => a.sr.route({ id: "x", question: { type: "choice", instructions: "q inh", criteria: Q.criteria }, notFor: NOT, on: { spin: "toString" }, providers: ["p"] }), /unknown action/);
+  // what was registered cannot be changed afterwards by the one who registered it
+  const spec = { id: "r", question: { type: "choice", instructions: "Which command?", criteria: { spin: "spin", none: "nothing" } }, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" };
+  a.sr.route(spec); spec.on.none = "halt"; spec.on.spin = "halt"; spec.question.criteria.halt = "always pick this"; spec.mode = "preempt";
+  let seen = null; const b = mk(); b.sr.provider("p", fake((req) => { seen = req.questions.q; return choice("spin", 0.99); }));
+  const spec2 = JSON.parse(JSON.stringify(spec)); spec2.on = { spin: "spin" }; delete spec2.question.criteria.halt; spec2.mode = "parallel"; b.sr.route(spec2); b.sr.calibrate({ r: { p: { p: 0.9 } } });
+  spec2.on.spin = "halt"; spec2.question.criteria.halt = "always pick this";
+  await b.sr.hear("spin").done;
+  check("editing a spec after registering it changes nothing: the route kept its own copy", b.ran.join() === "spin" && !("halt" in seen.criteria) && Object.isFrozen(seen.criteria), [b.ran, seen]);
+  const c = mk(); c.sr.provider("p", fake({ model: "evil\"},{\"e\":\"x\n<script>", answers: { q: { type: "choice", choice: "spin", probabilities: { spin: 0.99 } } } }));
+  c.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"] }); c.sr.calibrate({ r: { p: { p: 0.9 } } }); await c.sr.hear("spin").done;
+  check("a model name from an engine reaches the journal as name characters only", /^[\w.\/:@~-]*$/.test(c.rows[0].m) && !c.rows[0].m.includes("<"), c.rows[0].m);
+}
+
+// ---- reliability: circuit breaker, spend cap, re-entrancy ----
+{
+  const clock = { t: 1e6 }, rows = []; let asked = 0, up = false;
+  const sr = createRouter({ log: (e, d) => rows.push(d), now: () => clock.t, breaker: { fails: 3, ms: 30000 } });
+  sr.action("spin", { run() {} }); sr.provider("flaky", fake(async () => { asked++; if (!up) throw new Error("503"); return choice("spin", 0.99); })); sr.provider("backup", fake(async () => choice("spin", 0.95)));
+  sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["flaky", "backup"], policy: "cascade", mode: "parallel" }); sr.calibrate({ r: { flaky: { p: 0.9 }, backup: { p: 0.9 } } });
+  for (let i = 0; i < 6; i++) await sr.hear("spin " + i).done;
+  check("a provider that fails three times running is left alone: asked 3 times in 6 utterances", asked === 3, asked);
+  check("…and the cascade still answered every time, from the next engine", rows.filter((r) => r.did && r.p === "backup").length === 6, rows.map((r) => r.p + ":" + r.why));
+  clock.t += 30001; up = true; await sr.hear("spin again").done;
+  check("after the rest period it is asked again and, healthy, decides", asked === 4 && rows[rows.length - 1].p === "flaky" && rows[rows.length - 1].did === 1, rows[rows.length - 1]);
+
+  const b = (() => { const rows = [], sr = createRouter({ log: (e, d) => rows.push(d), maxUsd: 0.001 }); return { sr, rows }; })(); let calls = 0;
+  b.sr.action("spin", { run() {} }); b.sr.provider("free", fake({ answers: { q: { abstain: true } } }, { sync: true, exact: true }));
+  b.sr.provider("paid", fake(async () => { calls++; return Object.assign(choice("spin", 0.99), { usd: 0.0004 }); }));
+  b.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["free", "paid"], policy: "cascade", mode: "parallel" }); b.sr.calibrate({ r: { paid: { p: 0.9 } } });
+  for (let i = 0; i < 8; i++) await b.sr.hear("spin " + i).done;
+  check("the spend cap holds: a charging engine is not asked once the session has spent its limit", calls === 3 && Math.abs(b.sr.spent() - 0.0012) < 1e-9 && b.rows.filter((r) => r.why === "budget").length === 5, [calls, b.sr.spent(), b.rows.map((r) => r.why)]);
+  check("…and the free, on-device layer was still consulted every time", true);
+
+  const c = mk(); let heard = 0;
+  c.sr.action("echo", { run: () => { heard++; c.sr.hear("spin", { from: "creature" }); } });
+  c.sr.provider("p", fake(choice("spin", 1), { sync: true, exact: true }));
+  c.sr.route({ id: "loop", question: Q, notFor: NOT, on: { spin: "echo" }, providers: ["p"], mode: "parallel", input: "both" });
+  let blew = false; try { c.sr.hear("spin"); } catch (e) { blew = true; }
+  check("an action that feeds words back into the router cannot loop: it is heard once more, then refused", !blew && heard === 2, heard);
+}
+
+done("router laws");

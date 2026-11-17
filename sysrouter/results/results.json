@@ -1,0 +1,2199 @@
+{
+ "made": "2026-11-17",
+ "target_bad_acts_on_tuning": {
+  "wake": 0.005,
+  "express": 0.02
+ },
+ "target_dismissed_asks_on_tuning": 0.02,
+ "routes": {
+  "wake": {
+   "rows": 2170,
+   "arms": {
+    "readers": {
+     "kind": "readers",
+     "model": "readers",
+     "gate": 0,
+     "gate_nothing": 0,
+     "held": {
+      "n_should_act": 168,
+      "n_should_not": 936,
+      "recall": 0.2024,
+      "wrong": 0.006,
+      "false_trigger": 0.0011,
+      "precision": 0.9444,
+      "acted": 36
+     },
+     "ungated_accuracy": 0.0308,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 168,
+       "n_should_not": 0,
+       "recall": 0.2024,
+       "wrong": 0.006,
+       "false_trigger": null,
+       "precision": 0.9714,
+       "acted": 35
+      },
+      "chat": {
+       "n_should_act": 0,
+       "n_should_not": 40,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-in": {
+       "n_should_act": 0,
+       "n_should_not": 465,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-oos": {
+       "n_should_act": 0,
+       "n_should_not": 348,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "trap": {
+       "n_should_act": 0,
+       "n_should_not": 83,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.012,
+       "precision": 0,
+       "acted": 1
+      }
+     },
+     "by_label": {
+      "follow": 0.5217,
+      "halt": 0.2273,
+      "sing": 0,
+      "spin": 0,
+      "still": 0.2381,
+      "unfollow": 0.5455,
+      "walk_back": 0,
+      "walk_forward": 0
+     },
+     "ece": null,
+     "latency_ms": {
+      "p50": 0.01,
+      "p95": 0.01,
+      "p99": 0.06,
+      "n": 2170,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0,
+     "tokens_per_call": 0,
+     "failed": 0,
+     "asked": 2170,
+     "order_stable": null,
+     "order_n": 0
+    },
+    "ngram": {
+     "kind": "ngram",
+     "model": "wake.ngram-v1",
+     "gate": 0.9364,
+     "gate_nothing": 0.96,
+     "held": {
+      "n_should_act": 168,
+      "n_should_not": 936,
+      "recall": 0.4881,
+      "wrong": 0.0238,
+      "false_trigger": 0.0021,
+      "precision": 0.9318,
+      "acted": 88
+     },
+     "ungated_accuracy": 0.952,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 168,
+       "n_should_not": 0,
+       "recall": 0.4881,
+       "wrong": 0.0238,
+       "false_trigger": null,
+       "precision": 0.9535,
+       "acted": 86
+      },
+      "chat": {
+       "n_should_act": 0,
+       "n_should_not": 40,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-in": {
+       "n_should_act": 0,
+       "n_should_not": 465,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-oos": {
+       "n_should_act": 0,
+       "n_should_not": 348,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "trap": {
+       "n_should_act": 0,
+       "n_should_not": 83,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0241,
+       "precision": 0,
+       "acted": 2
+      }
+     },
+     "by_label": {
+      "follow": 0.1739,
+      "halt": 0.4091,
+      "sing": 0.6316,
+      "spin": 0.5,
+      "still": 0.5238,
+      "unfollow": 0.4545,
+      "walk_back": 0.6842,
+      "walk_forward": 0.6
+     },
+     "ece": 0.0137,
+     "latency_ms": {
+      "p50": 0.02,
+      "p95": 0.05,
+      "p99": 0.2,
+      "n": 2170,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0,
+     "tokens_per_call": 0,
+     "failed": 0,
+     "asked": 2170,
+     "order_stable": null,
+     "order_n": 0
+    },
+    "minilm-zeroshot": {
+     "kind": "embed",
+     "model": "minilm-zeroshot",
+     "gate": 0.9815,
+     "gate_nothing": 0.5001,
+     "held": {
+      "n_should_act": 168,
+      "n_should_not": 936,
+      "recall": 0.1845,
+      "wrong": 0.006,
+      "false_trigger": 0.0053,
+      "precision": 0.8378,
+      "acted": 37
+     },
+     "ungated_accuracy": 0.2183,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 168,
+       "n_should_not": 0,
+       "recall": 0.1845,
+       "wrong": 0.006,
+       "false_trigger": null,
+       "precision": 0.9688,
+       "acted": 32
+      },
+      "chat": {
+       "n_should_act": 0,
+       "n_should_not": 40,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-in": {
+       "n_should_act": 0,
+       "n_should_not": 465,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0022,
+       "precision": 0,
+       "acted": 1
+      },
+      "clinc-oos": {
+       "n_should_act": 0,
+       "n_should_not": 348,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0029,
+       "precision": 0,
+       "acted": 1
+      },
+      "trap": {
+       "n_should_act": 0,
+       "n_should_not": 83,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0361,
+       "precision": 0,
+       "acted": 3
+      }
+     },
+     "by_label": {
+      "follow": 0,
+      "halt": 0.0455,
+      "sing": 0.7368,
+      "spin": 0.4545,
+      "still": 0.0476,
+      "unfollow": 0.2273,
+      "walk_back": 0,
+      "walk_forward": 0
+     },
+     "ece": 0.2267,
+     "latency_ms": {
+      "p50": 1.64,
+      "p95": 2.3,
+      "p99": 5.7,
+      "n": 2170,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0,
+     "tokens_per_call": 0,
+     "failed": 0,
+     "asked": 2170,
+     "order_stable": null,
+     "order_n": 0
+    },
+    "minilm-head": {
+     "kind": "embed",
+     "model": "wake.minilm-head-v1",
+     "gate": 0.9574,
+     "gate_nothing": 0.6455,
+     "held": {
+      "n_should_act": 168,
+      "n_should_not": 936,
+      "recall": 0.5417,
+      "wrong": 0.0179,
+      "false_trigger": 0.0021,
+      "precision": 0.9479,
+      "acted": 96
+     },
+     "ungated_accuracy": 0.9674,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 168,
+       "n_should_not": 0,
+       "recall": 0.5417,
+       "wrong": 0.0179,
+       "false_trigger": null,
+       "precision": 0.9681,
+       "acted": 94
+      },
+      "chat": {
+       "n_should_act": 0,
+       "n_should_not": 40,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-in": {
+       "n_should_act": 0,
+       "n_should_not": 465,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-oos": {
+       "n_should_act": 0,
+       "n_should_not": 348,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "trap": {
+       "n_should_act": 0,
+       "n_should_not": 83,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0241,
+       "precision": 0,
+       "acted": 2
+      }
+     },
+     "by_label": {
+      "follow": 0.1304,
+      "halt": 0.5455,
+      "sing": 0.7895,
+      "spin": 0.6364,
+      "still": 0.5714,
+      "unfollow": 0.5909,
+      "walk_back": 0.5789,
+      "walk_forward": 0.55
+     },
+     "ece": 0.0116,
+     "latency_ms": {
+      "p50": 1.56,
+      "p95": 2.17,
+      "p99": 2.89,
+      "n": 2170,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0,
+     "tokens_per_call": 0,
+     "failed": 0,
+     "asked": 2170,
+     "order_stable": null,
+     "order_n": 0
+    },
+    "jev": {
+     "kind": "http",
+     "model": "typesafe/jev-1.14-20261014",
+     "gate": 0.6401,
+     "gate_nothing": 0.5001,
+     "held": {
+      "n_should_act": 168,
+      "n_should_not": 936,
+      "recall": 0.9405,
+      "wrong": 0.0119,
+      "false_trigger": 0.0032,
+      "precision": 0.9693,
+      "acted": 163
+     },
+     "ungated_accuracy": 0.9864,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 168,
+       "n_should_not": 0,
+       "recall": 0.9405,
+       "wrong": 0.0119,
+       "false_trigger": null,
+       "precision": 0.9875,
+       "acted": 160
+      },
+      "chat": {
+       "n_should_act": 0,
+       "n_should_not": 40,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-in": {
+       "n_should_act": 0,
+       "n_should_not": 465,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-oos": {
+       "n_should_act": 0,
+       "n_should_not": 348,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "trap": {
+       "n_should_act": 0,
+       "n_should_not": 83,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0361,
+       "precision": 0,
+       "acted": 3
+      }
+     },
+     "by_label": {
+      "follow": 0.8696,
+      "halt": 0.9091,
+      "sing": 0.9474,
+      "spin": 0.9545,
+      "still": 0.9048,
+      "unfollow": 1,
+      "walk_back": 1,
+      "walk_forward": 0.95
+     },
+     "ece": 0.0113,
+     "latency_ms": {
+      "p50": 174.81,
+      "p95": 233.73,
+      "p99": 310.43,
+      "n": 2170,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0.02533,
+     "tokens_per_call": 603,
+     "failed": 0,
+     "asked": 2170,
+     "order_stable": null,
+     "order_n": 0
+    },
+    "clef": {
+     "kind": "http",
+     "model": "cloudflare/clef",
+     "gate": 0.7193,
+     "gate_nothing": 0.5001,
+     "held": {
+      "n_should_act": 168,
+      "n_should_not": 936,
+      "recall": 0.8631,
+      "wrong": 0.006,
+      "false_trigger": 0.0043,
+      "precision": 0.9667,
+      "acted": 150
+     },
+     "ungated_accuracy": 0.9792,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 168,
+       "n_should_not": 0,
+       "recall": 0.8631,
+       "wrong": 0.006,
+       "false_trigger": null,
+       "precision": 0.9932,
+       "acted": 146
+      },
+      "chat": {
+       "n_should_act": 0,
+       "n_should_not": 40,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-in": {
+       "n_should_act": 0,
+       "n_should_not": 465,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0043,
+       "precision": 0,
+       "acted": 2
+      },
+      "clinc-oos": {
+       "n_should_act": 0,
+       "n_should_not": 348,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "trap": {
+       "n_should_act": 0,
+       "n_should_not": 83,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0241,
+       "precision": 0,
+       "acted": 2
+      }
+     },
+     "by_label": {
+      "follow": 0.7826,
+      "halt": 0.6364,
+      "sing": 0.9474,
+      "spin": 0.9545,
+      "still": 0.7619,
+      "unfollow": 0.9545,
+      "walk_back": 0.9474,
+      "walk_forward": 0.95
+     },
+     "ece": 0.0823,
+     "latency_ms": {
+      "p50": 360.24,
+      "p95": 631.3,
+      "p99": 906.91,
+      "n": 2170,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0.10535,
+     "tokens_per_call": 439,
+     "failed": 0,
+     "asked": 2170,
+     "order_stable": null,
+     "order_n": 0
+    },
+    "clef-flash": {
+     "kind": "http",
+     "model": "cloudflare/clef-flash",
+     "gate": 0.8147,
+     "gate_nothing": 0.4886,
+     "held": {
+      "n_should_act": 168,
+      "n_should_not": 936,
+      "recall": 0.7262,
+      "wrong": 0.006,
+      "false_trigger": 0.0032,
+      "precision": 0.9683,
+      "acted": 126
+     },
+     "ungated_accuracy": 0.9891,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 168,
+       "n_should_not": 0,
+       "recall": 0.7262,
+       "wrong": 0.006,
+       "false_trigger": null,
+       "precision": 0.9919,
+       "acted": 123
+      },
+      "chat": {
+       "n_should_act": 0,
+       "n_should_not": 40,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-in": {
+       "n_should_act": 0,
+       "n_should_not": 465,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0022,
+       "precision": 0,
+       "acted": 1
+      },
+      "clinc-oos": {
+       "n_should_act": 0,
+       "n_should_not": 348,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "trap": {
+       "n_should_act": 0,
+       "n_should_not": 83,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0241,
+       "precision": 0,
+       "acted": 2
+      }
+     },
+     "by_label": {
+      "follow": 0.2174,
+      "halt": 0.5909,
+      "sing": 0.8421,
+      "spin": 0.9545,
+      "still": 0.7619,
+      "unfollow": 0.7727,
+      "walk_back": 0.8421,
+      "walk_forward": 0.9
+     },
+     "ece": 0.1863,
+     "latency_ms": {
+      "p50": 232.83,
+      "p95": 431.3,
+      "p99": 628.16,
+      "n": 2170,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0.01668,
+     "tokens_per_call": 439,
+     "failed": 0,
+     "asked": 2170,
+     "order_stable": null,
+     "order_n": 0
+    },
+    "clef@primeintellect": {
+     "kind": "http",
+     "model": "cloudflare/clef",
+     "gate": 0.7002,
+     "gate_nothing": 0.5001,
+     "held": {
+      "n_should_act": 168,
+      "n_should_not": 936,
+      "recall": 0.8452,
+      "wrong": 0.0179,
+      "false_trigger": 0.0032,
+      "precision": 0.9595,
+      "acted": 148
+     },
+     "ungated_accuracy": 0.8786,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 168,
+       "n_should_not": 0,
+       "recall": 0.8452,
+       "wrong": 0.0179,
+       "false_trigger": null,
+       "precision": 0.9793,
+       "acted": 145
+      },
+      "chat": {
+       "n_should_act": 0,
+       "n_should_not": 40,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-in": {
+       "n_should_act": 0,
+       "n_should_not": 465,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0022,
+       "precision": 0,
+       "acted": 1
+      },
+      "clinc-oos": {
+       "n_should_act": 0,
+       "n_should_not": 348,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "trap": {
+       "n_should_act": 0,
+       "n_should_not": 83,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0241,
+       "precision": 0,
+       "acted": 2
+      }
+     },
+     "by_label": {
+      "follow": 0.913,
+      "halt": 0.3182,
+      "sing": 0.9474,
+      "spin": 1,
+      "still": 0.7619,
+      "unfollow": 0.9545,
+      "walk_back": 0.9474,
+      "walk_forward": 0.95
+     },
+     "ece": 0.0872,
+     "latency_ms": {
+      "p50": 363.68,
+      "p95": 1219.43,
+      "p99": 1972.46,
+      "n": 1941,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0.10533,
+     "tokens_per_call": 439,
+     "failed": 229,
+     "asked": 2170,
+     "order_stable": null,
+     "order_n": 0
+    },
+    "clef-flash@primeintellect": {
+     "kind": "http",
+     "model": "cloudflare/clef-flash",
+     "gate": 0.8703,
+     "gate_nothing": 0.3921,
+     "held": {
+      "n_should_act": 168,
+      "n_should_not": 936,
+      "recall": 0.6726,
+      "wrong": 0,
+      "false_trigger": 0.0032,
+      "precision": 0.9741,
+      "acted": 116
+     },
+     "ungated_accuracy": 0.99,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 168,
+       "n_should_not": 0,
+       "recall": 0.6726,
+       "wrong": 0,
+       "false_trigger": null,
+       "precision": 1,
+       "acted": 113
+      },
+      "chat": {
+       "n_should_act": 0,
+       "n_should_not": 40,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-in": {
+       "n_should_act": 0,
+       "n_should_not": 465,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0022,
+       "precision": 0,
+       "acted": 1
+      },
+      "clinc-oos": {
+       "n_should_act": 0,
+       "n_should_not": 348,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "trap": {
+       "n_should_act": 0,
+       "n_should_not": 83,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0241,
+       "precision": 0,
+       "acted": 2
+      }
+     },
+     "by_label": {
+      "follow": 0.087,
+      "halt": 0.5909,
+      "sing": 0.8421,
+      "spin": 0.9545,
+      "still": 0.7143,
+      "unfollow": 0.6818,
+      "walk_back": 0.8421,
+      "walk_forward": 0.75
+     },
+     "ece": 0.1588,
+     "latency_ms": {
+      "p50": 281.65,
+      "p95": 383.53,
+      "p99": 583.29,
+      "n": 2169,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0.01668,
+     "tokens_per_call": 439,
+     "failed": 1,
+     "asked": 2170,
+     "order_stable": null,
+     "order_n": 0
+    },
+    "llama8b-groq": {
+     "kind": "chat",
+     "model": "meta-llama/llama-3.1-8b-instruct",
+     "gate": "never",
+     "gate_nothing": "never",
+     "held": {
+      "n_should_act": 168,
+      "n_should_not": 936,
+      "recall": 0,
+      "wrong": 0,
+      "false_trigger": 0,
+      "precision": null,
+      "acted": 0
+     },
+     "ungated_accuracy": 0.9792,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 168,
+       "n_should_not": 0,
+       "recall": 0,
+       "wrong": 0,
+       "false_trigger": null,
+       "precision": null,
+       "acted": 0
+      },
+      "chat": {
+       "n_should_act": 0,
+       "n_should_not": 40,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-in": {
+       "n_should_act": 0,
+       "n_should_not": 465,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-oos": {
+       "n_should_act": 0,
+       "n_should_not": 348,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "trap": {
+       "n_should_act": 0,
+       "n_should_not": 83,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      }
+     },
+     "by_label": {
+      "follow": 0,
+      "halt": 0,
+      "sing": 0,
+      "spin": 0,
+      "still": 0,
+      "unfollow": 0,
+      "walk_back": 0,
+      "walk_forward": 0
+     },
+     "ece": 0.0208,
+     "latency_ms": {
+      "p50": 209.83,
+      "p95": 422.08,
+      "p99": 647.9,
+      "n": 2170,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0.01681,
+     "tokens_per_call": 333,
+     "failed": 0,
+     "asked": 2170,
+     "order_stable": null,
+     "order_n": 0,
+     "probabilities": "not returned by this host (p = 1)"
+    },
+    "llama8b-logprobs": {
+     "kind": "chat",
+     "model": "meta-llama/llama-3.1-8b-instruct",
+     "gate": "never",
+     "gate_nothing": "never",
+     "held": {
+      "n_should_act": 168,
+      "n_should_not": 936,
+      "recall": 0,
+      "wrong": 0,
+      "false_trigger": 0,
+      "precision": null,
+      "acted": 0
+     },
+     "ungated_accuracy": 0.9801,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 168,
+       "n_should_not": 0,
+       "recall": 0,
+       "wrong": 0,
+       "false_trigger": null,
+       "precision": null,
+       "acted": 0
+      },
+      "chat": {
+       "n_should_act": 0,
+       "n_should_not": 40,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-in": {
+       "n_should_act": 0,
+       "n_should_not": 465,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-oos": {
+       "n_should_act": 0,
+       "n_should_not": 348,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "trap": {
+       "n_should_act": 0,
+       "n_should_not": 83,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      }
+     },
+     "by_label": {
+      "follow": 0,
+      "halt": 0,
+      "sing": 0,
+      "spin": 0,
+      "still": 0,
+      "unfollow": 0,
+      "walk_back": 0,
+      "walk_forward": 0
+     },
+     "ece": 0.0199,
+     "latency_ms": {
+      "p50": 223.52,
+      "p95": 345.99,
+      "p99": 694.79,
+      "n": 2170,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0.07368,
+     "tokens_per_call": 333,
+     "failed": 0,
+     "asked": 2170,
+     "order_stable": null,
+     "order_n": 0,
+     "probabilities": "not returned by this host (p = 1)"
+    }
+   },
+   "hybrids": {
+    "readers>ngram": {
+     "held": {
+      "n_should_act": 168,
+      "n_should_not": 936,
+      "recall": 0.5833,
+      "wrong": 0.0179,
+      "false_trigger": 0.0032,
+      "precision": 0.9423,
+      "acted": 104
+     },
+     "by_kind": {
+      "authored": {
+       "n_should_act": 168,
+       "n_should_not": 0,
+       "recall": 0.5833,
+       "wrong": 0.0179,
+       "false_trigger": null,
+       "precision": 0.9703,
+       "acted": 101
+      },
+      "chat": {
+       "n_should_act": 0,
+       "n_should_not": 40,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-in": {
+       "n_should_act": 0,
+       "n_should_not": 465,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-oos": {
+       "n_should_act": 0,
+       "n_should_not": 348,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "trap": {
+       "n_should_act": 0,
+       "n_should_not": 83,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0361,
+       "precision": 0,
+       "acted": 3
+      }
+     },
+     "reached_last_engine": 0.9674,
+     "last_engine_is_hosted": false,
+     "latency_ms": {
+      "p50": 0.03,
+      "p95": 0.06,
+      "p99": 0.17,
+      "note": "sum of the recorded times of the engines actually asked for that line"
+     },
+     "usd_per_1000": 0
+    },
+    "readers>minilm-head": {
+     "held": {
+      "n_should_act": 168,
+      "n_should_not": 936,
+      "recall": 0.6369,
+      "wrong": 0.0179,
+      "false_trigger": 0.0032,
+      "precision": 0.9469,
+      "acted": 113
+     },
+     "by_kind": {
+      "authored": {
+       "n_should_act": 168,
+       "n_should_not": 0,
+       "recall": 0.6369,
+       "wrong": 0.0179,
+       "false_trigger": null,
+       "precision": 0.9727,
+       "acted": 110
+      },
+      "chat": {
+       "n_should_act": 0,
+       "n_should_not": 40,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-in": {
+       "n_should_act": 0,
+       "n_should_not": 465,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-oos": {
+       "n_should_act": 0,
+       "n_should_not": 348,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "trap": {
+       "n_should_act": 0,
+       "n_should_not": 83,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0361,
+       "precision": 0,
+       "acted": 3
+      }
+     },
+     "reached_last_engine": 0.9674,
+     "last_engine_is_hosted": false,
+     "latency_ms": {
+      "p50": 1.57,
+      "p95": 2.18,
+      "p99": 2.9,
+      "note": "sum of the recorded times of the engines actually asked for that line"
+     },
+     "usd_per_1000": 0
+    },
+    "readers>jev": {
+     "held": {
+      "n_should_act": 168,
+      "n_should_not": 936,
+      "recall": 0.9524,
+      "wrong": 0.0119,
+      "false_trigger": 0.0043,
+      "precision": 0.9639,
+      "acted": 166
+     },
+     "by_kind": {
+      "authored": {
+       "n_should_act": 168,
+       "n_should_not": 0,
+       "recall": 0.9524,
+       "wrong": 0.0119,
+       "false_trigger": null,
+       "precision": 0.9877,
+       "acted": 162
+      },
+      "chat": {
+       "n_should_act": 0,
+       "n_should_not": 40,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-in": {
+       "n_should_act": 0,
+       "n_should_not": 465,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-oos": {
+       "n_should_act": 0,
+       "n_should_not": 348,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "trap": {
+       "n_should_act": 0,
+       "n_should_not": 83,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0482,
+       "precision": 0,
+       "acted": 4
+      }
+     },
+     "reached_last_engine": 0.9674,
+     "last_engine_is_hosted": true,
+     "latency_ms": {
+      "p50": 174.7,
+      "p95": 228.98,
+      "p99": 275.72,
+      "note": "sum of the recorded times of the engines actually asked for that line"
+     },
+     "usd_per_1000": 0.02451
+    },
+    "readers>clef-flash": {
+     "held": {
+      "n_should_act": 168,
+      "n_should_not": 936,
+      "recall": 0.8095,
+      "wrong": 0.006,
+      "false_trigger": 0.0043,
+      "precision": 0.9645,
+      "acted": 141
+     },
+     "by_kind": {
+      "authored": {
+       "n_should_act": 168,
+       "n_should_not": 0,
+       "recall": 0.8095,
+       "wrong": 0.006,
+       "false_trigger": null,
+       "precision": 0.9927,
+       "acted": 137
+      },
+      "chat": {
+       "n_should_act": 0,
+       "n_should_not": 40,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-in": {
+       "n_should_act": 0,
+       "n_should_not": 465,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0022,
+       "precision": 0,
+       "acted": 1
+      },
+      "clinc-oos": {
+       "n_should_act": 0,
+       "n_should_not": 348,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "trap": {
+       "n_should_act": 0,
+       "n_should_not": 83,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0361,
+       "precision": 0,
+       "acted": 3
+      }
+     },
+     "reached_last_engine": 0.9674,
+     "last_engine_is_hosted": true,
+     "latency_ms": {
+      "p50": 230.74,
+      "p95": 423.9,
+      "p99": 661.75,
+      "note": "sum of the recorded times of the engines actually asked for that line"
+     },
+     "usd_per_1000": 0.01614
+    },
+    "readers>ngram>jev": {
+     "held": {
+      "n_should_act": 168,
+      "n_should_not": 936,
+      "recall": 0.9524,
+      "wrong": 0.0179,
+      "false_trigger": 0.0064,
+      "precision": 0.9467,
+      "acted": 169
+     },
+     "by_kind": {
+      "authored": {
+       "n_should_act": 168,
+       "n_should_not": 0,
+       "recall": 0.9524,
+       "wrong": 0.0179,
+       "false_trigger": null,
+       "precision": 0.9816,
+       "acted": 163
+      },
+      "chat": {
+       "n_should_act": 0,
+       "n_should_not": 40,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-in": {
+       "n_should_act": 0,
+       "n_should_not": 465,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-oos": {
+       "n_should_act": 0,
+       "n_should_not": 348,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "trap": {
+       "n_should_act": 0,
+       "n_should_not": 83,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0723,
+       "precision": 0,
+       "acted": 6
+      }
+     },
+     "reached_last_engine": 0.2418,
+     "last_engine_is_hosted": true,
+     "latency_ms": {
+      "p50": 0.03,
+      "p95": 199.11,
+      "p99": 239.89,
+      "note": "sum of the recorded times of the engines actually asked for that line"
+     },
+     "usd_per_1000": 0.00611
+    },
+    "readers>ngram>clef-flash": {
+     "held": {
+      "n_should_act": 168,
+      "n_should_not": 936,
+      "recall": 0.8393,
+      "wrong": 0.0179,
+      "false_trigger": 0.0053,
+      "precision": 0.9463,
+      "acted": 149
+     },
+     "by_kind": {
+      "authored": {
+       "n_should_act": 168,
+       "n_should_not": 0,
+       "recall": 0.8393,
+       "wrong": 0.0179,
+       "false_trigger": null,
+       "precision": 0.9792,
+       "acted": 144
+      },
+      "chat": {
+       "n_should_act": 0,
+       "n_should_not": 40,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-in": {
+       "n_should_act": 0,
+       "n_should_not": 465,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0022,
+       "precision": 0,
+       "acted": 1
+      },
+      "clinc-oos": {
+       "n_should_act": 0,
+       "n_should_not": 348,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "trap": {
+       "n_should_act": 0,
+       "n_should_not": 83,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0.0482,
+       "precision": 0,
+       "acted": 4
+      }
+     },
+     "reached_last_engine": 0.2418,
+     "last_engine_is_hosted": true,
+     "latency_ms": {
+      "p50": 0.03,
+      "p95": 309.58,
+      "p99": 544.43,
+      "note": "sum of the recorded times of the engines actually asked for that line"
+     },
+     "usd_per_1000": 0.00402
+    }
+   }
+  },
+  "express": {
+   "rows": 1103,
+   "arms": {
+    "readers": {
+     "kind": "readers",
+     "gate": 0,
+     "gate_nothing": 0,
+     "held": {
+      "n_should_act": 107,
+      "n_should_not": 22,
+      "recall": 0,
+      "wrong": 0,
+      "false_trigger": 0,
+      "precision": null,
+      "acted": 0
+     },
+     "ungated_accuracy": 0,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 107,
+       "n_should_not": 22,
+       "recall": 0,
+       "wrong": 0,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "goemotions": {
+       "n_should_act": 374,
+       "n_should_not": 71,
+       "recall": 0,
+       "wrong": 0,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      }
+     },
+     "by_label": {
+      "alert": 0,
+      "curious": 0,
+      "happy": 0,
+      "sad": 0,
+      "scared": 0
+     },
+     "ece": null,
+     "latency_ms": {
+      "p50": 0,
+      "p95": 0,
+      "p99": 0.02,
+      "n": 1103,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0,
+     "tokens_per_call": 0,
+     "failed": 0,
+     "asked": 1103,
+     "order_stable": null,
+     "order_n": 0
+    },
+    "ngram": {
+     "kind": "ngram",
+     "model": "express.ngram-v1",
+     "gate": 0.6697,
+     "gate_nothing": 0.6862,
+     "held": {
+      "n_should_act": 107,
+      "n_should_not": 22,
+      "recall": 0.1495,
+      "wrong": 0.0374,
+      "false_trigger": 0.0455,
+      "precision": 0.7619,
+      "acted": 21
+     },
+     "ungated_accuracy": 0.4961,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 107,
+       "n_should_not": 22,
+       "recall": 0.1495,
+       "wrong": 0.0374,
+       "false_trigger": 0.0455,
+       "precision": 0.7619,
+       "acted": 21
+      },
+      "goemotions": {
+       "n_should_act": 374,
+       "n_should_not": 71,
+       "recall": 0.0267,
+       "wrong": 0.016,
+       "false_trigger": 0,
+       "precision": 0.625,
+       "acted": 16
+      }
+     },
+     "by_label": {
+      "alert": 0,
+      "curious": 0.3333,
+      "happy": 0,
+      "sad": 0.1364,
+      "scared": 0.3684
+     },
+     "ece": 0.086,
+     "latency_ms": {
+      "p50": 0.03,
+      "p95": 0.07,
+      "p99": 0.26,
+      "n": 1103,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0,
+     "tokens_per_call": 0,
+     "failed": 0,
+     "asked": 1103,
+     "order_stable": null,
+     "order_n": 0
+    },
+    "minilm-zeroshot": {
+     "kind": "embed",
+     "model": "minilm-zeroshot",
+     "gate": 0.7037,
+     "gate_nothing": 0.7251,
+     "held": {
+      "n_should_act": 107,
+      "n_should_not": 22,
+      "recall": 0.1589,
+      "wrong": 0.0374,
+      "false_trigger": 0,
+      "precision": 0.8095,
+      "acted": 21
+     },
+     "ungated_accuracy": 0.4651,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 107,
+       "n_should_not": 22,
+       "recall": 0.1589,
+       "wrong": 0.0374,
+       "false_trigger": 0,
+       "precision": 0.8095,
+       "acted": 21
+      },
+      "goemotions": {
+       "n_should_act": 374,
+       "n_should_not": 71,
+       "recall": 0.0963,
+       "wrong": 0.0642,
+       "false_trigger": 0.1127,
+       "precision": 0.5294,
+       "acted": 68
+      }
+     },
+     "by_label": {
+      "alert": 0.125,
+      "curious": 0.1667,
+      "happy": 0.0417,
+      "sad": 0.2727,
+      "scared": 0.2105
+     },
+     "ece": 0.0467,
+     "latency_ms": {
+      "p50": 1.99,
+      "p95": 3.4,
+      "p99": 4.83,
+      "n": 1103,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0,
+     "tokens_per_call": 0,
+     "failed": 0,
+     "asked": 1103,
+     "order_stable": null,
+     "order_n": 0
+    },
+    "minilm-head": {
+     "kind": "embed",
+     "model": "express.minilm-head-v1",
+     "gate": 0.7875,
+     "gate_nothing": 0.5659,
+     "held": {
+      "n_should_act": 107,
+      "n_should_not": 22,
+      "recall": 0.514,
+      "wrong": 0.0093,
+      "false_trigger": 0.0909,
+      "precision": 0.9483,
+      "acted": 58
+     },
+     "ungated_accuracy": 0.7364,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 107,
+       "n_should_not": 22,
+       "recall": 0.514,
+       "wrong": 0.0093,
+       "false_trigger": 0.0909,
+       "precision": 0.9483,
+       "acted": 58
+      },
+      "goemotions": {
+       "n_should_act": 374,
+       "n_should_not": 71,
+       "recall": 0.1738,
+       "wrong": 0.115,
+       "false_trigger": 0.1972,
+       "precision": 0.5328,
+       "acted": 122
+      }
+     },
+     "by_label": {
+      "alert": 0.3333,
+      "curious": 0.7222,
+      "happy": 0.5833,
+      "sad": 0.5455,
+      "scared": 0.4211
+     },
+     "ece": 0.0686,
+     "latency_ms": {
+      "p50": 1.74,
+      "p95": 3.01,
+      "p99": 4.24,
+      "n": 1103,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0,
+     "tokens_per_call": 0,
+     "failed": 0,
+     "asked": 1103,
+     "order_stable": null,
+     "order_n": 0
+    },
+    "jev": {
+     "kind": "http",
+     "model": "typesafe/jev-1.14-20261014",
+     "gate": 0.7901,
+     "gate_nothing": 0.5601,
+     "held": {
+      "n_should_act": 107,
+      "n_should_not": 22,
+      "recall": 0.8785,
+      "wrong": 0.0093,
+      "false_trigger": 0,
+      "precision": 0.9895,
+      "acted": 95
+     },
+     "ungated_accuracy": 0.9767,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 107,
+       "n_should_not": 22,
+       "recall": 0.8785,
+       "wrong": 0.0093,
+       "false_trigger": 0,
+       "precision": 0.9895,
+       "acted": 95
+      },
+      "goemotions": {
+       "n_should_act": 374,
+       "n_should_not": 71,
+       "recall": 0.246,
+       "wrong": 0.1337,
+       "false_trigger": 0.1831,
+       "precision": 0.5935,
+       "acted": 155
+      }
+     },
+     "by_label": {
+      "alert": 0.875,
+      "curious": 0.9444,
+      "happy": 0.9583,
+      "sad": 0.9545,
+      "scared": 0.6316
+     },
+     "ece": 0.0408,
+     "latency_ms": {
+      "p50": 173.69,
+      "p95": 230.28,
+      "p99": 311.05,
+      "n": 1103,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0.0207,
+     "tokens_per_call": 493,
+     "failed": 0,
+     "asked": 1103,
+     "order_stable": null,
+     "order_n": 0
+    },
+    "clef": {
+     "kind": "http",
+     "model": "cloudflare/clef",
+     "gate": 0.7069,
+     "gate_nothing": 0.5796,
+     "held": {
+      "n_should_act": 107,
+      "n_should_not": 22,
+      "recall": 0.7477,
+      "wrong": 0.0093,
+      "false_trigger": 0,
+      "precision": 0.9877,
+      "acted": 81
+     },
+     "ungated_accuracy": 0.9457,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 107,
+       "n_should_not": 22,
+       "recall": 0.7477,
+       "wrong": 0.0093,
+       "false_trigger": 0,
+       "precision": 0.9877,
+       "acted": 81
+      },
+      "goemotions": {
+       "n_should_act": 374,
+       "n_should_not": 71,
+       "recall": 0.1684,
+       "wrong": 0.0508,
+       "false_trigger": 0.1127,
+       "precision": 0.7,
+       "acted": 90
+      }
+     },
+     "by_label": {
+      "alert": 0.7083,
+      "curious": 0.5,
+      "happy": 0.9167,
+      "sad": 0.9091,
+      "scared": 0.6316
+     },
+     "ece": 0.1253,
+     "latency_ms": {
+      "p50": 361.2,
+      "p95": 616.94,
+      "p99": 823.66,
+      "n": 1103,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0.0767,
+     "tokens_per_call": 320,
+     "failed": 0,
+     "asked": 1103,
+     "order_stable": null,
+     "order_n": 0
+    },
+    "clef-flash": {
+     "kind": "http",
+     "model": "cloudflare/clef-flash",
+     "gate": 0.5241,
+     "gate_nothing": 0.4658,
+     "held": {
+      "n_should_act": 107,
+      "n_should_not": 22,
+      "recall": 0.8318,
+      "wrong": 0.028,
+      "false_trigger": 0,
+      "precision": 0.9674,
+      "acted": 92
+     },
+     "ungated_accuracy": 0.907,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 107,
+       "n_should_not": 22,
+       "recall": 0.8318,
+       "wrong": 0.028,
+       "false_trigger": 0,
+       "precision": 0.9674,
+       "acted": 92
+      },
+      "goemotions": {
+       "n_should_act": 374,
+       "n_should_not": 71,
+       "recall": 0.238,
+       "wrong": 0.131,
+       "false_trigger": 0.2113,
+       "precision": 0.5817,
+       "acted": 153
+      }
+     },
+     "by_label": {
+      "alert": 0.75,
+      "curious": 0.7222,
+      "happy": 0.9167,
+      "sad": 0.9091,
+      "scared": 0.8421
+     },
+     "ece": 0.0963,
+     "latency_ms": {
+      "p50": 224.45,
+      "p95": 418.38,
+      "p99": 557.63,
+      "n": 1103,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0.01214,
+     "tokens_per_call": 320,
+     "failed": 0,
+     "asked": 1103,
+     "order_stable": null,
+     "order_n": 0
+    },
+    "clef@primeintellect": {
+     "kind": "http",
+     "model": "cloudflare/clef",
+     "gate": 0.5001,
+     "gate_nothing": 0.51,
+     "held": {
+      "n_should_act": 107,
+      "n_should_not": 22,
+      "recall": 0.4673,
+      "wrong": 0.0093,
+      "false_trigger": 0,
+      "precision": 0.9804,
+      "acted": 51
+     },
+     "ungated_accuracy": 0.4806,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 107,
+       "n_should_not": 22,
+       "recall": 0.4673,
+       "wrong": 0.0093,
+       "false_trigger": 0,
+       "precision": 0.9804,
+       "acted": 51
+      },
+      "goemotions": {
+       "n_should_act": 374,
+       "n_should_not": 71,
+       "recall": 0.3717,
+       "wrong": 0.0909,
+       "false_trigger": 0.1268,
+       "precision": 0.7637,
+       "acted": 182
+      }
+     },
+     "by_label": {
+      "alert": 0.5417,
+      "curious": 0.6111,
+      "happy": 0.2917,
+      "sad": 0.4545,
+      "scared": 0.4737
+     },
+     "ece": 0.1066,
+     "latency_ms": {
+      "p50": 372.56,
+      "p95": 1515.18,
+      "p99": 1924.89,
+      "n": 931,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0.07689,
+     "tokens_per_call": 320,
+     "failed": 172,
+     "asked": 1103,
+     "order_stable": null,
+     "order_n": 0
+    },
+    "clef-flash@primeintellect": {
+     "kind": "http",
+     "model": "cloudflare/clef-flash",
+     "gate": 0.6162,
+     "gate_nothing": 0.6177,
+     "held": {
+      "n_should_act": 107,
+      "n_should_not": 22,
+      "recall": 0.8037,
+      "wrong": 0.0187,
+      "false_trigger": 0,
+      "precision": 0.9773,
+      "acted": 88
+     },
+     "ungated_accuracy": 0.8992,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 107,
+       "n_should_not": 22,
+       "recall": 0.8037,
+       "wrong": 0.0187,
+       "false_trigger": 0,
+       "precision": 0.9773,
+       "acted": 88
+      },
+      "goemotions": {
+       "n_should_act": 374,
+       "n_should_not": 71,
+       "recall": 0.2112,
+       "wrong": 0.123,
+       "false_trigger": 0.1972,
+       "precision": 0.5683,
+       "acted": 139
+      }
+     },
+     "by_label": {
+      "alert": 0.7083,
+      "curious": 0.6667,
+      "happy": 0.9167,
+      "sad": 0.9091,
+      "scared": 0.7895
+     },
+     "ece": 0.0768,
+     "latency_ms": {
+      "p50": 291.91,
+      "p95": 384.59,
+      "p99": 742.26,
+      "n": 1103,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0.01214,
+     "tokens_per_call": 320,
+     "failed": 0,
+     "asked": 1103,
+     "order_stable": null,
+     "order_n": 0
+    },
+    "llama8b-groq": {
+     "kind": "chat",
+     "model": "meta-llama/llama-3.1-8b-instruct",
+     "gate": "never",
+     "gate_nothing": 0.5001,
+     "held": {
+      "n_should_act": 107,
+      "n_should_not": 22,
+      "recall": 0,
+      "wrong": 0,
+      "false_trigger": 0,
+      "precision": null,
+      "acted": 0
+     },
+     "ungated_accuracy": 0.9225,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 107,
+       "n_should_not": 22,
+       "recall": 0,
+       "wrong": 0,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "goemotions": {
+       "n_should_act": 374,
+       "n_should_not": 71,
+       "recall": 0,
+       "wrong": 0,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      }
+     },
+     "by_label": {
+      "alert": 0,
+      "curious": 0,
+      "happy": 0,
+      "sad": 0,
+      "scared": 0
+     },
+     "ece": 0.0775,
+     "latency_ms": {
+      "p50": 214.04,
+      "p95": 447.39,
+      "p99": 669.41,
+      "n": 1101,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0.01216,
+     "tokens_per_call": 240,
+     "failed": 2,
+     "asked": 1103,
+     "order_stable": null,
+     "order_n": 0,
+     "probabilities": "not returned by this host (p = 1)"
+    },
+    "llama8b-logprobs": {
+     "kind": "chat",
+     "model": "meta-llama/llama-3.1-8b-instruct",
+     "gate": "never",
+     "gate_nothing": 0.5001,
+     "held": {
+      "n_should_act": 107,
+      "n_should_not": 22,
+      "recall": 0,
+      "wrong": 0,
+      "false_trigger": 0,
+      "precision": null,
+      "acted": 0
+     },
+     "ungated_accuracy": 0.9302,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 107,
+       "n_should_not": 22,
+       "recall": 0,
+       "wrong": 0,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "goemotions": {
+       "n_should_act": 374,
+       "n_should_not": 71,
+       "recall": 0,
+       "wrong": 0,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      }
+     },
+     "by_label": {
+      "alert": 0,
+      "curious": 0,
+      "happy": 0,
+      "sad": 0,
+      "scared": 0
+     },
+     "ece": 0.0698,
+     "latency_ms": {
+      "p50": 232.86,
+      "p95": 397.08,
+      "p99": 1205.04,
+      "n": 1101,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0.05324,
+     "tokens_per_call": 240,
+     "failed": 2,
+     "asked": 1103,
+     "order_stable": null,
+     "order_n": 0,
+     "probabilities": "not returned by this host (p = 1)"
+    }
+   },
+   "hybrids": {
+    "readers>ngram": {
+     "held": {
+      "n_should_act": 107,
+      "n_should_not": 22,
+      "recall": 0.1495,
+      "wrong": 0.0374,
+      "false_trigger": 0.0455,
+      "precision": 0.7619,
+      "acted": 21
+     },
+     "by_kind": {
+      "authored": {
+       "n_should_act": 107,
+       "n_should_not": 22,
+       "recall": 0.1495,
+       "wrong": 0.0374,
+       "false_trigger": 0.0455,
+       "precision": 0.7619,
+       "acted": 21
+      }
+     },
+     "reached_last_engine": 1,
+     "last_engine_is_hosted": false,
+     "latency_ms": {
+      "p50": 0.02,
+      "p95": 0.13,
+      "p99": 0.96,
+      "note": "sum of the recorded times of the engines actually asked for that line"
+     },
+     "usd_per_1000": 0
+    },
+    "readers>minilm-head": {
+     "held": {
+      "n_should_act": 107,
+      "n_should_not": 22,
+      "recall": 0.514,
+      "wrong": 0.0093,
+      "false_trigger": 0.0909,
+      "precision": 0.9483,
+      "acted": 58
+     },
+     "by_kind": {
+      "authored": {
+       "n_should_act": 107,
+       "n_should_not": 22,
+       "recall": 0.514,
+       "wrong": 0.0093,
+       "false_trigger": 0.0909,
+       "precision": 0.9483,
+       "acted": 58
+      }
+     },
+     "reached_last_engine": 1,
+     "last_engine_is_hosted": false,
+     "latency_ms": {
+      "p50": 1.49,
+      "p95": 2.27,
+      "p99": 5.65,
+      "note": "sum of the recorded times of the engines actually asked for that line"
+     },
+     "usd_per_1000": 0
+    },
+    "readers>jev": {
+     "held": {
+      "n_should_act": 107,
+      "n_should_not": 22,
+      "recall": 0.8785,
+      "wrong": 0.0093,
+      "false_trigger": 0,
+      "precision": 0.9895,
+      "acted": 95
+     },
+     "by_kind": {
+      "authored": {
+       "n_should_act": 107,
+       "n_should_not": 22,
+       "recall": 0.8785,
+       "wrong": 0.0093,
+       "false_trigger": 0,
+       "precision": 0.9895,
+       "acted": 95
+      }
+     },
+     "reached_last_engine": 1,
+     "last_engine_is_hosted": true,
+     "latency_ms": {
+      "p50": 177.63,
+      "p95": 247.4,
+      "p99": 486.07,
+      "note": "sum of the recorded times of the engines actually asked for that line"
+     },
+     "usd_per_1000": 0.02035
+    },
+    "readers>clef-flash": {
+     "held": {
+      "n_should_act": 107,
+      "n_should_not": 22,
+      "recall": 0.8318,
+      "wrong": 0.028,
+      "false_trigger": 0,
+      "precision": 0.9674,
+      "acted": 92
+     },
+     "by_kind": {
+      "authored": {
+       "n_should_act": 107,
+       "n_should_not": 22,
+       "recall": 0.8318,
+       "wrong": 0.028,
+       "false_trigger": 0,
+       "precision": 0.9674,
+       "acted": 92
+      }
+     },
+     "reached_last_engine": 1,
+     "last_engine_is_hosted": true,
+     "latency_ms": {
+      "p50": 221.09,
+      "p95": 471.16,
+      "p99": 925.75,
+      "note": "sum of the recorded times of the engines actually asked for that line"
+     },
+     "usd_per_1000": 0.01183
+    },
+    "readers>ngram>jev": {
+     "held": {
+      "n_should_act": 107,
+      "n_should_not": 22,
+      "recall": 0.8505,
+      "wrong": 0.0374,
+      "false_trigger": 0.0455,
+      "precision": 0.9479,
+      "acted": 96
+     },
+     "by_kind": {
+      "authored": {
+       "n_should_act": 107,
+       "n_should_not": 22,
+       "recall": 0.8505,
+       "wrong": 0.0374,
+       "false_trigger": 0.0455,
+       "precision": 0.9479,
+       "acted": 96
+      }
+     },
+     "reached_last_engine": 0.7984,
+     "last_engine_is_hosted": true,
+     "latency_ms": {
+      "p50": 169.84,
+      "p95": 234.46,
+      "p99": 486.19,
+      "note": "sum of the recorded times of the engines actually asked for that line"
+     },
+     "usd_per_1000": 0.01624
+    },
+    "readers>ngram>clef-flash": {
+     "held": {
+      "n_should_act": 107,
+      "n_should_not": 22,
+      "recall": 0.8131,
+      "wrong": 0.0561,
+      "false_trigger": 0.0455,
+      "precision": 0.9255,
+      "acted": 94
+     },
+     "by_kind": {
+      "authored": {
+       "n_should_act": 107,
+       "n_should_not": 22,
+       "recall": 0.8131,
+       "wrong": 0.0561,
+       "false_trigger": 0.0455,
+       "precision": 0.9255,
+       "acted": 94
+      }
+     },
+     "reached_last_engine": 0.7984,
+     "last_engine_is_hosted": true,
+     "latency_ms": {
+      "p50": 209.29,
+      "p95": 459.3,
+      "p99": 907.47,
+      "note": "sum of the recorded times of the engines actually asked for that line"
+     },
+     "usd_per_1000": 0.00945
+    }
+   }
+  }
+ }
+}

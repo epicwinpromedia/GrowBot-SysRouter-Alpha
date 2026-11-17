@@ -1,0 +1,44 @@
+{
+ "wake": {
+  "ngram-wake": {
+   "p": 0.9364,
+   "pn": 0.96
+  },
+  "hosted@typesafe/jev-1.14-20261014": {
+   "arm": "jev",
+   "p": 0.6401,
+   "pn": 0.5001
+  },
+  "hosted@cloudflare/clef": {
+   "arm": "clef@primeintellect",
+   "p": 0.7002,
+   "pn": 0.5001
+  },
+  "hosted@cloudflare/clef-flash": {
+   "arm": "clef-flash@primeintellect",
+   "p": 0.8703,
+   "pn": 0.3921
+  }
+ },
+ "express": {
+  "ngram-express": {
+   "p": 0.6697,
+   "pn": 0.6862
+  },
+  "hosted@typesafe/jev-1.14-20261014": {
+   "arm": "jev",
+   "p": 0.7901,
+   "pn": 0.5601
+  },
+  "hosted@cloudflare/clef": {
+   "arm": "clef@primeintellect",
+   "p": 0.5001,
+   "pn": 0.51
+  },
+  "hosted@cloudflare/clef-flash": {
+   "arm": "clef-flash@primeintellect",
+   "p": 0.6162,
+   "pn": 0.6177
+  }
+ }
+}

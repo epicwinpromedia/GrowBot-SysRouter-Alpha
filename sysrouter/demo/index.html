@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SysRouter bench</title>
+<!-- SysRouter bench page. Type what a person might say and see what each registered route
+     decided, which engine decided it, how sure it was, how long it took, and the exact
+     journal row the app would write. Nothing here moves a robot: the actions only print.
+
+     Run:  node sysrouter/tools/serve.mjs   then open http://localhost:8765/sysrouter/demo/
+     The readers are Brit's own, read live from app/v3/next.html (not a copy).
+     ?mode=shadow (default) | parallel     ?embed=1 also loads the MiniLM engine (23 MB)
+     Hosted engines are asked only if you set a lane yourself in this page's localStorage
+     (pb_byok or pb_s1_url, see src/keys.js) and name a model with ?s1=cloudflare/clef-flash -->
+<style>
+  :root { color-scheme: light dark; --line: #8884; --dim: #888; --ok: #1a9b5c; --warn: #c2410c; }
+  body { font: 15px/1.45 system-ui, sans-serif; max-width: 62rem; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 1.15rem; margin: 0 0 4px; } p { margin: 4px 0 12px; color: var(--dim); }
+  form { display: flex; gap: 8px; margin: 12px 0; } input { flex: 1; font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: transparent; color: inherit; }
+  button { font: inherit; padding: 8px 14px; border: 1px solid var(--line); border-radius: 6px; background: transparent; color: inherit; cursor: pointer; }
+  .tries { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; } .tries button { padding: 3px 9px; font-size: 13px; }
+  .wrap { overflow-x: auto; } table { border-collapse: collapse; width: 100%; font-size: 13.5px; } th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { color: var(--dim); font-weight: 500; } td.num { font-variant-numeric: tabular-nums; } .acted { color: var(--ok); font-weight: 600; } .why { color: var(--dim); } .warn { color: var(--warn); }
+  pre { font-size: 12px; overflow-x: auto; padding: 8px; border: 1px solid var(--line); border-radius: 6px; max-height: 14rem; }
+</style>
+<h1>SysRouter bench</h1>
+<p id="status">loading…</p>
+<form id="f"><input id="t" placeholder="say something to the creature" autocomplete="off" autofocus><button>hear</button></form>
+<div class="tries" id="tries"></div>
+<div class="wrap"><table><thead><tr><th>words</th><th>route</th><th>engine</th><th>answer</th><th>p</th><th>ms</th><th>outcome</th><th>action</th></tr></thead><tbody id="rows"></tbody></table></div>
+<p style="margin-top:14px">Journal rows, exactly as <code>logEv("sysroute", …)</code> would receive them (the words themselves are never in a row):</p>
+<pre id="journal"></pre>
+<script type="module">
+import { createRouter, readFlags } from '../src/sysrouter.js';
+import { readersProvider, ftPick } from '../src/s1-readers.js';
+import { ngramProvider } from '../src/s1-ngram.js';
+import { embedProvider } from '../src/s1-embed.js';
+import { httpProvider } from '../src/s1-http.js';
+import { keyring, browserEnv } from '../src/keys.js';
+import { registerWake, WAKE_ROUTE } from '../src/wakeword.js';
+import { registerExpress } from '../src/expressive.js';
+
+const $ = (id) => document.getElementById(id), q = new URLSearchParams(location.search), mode = q.get('mode') === 'parallel' ? 'parallel' : 'shadow';
+const journal = [], acted = []; let current = '';
+const log = (e, d) => { journal.push(d); $('journal').textContent = journal.slice(-12).map((r) => JSON.stringify(r)).join('\n'); if (d.why !== 'boot') draw(d); };
+function draw(d) {
+  const tr = document.createElement('tr'), cell = (v, c) => { const td = document.createElement('td'); td.textContent = v === undefined ? '' : v; if (c) td.className = c; tr.appendChild(td); };
+  cell(current.length > 34 ? current.slice(0, 33) + '…' : current); cell(d.r); cell(d.p + (d.m && d.m !== d.p ? ' (' + d.m + ')' : '')); cell(d.a); cell(d.pr, 'num'); cell(d.ms, 'num');
+  cell(d.why, d.did ? 'acted' : d.why === 'shadow' ? '' : 'why'); cell(d.act ? d.act + (d.did ? ' ✓ ran' : ' (not run)') : '', d.did ? 'acted' : 'why');
+  $('rows').prepend(tr);
+}
+
+// Brit's reader, read live from the app page and sliced the way bench/slice.mjs does it
+async function ftWords() {
+  const text = await (await fetch('../../app/v3/next.html')).text(), lines = text.split('\n'), at = lines.findIndex((l) => l.startsWith('function _ftWords('));
+  let src = ''; for (let i = at; i < at + 400; i++) { src += lines[i] + '\n'; try { return new Function(src + '\nreturn _ftWords;')(); } catch (e) {} }
+  throw new Error('could not slice _ftWords');
+}
+const json = async (u) => (await fetch(u)).json();
+
+const sr = createRouter({ log, flags: readFlags(location.search, {}) }), wake = [], express = [], notes = [];
+try { const ft = await ftWords(); sr.provider('readers', readersProvider((t) => ftPick(ft(t)))); wake.push('readers'); notes.push('readers: live from app/v3/next.html'); } catch (e) { notes.push('readers unavailable (' + e.message + ')'); }
+const [mw, me, gates] = await Promise.all([json('../models/wake.ngram.json'), json('../models/express.ngram.json'), json('../models/gates.json')]);
+sr.provider('ngram-wake', ngramProvider(mw)); wake.push('ngram-wake'); sr.provider('ngram-express', ngramProvider(me)); express.push('ngram-express');
+if (q.get('embed') === '1') try {
+  await new Promise((ok, no) => { const s = document.createElement('script'); s.src = '/ml/ort.min.js'; s.onload = ok; s.onerror = no; document.head.appendChild(s); });
+  ort.env.wasm.numThreads = 1; ort.env.wasm.wasmPaths = '/ml/';                             // the app's own settings for its voice detector
+  const session = await ort.InferenceSession.create('/ml/all-MiniLM-L6-v2.q.onnx'), vocab = await (await fetch('/ml/vocab.txt')).text();
+  const hw = await json('../models/wake.minilm-head.json'), he = await json('../models/express.minilm-head.json');
+  const ew = embedProvider({ ort, session, vocab, head: hw }); window.__embed = ew;
+  sr.provider('embed-wake', ew); sr.provider('embed-express', embedProvider({ ort, session, vocab, head: he }));
+  wake.push('embed-wake'); express.push('embed-express'); notes.push('MiniLM loaded');
+} catch (e) { notes.push('MiniLM unavailable: run tools/get-models.mjs'); }
+const send = q.get('s1') ? keyring(browserEnv(localStorage)).sender('systemone') : null;
+if (send) { sr.provider('hosted', httpProvider({ model: q.get('s1'), send })); wake.push('hosted'); express.push('hosted'); notes.push('hosted: ' + q.get('s1') + ' via ' + send.lane); }
+
+const say = (k) => () => acted.push(k);
+registerWake(sr, Object.fromEntries(Object.keys(WAKE_ROUTE.on).map((k) => [k, say(k)])), wake, { mode });
+registerExpress(sr, (fields, id) => acted.push(id), express, { mode });
+const g = { wake: {}, express: {} };                                                          // the fitted gates, re-keyed to this page's provider names
+for (const r of ['wake', 'express']) { g[r]['ngram-' + r] = gates[r]['ngram-' + r]; for (const k in gates[r]) if (k.startsWith('hosted@')) g[r][k] = gates[r][k]; }
+sr.calibrate(g); sr.seal();
+$('status').textContent = 'mode: ' + mode + (mode === 'shadow' ? ' (decides and logs, runs nothing)' : ' (actions print; nothing moves)') + ' · ' + notes.join(' · ');
+
+function hear(text) { current = text; return sr.hear(text).done; }
+$('f').addEventListener('submit', (e) => { e.preventDefault(); const v = $('t').value.trim(); if (v) { hear(v); $('t').value = ''; } });
+for (const s of ['stop', 'hey quit staring at me', "let's stop by the store", 'twirl for me', 'we won the game', 'come a little closer', 'I lost my keys again', 'stop, look at me', 'watch out behind you']) {
+  const b = document.createElement('button'); b.type = 'button'; b.textContent = s; b.onclick = () => hear(s); $('tries').appendChild(b);
+}
+window.__sr = { sr, hear, journal, acted, providers: { wake, express } };                     // for bench/browser.mjs
+</script>
+</html>

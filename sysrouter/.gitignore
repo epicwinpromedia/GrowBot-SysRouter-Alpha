@@ -1,0 +1,4 @@
+# fetched by tools/get-models.mjs (23 MB, pinned by sha256)
+models/cache/
+# local run logs
+results/*.log

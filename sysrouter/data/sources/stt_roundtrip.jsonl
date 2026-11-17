@@ -1,0 +1,608 @@
+{"id": "1b480158e1", "text": "stop", "cond": "clean", "stt": "Stop!", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6d13e37b2e", "text": "stop!", "cond": "clean", "stt": "Stop.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "75fd385459", "text": "stop it", "cond": "clean", "stt": "Stop it!", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "5a5b594486", "text": "wait, stop", "cond": "clean", "stt": "Wait, stop!", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b179b183b3", "text": "no, stop", "cond": "clean", "stt": "No, stop.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "09a15b665e", "text": "okay stop", "cond": "clean", "stt": "Okay, stop.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "58bbcc6e40", "text": "please stop", "cond": "clean", "stt": "Please stop.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "4da785edcc", "text": "stop right now", "cond": "clean", "stt": "Stop right now.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c4bb896961", "text": "halt", "cond": "clean", "stt": "Halt.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8ce77cc3f9", "text": "enough", "cond": "clean", "stt": "Enough!", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "bbe936acb1", "text": "that's enough", "cond": "clean", "stt": "That's enough.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6b5da40dba", "text": "cut it out", "cond": "clean", "stt": "Cut it out.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "20c403ccb0", "text": "knock it off", "cond": "clean", "stt": "Knock it off.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f9de0c08f6", "text": "quit it", "cond": "clean", "stt": "What the...", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "9f087a4251", "text": "whoa whoa whoa", "cond": "clean", "stt": "Woo woo woo.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8ae0b22d4b", "text": "hey hey hey stop that", "cond": "clean", "stt": "Hehehe stop that.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e4a3269d0d", "text": "cease", "cond": "clean", "stt": "Cease.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b61646f016", "text": "abort", "cond": "clean", "stt": "Abort!", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6bfaa047f7", "text": "stop what you're doing", "cond": "clean", "stt": "Stop what you're doing.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "26d6fb3636", "text": "stop everything", "cond": "clean", "stt": "Stop everything.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a3ceeb8707", "text": "you need to stop now", "cond": "clean", "stt": "You need to stop now.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "311672a178", "text": "I said stop", "cond": "clean", "stt": "I said stop.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "bc74533a47", "text": "can you stop please", "cond": "clean", "stt": "Can you stop please?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "09e3a60926", "text": "would you stop", "cond": "clean", "stt": "Would you stop?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "5710ba4f33", "text": "just stop already", "cond": "clean", "stt": "Just stop already.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6cd55d420a", "text": "okay that's enough of that", "cond": "clean", "stt": "Okay, that's enough of that.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "7ad14fc255", "text": "alright, that'll do", "cond": "clean", "stt": "Alright, that'll do.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "7588332241", "text": "no more", "cond": "clean", "stt": "No more.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6aee907d72", "text": "no no no", "cond": "clean", "stt": "No, no, no.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2a68a46da6", "text": "time out", "cond": "clean", "stt": "Time out.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "81734767e5", "text": "pack it in", "cond": "clean", "stt": "Pack it in.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "3df4807b9f", "text": "give it a rest", "cond": "clean", "stt": "Give it a rest.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "04a33fbac4", "text": "easy, easy, stop", "cond": "clean", "stt": "Easy, easy, stop.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "af9867a8cd", "text": "hold up", "cond": "clean", "stt": "Hold up.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8e4f62a60b", "text": "hold it", "cond": "clean", "stt": "Hold it.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ea7af943a7", "text": "hang on, stop moving around", "cond": "clean", "stt": "Hang on, stop moving around.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "11bdc11438", "text": "put the brakes on", "cond": "clean", "stt": "Put the brakes on.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2139c24e32", "text": "kill it", "cond": "clean", "stt": "Cut.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f4cbe65168", "text": "shut it down", "cond": "clean", "stt": "Shut it down.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d9a299059b", "text": "end it", "cond": "clean", "stt": "He held it.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ef8d29955a", "text": "pause", "cond": "clean", "stt": "Pause.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c0f9d0cecd", "text": "pause that", "cond": "clean", "stt": "Pause that.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "216fe9e868", "text": "stop the walking", "cond": "clean", "stt": "Tap the walking.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "3da0e95cfd", "text": "stop walking", "cond": "clean", "stt": "Stop walking.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "184ca2899f", "text": "stop spinning", "cond": "clean", "stt": "Stop spinning.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "18eb08a42b", "text": "quit moving around", "cond": "clean", "stt": "Quit moving around.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b8ae691de7", "text": "that's it, you're done", "cond": "clean", "stt": "That's it, you're done.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e45c11a0d6", "text": "we're done, stop", "cond": "clean", "stt": "We're done. Stop.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "adcdee7c29", "text": "freeze", "cond": "clean", "stt": "Freeze.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "af7ad8e2f2", "text": "hold still", "cond": "clean", "stt": "Hold still.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e1f7903d7a", "text": "stay still", "cond": "clean", "stt": "Stay still.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "9ae11f6bf7", "text": "keep still", "cond": "clean", "stt": "Keep still.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "019ff76e3c", "text": "don't move", "cond": "clean", "stt": "Don't move.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b6e43a403f", "text": "do not move", "cond": "clean", "stt": "Do not move.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "7d29c6560e", "text": "stop moving", "cond": "clean", "stt": "Stop moving.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6742185fc0", "text": "stay right there", "cond": "clean", "stt": "stay right there", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e791319441", "text": "stay put", "cond": "clean", "stt": "Stay putt!", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "886f156aad", "text": "stay where you are", "cond": "clean", "stt": "Stay where you are.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d820183747", "text": "don't go anywhere", "cond": "clean", "stt": "Don't go anywhere.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "7657493629", "text": "stand still", "cond": "clean", "stt": "Stand still.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "18d58a6087", "text": "be still", "cond": "clean", "stt": "Be still.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "1ff8ea5407", "text": "hold your position", "cond": "clean", "stt": "Hold your position.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "29d584aa23", "text": "nobody move", "cond": "clean", "stt": "Nobody moved?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "51245b48a4", "text": "not a muscle", "cond": "clean", "stt": "Not a muscle.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "396f9974da", "text": "stay", "cond": "clean", "stt": "Day.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ace24088f5", "text": "sit tight", "cond": "clean", "stt": "Sit tight.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a33feb3643", "text": "remain where you are", "cond": "clean", "stt": "Remain where you are.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ac331f231f", "text": "keep perfectly still for me", "cond": "clean", "stt": "He perfectly still for me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ee3a61998c", "text": "hold that pose", "cond": "clean", "stt": "Hold that pose.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b5d35b9393", "text": "hold it right there and don't budge", "cond": "clean", "stt": "Hold it right there and don't budge.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "1bce927704", "text": "stay just like that", "cond": "clean", "stt": "Stay just like that.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "757ee47c7d", "text": "don't you move an inch", "cond": "clean", "stt": "Don't you move an inch.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "33cf0f2a45", "text": "no moving", "cond": "clean", "stt": "No moving.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "68f7f0c32a", "text": "I need you to be still for a second", "cond": "clean", "stt": "I need you to be still for a second.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b004937c56", "text": "stay there, I'm taking a picture", "cond": "clean", "stt": "Stay there, I'm taking a picture.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "221cb725b3", "text": "be a statue", "cond": "clean", "stt": "Be a statue.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "3b4da5cf7d", "text": "play statue", "cond": "clean", "stt": "play statue", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "df781283d9", "text": "quit wiggling", "cond": "clean", "stt": "Quit wiggling.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "1cedfed05b", "text": "stop fidgeting", "cond": "clean", "stt": "Stop fidgeting.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2bf95535a7", "text": "stop wiggling around", "cond": "clean", "stt": "Stop wiggling around.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "015444cdc2", "text": "can you keep still", "cond": "clean", "stt": "Can you keep still?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "109eb3ea6c", "text": "try not to move", "cond": "clean", "stt": "Try not to move.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0c69e7aaeb", "text": "steady", "cond": "clean", "stt": "steady.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c518698573", "text": "steady now", "cond": "clean", "stt": "Steady now.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "bc6fceb78d", "text": "hold steady", "cond": "clean", "stt": "Hold steady.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "56fc19702d", "text": "stay frozen", "cond": "clean", "stt": "Stay frozen!", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e4aa375496", "text": "lock in place", "cond": "clean", "stt": "Lock in place.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c2788a223f", "text": "just stay there", "cond": "clean", "stt": "Just stay there.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "48a7718380", "text": "follow me", "cond": "clean", "stt": "Follow me.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e6316e558b", "text": "look at me", "cond": "clean", "stt": "Look at me.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c2e6dc611f", "text": "watch me", "cond": "clean", "stt": "Watch me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "24c848d669", "text": "track me", "cond": "clean", "stt": "Track me.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "73adf3d8d8", "text": "keep your eyes on me", "cond": "clean", "stt": "Keep your eyes on me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "7ddf81f4b5", "text": "follow my face", "cond": "clean", "stt": "Follow my face.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c189dbc7ab", "text": "start following me", "cond": "clean", "stt": "Start following me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "af35a27c0d", "text": "come on, follow me", "cond": "clean", "stt": "Come on, follow me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "71da9a8892", "text": "can you follow me", "cond": "clean", "stt": "Can you follow me?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "66a009bc38", "text": "eyes on me", "cond": "clean", "stt": "Eyes on me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "15742ecd8d", "text": "look over here at me", "cond": "clean", "stt": "Look over here at me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "18f323e018", "text": "look up at me", "cond": "clean", "stt": "Look up at me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e60d4319c7", "text": "turn and look at me", "cond": "clean", "stt": "Turn and look at me.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "85b328d0bb", "text": "keep watching me", "cond": "clean", "stt": "Keep watching me.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "212fd13071", "text": "keep looking at me", "cond": "clean", "stt": "Keep looking at me.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "55ae9081d7", "text": "watch my face", "cond": "clean", "stt": "Watch my face.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "3b70863314", "text": "pay attention to me", "cond": "clean", "stt": "Pay attention to me.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0ba934dbde", "text": "face me", "cond": "clean", "stt": "Face me.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "688ba209ed", "text": "turn to face me", "cond": "clean", "stt": "Turn to face me.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "1b4a6ac6e1", "text": "look this way", "cond": "clean", "stt": "Look this way.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "cd91706083", "text": "over here, look at me", "cond": "clean", "stt": "Over here, look at me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2e6107a4f5", "text": "hey, look at me please", "cond": "clean", "stt": "Hey, look at me please.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d8ba1a64af", "text": "follow me again", "cond": "clean", "stt": "Follow me again.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e400dc6aee", "text": "start tracking me again", "cond": "clean", "stt": "Start tracking me again.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "cff1a71c57", "text": "resume following me", "cond": "clean", "stt": "Resume following me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "1fe4fdc714", "text": "I want you to follow me", "cond": "clean", "stt": "I want you to follow me.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "bddc6c7e46", "text": "would you look at me", "cond": "clean", "stt": "Would you look at me?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "762b044277", "text": "keep me in view", "cond": "clean", "stt": "Keep me in view.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "3af6aac0d5", "text": "don't lose sight of me", "cond": "clean", "stt": "Don't lose sight of me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "fe71db1cbb", "text": "stay looking at me", "cond": "clean", "stt": "Stay looking at me.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "3c50f5f960", "text": "lock onto me", "cond": "clean", "stt": "Lock onto me.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f01d5334d3", "text": "follow me around", "cond": "clean", "stt": "Follow me around.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "de6218da25", "text": "follow along with me", "cond": "clean", "stt": "Follow along with me.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "35b34953c7", "text": "keep up with me", "cond": "clean", "stt": "Keep up with me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "00822fcf5d", "text": "stick with me", "cond": "clean", "stt": "Stick with me.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "db9ac73e4d", "text": "turn towards me", "cond": "clean", "stt": "Turn towards me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b901172bc9", "text": "point yourself at me", "cond": "clean", "stt": "Point yourself at me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "27114be26d", "text": "find my face and stay on it", "cond": "clean", "stt": "Find my face and stay on it.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "628f90100b", "text": "keep facing me", "cond": "clean", "stt": "Keep facing me.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b5926b6d8e", "text": "watch me closely", "cond": "clean", "stt": "Watch me closely.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "db6a8e5548", "text": "stop following me", "cond": "clean", "stt": "Stop following me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0de034686e", "text": "stop tracking me", "cond": "clean", "stt": "Stop tracking me.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "474a2eff07", "text": "stop looking at me", "cond": "clean", "stt": "Stop looking at me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b7554bfeff", "text": "stop watching me", "cond": "clean", "stt": "Stop watching me.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "386a585a13", "text": "look away", "cond": "clean", "stt": "Look away.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "07a5de6660", "text": "quit following me", "cond": "clean", "stt": "Quit following me.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "9dec8f1f08", "text": "stop staring at me", "cond": "clean", "stt": "Stop staring at me.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "bad513f8c8", "text": "don't look at me", "cond": "clean", "stt": "Don't look at me.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "35515644fc", "text": "don't follow me", "cond": "clean", "stt": "Don't follow me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e0a2de30e4", "text": "stop face tracking", "cond": "clean", "stt": "Stop feast tracking.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c4e7bcbf9d", "text": "turn off face tracking", "cond": "clean", "stt": "Turn off face tracking", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8bce991034", "text": "face tracking off", "cond": "clean", "stt": "Face tracking off.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "02572124c6", "text": "no more following", "cond": "clean", "stt": "No more following.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "9ac8a742a2", "text": "quit staring", "cond": "clean", "stt": "Quit staring.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f9663b8f02", "text": "eyes off me", "cond": "clean", "stt": "Eyes off me.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "85598924c7", "text": "look somewhere else", "cond": "clean", "stt": "Look somewhere else.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "af5566bd0b", "text": "look at something else", "cond": "clean", "stt": "Look at something else.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "00532c4504", "text": "stop keeping your eyes on me", "cond": "clean", "stt": "Stop keeping your eyes on me.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b1ce55466a", "text": "leave me alone, stop following", "cond": "clean", "stt": "Leave me alone. Stop following.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ad0fec1206", "text": "I don't want you following me", "cond": "clean", "stt": "I don't want you following me.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "fa11946547", "text": "you can stop watching me now", "cond": "clean", "stt": "You can stop watching me now.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "5ce6438c43", "text": "enough following", "cond": "clean", "stt": "Enough following.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0a2c2a2908", "text": "that's creepy, stop staring", "cond": "clean", "stt": "That's creepy, stop staring.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "3f9758ebf5", "text": "give me some privacy, look away", "cond": "clean", "stt": "Give me some privacy, look away.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "61677b5db0", "text": "turn away from me", "cond": "clean", "stt": "Turn away from me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d80c97531a", "text": "stop tracking my face", "cond": "clean", "stt": "Stop tracking my face.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "34b5d33725", "text": "quit tracking me", "cond": "clean", "stt": "Quit tracking me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f561e6f733", "text": "please look away now", "cond": "clean", "stt": "Please look away now.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "bf15a5c06a", "text": "disable face tracking", "cond": "clean", "stt": "Disable face tracking.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d2bb0f267d", "text": "don't track me", "cond": "clean", "stt": "Don't track me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "36d33f5e6d", "text": "never follow me", "cond": "clean", "stt": "Never follow me.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "eb6c8c7a79", "text": "stop tailing me", "cond": "clean", "stt": "Stop telling me.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "989d637afb", "text": "quit watching me like that", "cond": "clean", "stt": "Quit watching me like that.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6a36df1c6b", "text": "avert your eyes", "cond": "clean", "stt": "Avert your eyes.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "1d25dc6bb3", "text": "stop eyeballing me", "cond": "clean", "stt": "Stop eyeballing me.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "7770be1ce2", "text": "don't keep looking at me", "cond": "clean", "stt": "Don't keep looking at me.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6ed1727e3d", "text": "face the other way", "cond": "clean", "stt": "Face the other way.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "79ad57dd12", "text": "look elsewhere", "cond": "clean", "stt": "Look elsewhere.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "173106d8ef", "text": "you don't have to watch me", "cond": "clean", "stt": "You don't have to watch me.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0c57a0b2c7", "text": "stop turning toward me", "cond": "clean", "stt": "Stop turning toward me.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "9793ab1ea9", "text": "walk forward", "cond": "clean", "stt": "Walk forward.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b6bd6dd6d4", "text": "go forward", "cond": "clean", "stt": "Go forward.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "dc22bcffd8", "text": "move forward", "cond": "clean", "stt": "Move forward.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a85c96e80a", "text": "come here", "cond": "clean", "stt": "Come here.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "862d2e1ecd", "text": "come to me", "cond": "clean", "stt": "Come to me.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "4228425928", "text": "come closer", "cond": "clean", "stt": "Come closer.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "9499628eab", "text": "walk to me", "cond": "clean", "stt": "Walk to me.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0429d7d618", "text": "walk towards me", "cond": "clean", "stt": "Walk towards me.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "415a149573", "text": "come over here", "cond": "clean", "stt": "Come over here.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e13ee3600c", "text": "step forward", "cond": "clean", "stt": "Step forward.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "fc13002c85", "text": "go straight", "cond": "clean", "stt": "Go straight.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "1f11e269ce", "text": "go ahead and walk", "cond": "clean", "stt": "Go ahead and walk.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "98be7243b4", "text": "take a few steps forward", "cond": "clean", "stt": "Take a few steps forward.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "030484ff4c", "text": "head forward", "cond": "clean", "stt": "Head forward.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "17fdd53a43", "text": "keep going forward", "cond": "clean", "stt": "keep going forward.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6ef7c4c194", "text": "advance", "cond": "clean", "stt": "Advance.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "3d0e6c4d12", "text": "come this way", "cond": "clean", "stt": "Come this way.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b39a7aec24", "text": "get over here", "cond": "clean", "stt": "Get over here.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e72af49bf2", "text": "walk this way", "cond": "clean", "stt": "Walk this way.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "1b55f4072c", "text": "approach me", "cond": "clean", "stt": "Approach me.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ec39410d80", "text": "come on over", "cond": "clean", "stt": "Come on over.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f21431e6f0", "text": "walk straight ahead", "cond": "clean", "stt": "Walk straight ahead.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0b09cf3ba3", "text": "move ahead", "cond": "clean", "stt": "Move ahead.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "9781b93200", "text": "go on, walk", "cond": "clean", "stt": "Go on, walk.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "5c05edaf24", "text": "start walking", "cond": "clean", "stt": "Start walking.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6f2fbb98fb", "text": "take a walk forward", "cond": "clean", "stt": "Take a walk forward.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f8d408cfb9", "text": "scoot forward", "cond": "clean", "stt": "scoot forward.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b4e40c6749", "text": "come a little closer", "cond": "clean", "stt": "Come a little closer.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d98be4566d", "text": "get closer to me", "cond": "clean", "stt": "Get closer to me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "3a7f3c940b", "text": "move up", "cond": "clean", "stt": "Move out.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a1df40069e", "text": "forward march", "cond": "clean", "stt": "forward march", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "896574cb01", "text": "march forward", "cond": "clean", "stt": "March forward.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "723ad5f50d", "text": "walk up to me", "cond": "clean", "stt": "Walk up to me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "9337ffd73d", "text": "trot over here", "cond": "clean", "stt": "Trot over here.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "22e3877a44", "text": "waddle over here", "cond": "clean", "stt": "Waddle over here.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "fffd470d9d", "text": "onward", "cond": "clean", "stt": "Onward.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "528ba43961", "text": "proceed forward", "cond": "clean", "stt": "Proceed forward.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "cab0971697", "text": "move toward me", "cond": "clean", "stt": "Move toward me.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a03f9c8827", "text": "shuffle forward a bit", "cond": "clean", "stt": "Shuffle forward a bit.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2ec780e7f0", "text": "inch forward", "cond": "clean", "stt": "inch forward", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "fd28154aaa", "text": "walk backward", "cond": "clean", "stt": "Walk backwards.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "5886bf65d2", "text": "go back", "cond": "clean", "stt": "Go back.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "52bee37f33", "text": "back up", "cond": "clean", "stt": "That cup.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "3c23a97100", "text": "move back", "cond": "clean", "stt": "Move back.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c473e6bdaf", "text": "step back", "cond": "clean", "stt": "Step back.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "416817000f", "text": "walk backwards", "cond": "clean", "stt": "Walk backwards.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8394677a8e", "text": "go backwards", "cond": "clean", "stt": "Go backwards.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "92585a99f4", "text": "back away", "cond": "clean", "stt": "Back away.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "59fff58ad8", "text": "back off", "cond": "clean", "stt": "Back off.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "75470a3076", "text": "reverse", "cond": "clean", "stt": "Reverse.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "595cced46c", "text": "take a step back", "cond": "clean", "stt": "Take a step back.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "1e3433319c", "text": "move backward", "cond": "clean", "stt": "Move backward.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "1d3c0b4c6e", "text": "scoot back", "cond": "clean", "stt": "Good back.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "cfff4c19ef", "text": "get back", "cond": "clean", "stt": "Get back.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "eb5b9a3ec2", "text": "retreat", "cond": "clean", "stt": "Which rate?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ebf4841061", "text": "back it up", "cond": "clean", "stt": "Back it up.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f1fb2fbd2e", "text": "go in reverse", "cond": "clean", "stt": "go in reverse.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e68f564d4a", "text": "walk away from me", "cond": "clean", "stt": "\"'Walk away from me.'", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "04ac6d1fd0", "text": "give me some room, back up", "cond": "clean", "stt": "Give me some room. Back up.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f192df129f", "text": "move away", "cond": "clean", "stt": "Move away.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "9b5b2783d7", "text": "back up a little", "cond": "clean", "stt": "Back up a little.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "494c084beb", "text": "take a few steps back", "cond": "clean", "stt": "Take a few steps back.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f444cefa71", "text": "shuffle back", "cond": "clean", "stt": "shuffle back", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "66506b5157", "text": "step away", "cond": "clean", "stt": "Step away!", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6cf7e60abc", "text": "too close, back up", "cond": "clean", "stt": "Too close, back up.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "424196d83d", "text": "you're too close, move back", "cond": "clean", "stt": "You're too close. Move back.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "5df3625146", "text": "put it in reverse", "cond": "clean", "stt": "Put it in reverse.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "50a83033f5", "text": "backpedal", "cond": "clean", "stt": "Back middle.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "31010d756c", "text": "inch backward", "cond": "clean", "stt": "Inch backward.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f8cb81c1b7", "text": "go back a bit", "cond": "clean", "stt": "Go back a bit.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "05da07dfc3", "text": "back up please", "cond": "clean", "stt": "Back up please.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "861ed054c2", "text": "can you back up", "cond": "clean", "stt": "Can you back up?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0b46eb57cb", "text": "moonwalk backward", "cond": "clean", "stt": "Moonwalk backwards.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0a6db2aa6a", "text": "walk back", "cond": "clean", "stt": "Walk back.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "10722bfe34", "text": "head back", "cond": "clean", "stt": "Head back.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "7956a77866", "text": "pull back", "cond": "clean", "stt": "Pull back.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "57c794c0f7", "text": "fall back", "cond": "clean", "stt": "Fall back.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "4c92629006", "text": "ease back", "cond": "clean", "stt": "He's back.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "57f6dafb9c", "text": "roll it back", "cond": "clean", "stt": "Roll it back.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ffd6b434fb", "text": "backwards now", "cond": "clean", "stt": "Backwards now.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a801301ec2", "text": "spin", "cond": "clean", "stt": "Spen.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "7d4d40e8c7", "text": "spin around", "cond": "clean", "stt": "Spin around.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "040d9499b1", "text": "turn around", "cond": "clean", "stt": "Turn around.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d7774f7883", "text": "do a spin", "cond": "clean", "stt": "Do a spin.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "aafe9a116c", "text": "spin in a circle", "cond": "clean", "stt": "Spin in a circle.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8ff307a4c7", "text": "twirl", "cond": "clean", "stt": "So I'll...", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6d93029db0", "text": "do a twirl", "cond": "clean", "stt": "Do a twirl.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2ac527f1d0", "text": "rotate", "cond": "clean", "stt": "rotate.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "4b5f6a0141", "text": "turn in a circle", "cond": "clean", "stt": "Turn in a circle.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0153bc71a9", "text": "give me a spin", "cond": "clean", "stt": "Give me a spin.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0232d03552", "text": "spin for me", "cond": "clean", "stt": "Spend for me.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "74593917a7", "text": "go around in a circle", "cond": "clean", "stt": "go around in a circle.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "46a78c451b", "text": "do a three sixty", "cond": "clean", "stt": "Do a 360.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "691faf1263", "text": "turn all the way around", "cond": "clean", "stt": "Turn all the way around", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0f914d7d97", "text": "pirouette", "cond": "clean", "stt": "Have a great day.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ca4603f3ad", "text": "do a pirouette", "cond": "clean", "stt": "Do a pirouette.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ee36dde9db", "text": "whirl around", "cond": "clean", "stt": "Whirl around.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "4036d72e8b", "text": "spin on the spot", "cond": "clean", "stt": "been on the spot.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "70cfede414", "text": "rotate in place", "cond": "clean", "stt": "Rotate in place.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6d47196a88", "text": "turn in place", "cond": "clean", "stt": "Turn in place.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "7d35cd90ed", "text": "do a little spin", "cond": "clean", "stt": "Do a little spin.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "800e1daeed", "text": "can you spin", "cond": "clean", "stt": "Can you spin?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "7e366a72f9", "text": "let's see you spin", "cond": "clean", "stt": "Let's see you spin.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "dcc194681d", "text": "show me a spin", "cond": "clean", "stt": "Show me a spin.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "458502af82", "text": "spin spin spin", "cond": "clean", "stt": "Spin spin spin.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "091e24c873", "text": "go round and round", "cond": "clean", "stt": "Go round and round.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a954fe4e27", "text": "twist around", "cond": "clean", "stt": "Twist around.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c9249a320e", "text": "swivel around", "cond": "clean", "stt": "Twivel around.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "706c9b5bf4", "text": "do a full turn", "cond": "clean", "stt": "Do a full turn.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "3271968ad2", "text": "make a circle", "cond": "clean", "stt": "Make a circle.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "425ed18154", "text": "circle around", "cond": "clean", "stt": "circle around", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ba9b7a5001", "text": "spin like a top", "cond": "clean", "stt": "Thin like a top.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e6003a61e1", "text": "turn yourself around", "cond": "clean", "stt": "Turn yourself around.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "076645f8e0", "text": "do a one eighty", "cond": "clean", "stt": "Do a 180.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "cb231fc0f1", "text": "take a spin", "cond": "clean", "stt": "Take a spin.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "1d06ed39eb", "text": "give us a twirl", "cond": "clean", "stt": "Give us a twirl.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "51096f65ba", "text": "rotate around", "cond": "clean", "stt": "Rotate around.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a229f163f3", "text": "spin it", "cond": "clean", "stt": "Senate.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8911217305", "text": "swing around", "cond": "clean", "stt": "wing around.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d1bff279f1", "text": "wheel around", "cond": "clean", "stt": "Wheel around.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f9bef9c232", "text": "sing", "cond": "clean", "stt": "saying", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e447d1c8bc", "text": "sing a song", "cond": "clean", "stt": "Sing a song.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d7588ddf63", "text": "sing for me", "cond": "clean", "stt": "Sing for me.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "4c95347491", "text": "sing me a song", "cond": "clean", "stt": "Sing me the song.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d00fa76a16", "text": "sing something", "cond": "clean", "stt": "Sing something.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ff3b11193d", "text": "can you sing", "cond": "clean", "stt": "Can you sing?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b31573c41d", "text": "give us a song", "cond": "clean", "stt": "Give us a song.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "1a650d51ff", "text": "hum a tune", "cond": "clean", "stt": "Hama Tune!", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "12361e6347", "text": "hum for me", "cond": "clean", "stt": "Come for me.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "45219f31b6", "text": "hum something", "cond": "clean", "stt": "Hum something.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "37be46ab9d", "text": "sing a little tune", "cond": "clean", "stt": "Sing a little tune.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "455ddfc018", "text": "let's hear you sing", "cond": "clean", "stt": "Let's hear you sing.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "fd2686f970", "text": "carry a tune", "cond": "clean", "stt": "Carry a tune.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "88466289a9", "text": "sing me something pretty", "cond": "clean", "stt": "Sing me something pretty.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "302c90d27f", "text": "do a little song", "cond": "clean", "stt": "Do a little song.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8cb17d02a0", "text": "whistle a tune", "cond": "clean", "stt": "Whistle-a-tune.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b6de866ce4", "text": "make some music", "cond": "clean", "stt": "Make some music.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f4b4df5aff", "text": "play me a melody", "cond": "clean", "stt": "Play me the melody.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "49c5b9e270", "text": "sing a lullaby", "cond": "clean", "stt": "Sing a lullaby.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c74f3e51be", "text": "sing along", "cond": "clean", "stt": "Sing along!", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a0077e0ad0", "text": "serenade me", "cond": "clean", "stt": "Serenade me.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "05ef008438", "text": "belt one out", "cond": "clean", "stt": "Belt one out.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "39da1b0f32", "text": "sing your favorite song", "cond": "clean", "stt": "Sing your favorite song.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "58e7baf41d", "text": "do your singing thing", "cond": "clean", "stt": "Do your singing thing.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "51a6e99a37", "text": "show me how you sing", "cond": "clean", "stt": "Show me how you sing.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "bfd5ba9fad", "text": "I want to hear you sing", "cond": "clean", "stt": "I want to hear you sing.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "102ae0bf71", "text": "would you sing for us", "cond": "clean", "stt": "Would you sing for us?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f5a348d750", "text": "sing it", "cond": "clean", "stt": "Sing it.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "bad13e249e", "text": "give me a melody", "cond": "clean", "stt": "Give me a melody.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "95efb0c5a3", "text": "hum a little melody", "cond": "clean", "stt": "Hum a little melody.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "4c865ca943", "text": "sing a happy song", "cond": "clean", "stt": "Sing a happy song.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "744a8c7053", "text": "sing me to sleep", "cond": "clean", "stt": "Sing me to sleep.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b7c9e02092", "text": "croon something", "cond": "clean", "stt": "Prune something.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b9ce221f93", "text": "do a song for grandma", "cond": "clean", "stt": "Do a song for grandma.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c663ac833e", "text": "how about a song", "cond": "clean", "stt": "How about a song?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a932d4bd37", "text": "time for a song", "cond": "clean", "stt": "Time for a song.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e64dfa1b8f", "text": "sing us a tune", "cond": "clean", "stt": "Sing us a tune.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "7e3861ae58", "text": "a song please", "cond": "clean", "stt": "A song please.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "782311424d", "text": "make up a song", "cond": "clean", "stt": "Make up a song.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0269f2b65a", "text": "let's hear a tune", "cond": "clean", "stt": "Let's hear a tune.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "db2825dec6", "text": "let's stop by the store on the way home", "cond": "clean", "stt": "Let's stop by the store on the way home.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c4e608436f", "text": "I can't stop laughing", "cond": "clean", "stt": "I can't stop laughing.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "55db83ef1f", "text": "the bus stop is two blocks away", "cond": "clean", "stt": "The bus stop is two blocks away.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ec10d29c4d", "text": "did the rain stop yet", "cond": "clean", "stt": "Did the rain stop yet?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "7dadbcc613", "text": "he wouldn't stop talking about his car", "cond": "clean", "stt": "he wouldn't stop talking about his car.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f980db336c", "text": "my watch stopped last night", "cond": "clean", "stt": "My watch stopped last night.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "783c4c05b3", "text": "we should stop for gas soon", "cond": "clean", "stt": "We should stop for gas soon.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "3fc2eb3129", "text": "that show never stops being funny", "cond": "clean", "stt": "That show never stops being funny.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d4a4aa0903", "text": "the music stopped all of a sudden", "cond": "clean", "stt": "The music stopped all of a sudden.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "02f9274d3e", "text": "stop signs are red in most countries", "cond": "clean", "stt": "up signs are read in most countries.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6b196ac780", "text": "I couldn't stop thinking about the ending", "cond": "clean", "stt": "I couldn't stop thinking about the ending.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c32c971e19", "text": "she told the kids to stop but they kept going", "cond": "clean", "stt": "She told the kids to stop but they kept going.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ea64a0f860", "text": "nothing can stop us now", "cond": "clean", "stt": "Nothing can stop us now.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "9bc7ea3af9", "text": "non stop flights are expensive", "cond": "clean", "stt": "non-stop flights are expensive", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "03e973c115", "text": "do you ever stop to think about the stars", "cond": "clean", "stt": "Do you ever stop to think about the stars?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "fb78d00c3b", "text": "the clock stopped at noon", "cond": "clean", "stt": "The clock stopped at noon.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d55df013ce", "text": "I follow a lot of cooking channels", "cond": "clean", "stt": "I follow a lot of cooking channels.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2d44ffdd6c", "text": "the movie follows a dog across the country", "cond": "clean", "stt": "The movie follows a dog across the country.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "19f236595f", "text": "follow the recipe exactly", "cond": "clean", "stt": "follow the recipe exactly", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6c6a88e79e", "text": "I don't follow what you mean", "cond": "clean", "stt": "I don't follow what you mean.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a8bb632168", "text": "the sequel follows the same plot", "cond": "clean", "stt": "The sequel follows the same plot.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2e87fc73c6", "text": "who do you follow online", "cond": "clean", "stt": "Who do you follow online?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0706219673", "text": "night follows day", "cond": "clean", "stt": "Night follows day.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "895f57e894", "text": "a storm followed us all the way from the coast", "cond": "clean", "stt": "A storm followed us all the way from the coast.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "7943170ccb", "text": "follow your dreams, they say", "cond": "clean", "stt": "Follow your dreams, they say.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b5fa40e7e2", "text": "the instructions were hard to follow", "cond": "clean", "stt": "The instructions were hard to follow.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0dde9a4e0a", "text": "watch out for ice on the steps", "cond": "clean", "stt": "Watch out for ice on the steps.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ce7c30aac5", "text": "my watch needs a new battery", "cond": "clean", "stt": "My watch needs a new battery.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "97a01a3478", "text": "we watched a movie last night", "cond": "clean", "stt": "We watched a movie last night.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a199037263", "text": "I like to watch birds in the morning", "cond": "clean", "stt": "I like to watch birds in the morning.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ad26848068", "text": "look at that sunset", "cond": "clean", "stt": "Look at that sunset!", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a742dac201", "text": "look at the size of that pumpkin", "cond": "clean", "stt": "Look at the size of that pumpkin!", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f81b388e6d", "text": "it looks like rain", "cond": "clean", "stt": "It looks like rain.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d66df29eef", "text": "you look nice today", "cond": "clean", "stt": "You look nice today.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2e340c3a33", "text": "look, I had a long day", "cond": "clean", "stt": "Look, I had a long day.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "4dd27f000a", "text": "I was looking for my keys all morning", "cond": "clean", "stt": "I was looking for my keys all morning.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ea5bd4fe49", "text": "take a look at this drawing I made", "cond": "clean", "stt": "Take a look at this drawing I made.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0d7c108da1", "text": "the dog looked at me funny", "cond": "clean", "stt": "The dog looked at me funny.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8dc9f966d1", "text": "track seven is my favorite on that album", "cond": "clean", "stt": "Track 7 is my favorite on that album.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8dabf14ea9", "text": "I ran track in high school", "cond": "clean", "stt": "I ran track in high school.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "edc508001b", "text": "the train tracks run behind the house", "cond": "clean", "stt": "The train tracks run behind the house.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "3e58596857", "text": "I lost track of time", "cond": "clean", "stt": "I lost track of time.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f59ed592f5", "text": "keep track of your receipts", "cond": "clean", "stt": "Keep track of your receipts.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d75fd864c0", "text": "freeze the leftovers for later", "cond": "clean", "stt": "Freeze the leftovers for later.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "3fa8571312", "text": "the lake freezes over in January", "cond": "clean", "stt": "The lake freezes over in January.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b448a6f724", "text": "I'm freezing, close the window", "cond": "clean", "stt": "I'm freezing. Close the window.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "3794864490", "text": "my computer keeps freezing", "cond": "clean", "stt": "My computer keeps freezing.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8e6a6e41d7", "text": "the pipes froze last winter", "cond": "clean", "stt": "The pipes froze last winter.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "246f51254a", "text": "still waters run deep", "cond": "clean", "stt": "Still waters run deep.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "26a36ccc57", "text": "are you still there", "cond": "clean", "stt": "Are you still there?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2904c52cac", "text": "I'm still hungry", "cond": "clean", "stt": "I'm still hungry.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "3be1cef8c2", "text": "it's still raining outside", "cond": "clean", "stt": "It's still raining outside.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d54d91b6df", "text": "is the store still open", "cond": "clean", "stt": "Is the store still open?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d91c3c65de", "text": "he still hasn't called me back", "cond": "clean", "stt": "He still hasn't called me back.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d12373e111", "text": "hold on, my phone is ringing", "cond": "clean", "stt": "Hold on, my phone is ringing.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d9d110ca33", "text": "can you hold this thought", "cond": "clean", "stt": "Can you hold this thought?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c677a025ae", "text": "hold the door for the neighbor", "cond": "clean", "stt": "Hold the door for the neighbor.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e0e970cfd5", "text": "she holds the record for the mile", "cond": "clean", "stt": "She holds the record for the mile.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "1d632366a2", "text": "I'll move to Denver next year", "cond": "clean", "stt": "I'll move to Denver next year.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8d3874a7f6", "text": "that movie really moved me", "cond": "clean", "stt": "That movie really moved me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "80e43760b6", "text": "we moved the couch to the other wall", "cond": "clean", "stt": "We move the couch to the other wall.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "96478fbf4f", "text": "it's your move in chess", "cond": "clean", "stt": "It's your move in chess.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8df908f4ee", "text": "the meeting got moved to Friday", "cond": "clean", "stt": "The meeting got moved to Friday.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e3489f897e", "text": "walk me through your day", "cond": "clean", "stt": "Walk me through your day.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e408443f46", "text": "I walked the dog this morning", "cond": "clean", "stt": "I walked the dog this morning.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b76fd1b597", "text": "it's a ten minute walk to school", "cond": "clean", "stt": "It's a 10-minute walk to school.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "4e55d81d93", "text": "she walks to work every day", "cond": "clean", "stt": "She walks to work every day.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "96dc4cb6a1", "text": "the forward on that team is fast", "cond": "clean", "stt": "The forward on that team is fast.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "47a5b36de5", "text": "I'm looking forward to the weekend", "cond": "clean", "stt": "I'm looking forward to the weekend.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ff20ec4008", "text": "can you forward that email", "cond": "clean", "stt": "Can you forward that email?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b9b6d689aa", "text": "fast forward to the good part", "cond": "clean", "stt": "Fast forward to the good part.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ad3f5eab3b", "text": "put your best foot forward", "cond": "clean", "stt": "Put your best foot forward.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "3ce6b2a1f7", "text": "we're going back to school on Monday", "cond": "clean", "stt": "We're going back to school on Monday.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2f50843eca", "text": "my back hurts today", "cond": "clean", "stt": "My back hurts today.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "79946422d7", "text": "I'll be right back", "cond": "clean", "stt": "I'll be right back.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "11fd575b12", "text": "back in my day we had no phones", "cond": "clean", "stt": "Back in my day we had no phones.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a3d3140778", "text": "she came back from her trip", "cond": "clean", "stt": "She came back from her trip.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6b61658e91", "text": "write it on the back of the page", "cond": "clean", "stt": "Write it on the back of the page.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "edc92fb591", "text": "the back door is unlocked", "cond": "clean", "stt": "The back door is unlocked.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "9c5878a4fd", "text": "I want my money back", "cond": "clean", "stt": "I want my money back.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c6699055b3", "text": "spin class starts at six", "cond": "clean", "stt": "Spend class starts at six.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "353e7cf7b9", "text": "my head is spinning", "cond": "clean", "stt": "My head is spinning.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8828bfce33", "text": "the washing machine is on the spin cycle", "cond": "clean", "stt": "The washing machine is on the spin cycle.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "659dad7c36", "text": "he put a positive spin on the news", "cond": "clean", "stt": "He put a positive spin on the news.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "694cb32069", "text": "the earth spins on its axis", "cond": "clean", "stt": "The Earth spins on its axis.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "85587dfa1d", "text": "turn the oven to three fifty", "cond": "clean", "stt": "Turn the oven to 350.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e00f4979fd", "text": "it's my turn to do the dishes", "cond": "clean", "stt": "It's my turn to do the dishes.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "9f04270b3e", "text": "the leaves turn red in the fall", "cond": "clean", "stt": "The leaves turn red in the fall.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "491778f366", "text": "turn the page", "cond": "clean", "stt": "Turn the page.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c84b238e28", "text": "things took a turn for the worse", "cond": "clean", "stt": "Things took a turn for the worse.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "319f0dd5f9", "text": "the milk turned sour", "cond": "clean", "stt": "The milk turned sour.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0ab4c09ea8", "text": "she turned forty last week", "cond": "clean", "stt": "She turned 40 last week.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2cdf4e81d1", "text": "we turned left at the church", "cond": "clean", "stt": "We turned left at the church.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "9ee1250cbc", "text": "birds sing early in spring", "cond": "clean", "stt": "Birds sing early in spring.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "7148842a67", "text": "my sister sings in a choir", "cond": "clean", "stt": "My sister sings in a choir.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "da8f57493d", "text": "the kettle sings when it boils", "cond": "clean", "stt": "The kettle sings when it boils.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "19f71852a2", "text": "I heard her singing in the shower", "cond": "clean", "stt": "I heard her singing in the shower.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e67d96f570", "text": "that song is stuck in my head", "cond": "clean", "stt": "That song is stuck in my head.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "49fc18b536", "text": "what's your favorite song", "cond": "clean", "stt": "What's your favorite song?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a3cba55822", "text": "she hummed while she cooked", "cond": "clean", "stt": "She hummed while she cooked.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "84cc12ec66", "text": "the fridge is humming loudly", "cond": "clean", "stt": "The fridge is humming loudly.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a098e9103a", "text": "the engine hums when it idles", "cond": "clean", "stt": "The engine hums when it idles.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e0ce2e3788", "text": "come to think of it, you're right", "cond": "clean", "stt": "Come to think of it, you're right.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "768152f693", "text": "how come the sky is blue", "cond": "clean", "stt": "How come the sky is blue?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a2220b289f", "text": "the mail hasn't come yet", "cond": "clean", "stt": "The mail hasn't come yet.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2e74b46ae2", "text": "spring comes early some years", "cond": "clean", "stt": "Spring comes early some years.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "20ec362246", "text": "that's enough salt for the soup", "cond": "clean", "stt": "That's enough salt for the soup.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2d827ecefd", "text": "is there enough milk for coffee", "cond": "clean", "stt": "Is there enough milk for coffee?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "412e52ec9f", "text": "I didn't get enough sleep", "cond": "clean", "stt": "I didn't get enough sleep.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "85b76e10a9", "text": "fair enough", "cond": "clean", "stt": "Fair enough.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "9d8e4cf723", "text": "funny enough, I saw him yesterday", "cond": "clean", "stt": "Funny enough, I saw him yesterday.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6b4c6e3bd0", "text": "wait until the paint dries", "cond": "clean", "stt": "Wait until the paint dries.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "10ff7ed0ef", "text": "I can't wait for summer", "cond": "clean", "stt": "I can't wait for summer.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "3b32496048", "text": "we waited an hour for a table", "cond": "clean", "stt": "We waited an hour for a table.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "dfa68f121d", "text": "the wait at the doctor was long", "cond": "clean", "stt": "The wait at the doctor was long.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d9c801ce5b", "text": "no thanks, I already ate", "cond": "clean", "stt": "No thanks, I already ate.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "27c576603b", "text": "I have no idea what time it is", "cond": "clean", "stt": "I have no idea what time it is.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d199cc8f1a", "text": "there's no milk left", "cond": "clean", "stt": "There's no milk left.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a7981b9f08", "text": "no wonder you're tired", "cond": "clean", "stt": "No wonder you're tired.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "3c74b1dedb", "text": "never mind what he said, how are you", "cond": "clean", "stt": "Never mind what he said, how are you?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "18d702c584", "text": "I never mind the rain much", "cond": "clean", "stt": "I never mind the rain much.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "fe83329746", "text": "halt was the word on the old railway sign", "cond": "clean", "stt": "Halt was the word on the old railway sign.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "24459879c0", "text": "they called a halt to the game because of rain", "cond": "clean", "stt": "They called a halt to the game because of rain.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b729697680", "text": "the project came to a halt last year", "cond": "clean", "stt": "The project came to a halt last year.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "70c8c72c27", "text": "quit your job if it makes you miserable", "cond": "clean", "stt": "quit your job if it makes you miserable.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "fb795fcdbc", "text": "my uncle quit smoking", "cond": "clean", "stt": "My uncle quit smoking.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f3259c35b8", "text": "I quit the team in tenth grade", "cond": "clean", "stt": "I quit the team in 10th grade.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0341f58e3c", "text": "pause the movie when the pizza gets here", "cond": "clean", "stt": "Pause the movie when the pizza gets here.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "3d652d916a", "text": "there was a long pause before she answered", "cond": "clean", "stt": "There was a long pause before she answered.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "53a5f3961b", "text": "rotate the tires every six months", "cond": "clean", "stt": "Rotate the tires every 6 months.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "919e16677f", "text": "we rotate chores at home", "cond": "clean", "stt": "We rotate chores at home.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "82662bdbe7", "text": "crops are rotated each season", "cond": "clean", "stt": "Crops are rotated each season.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "5e24abb932", "text": "stay for dinner if you like", "cond": "clean", "stt": "Stay for dinner if you like.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2e00501ec9", "text": "we stayed at a cabin last summer", "cond": "clean", "stt": "We stayed at a cabin last summer.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8e5508fc89", "text": "the stain stayed in the shirt", "cond": "clean", "stt": "The stain stayed in the shirt.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "64947cac54", "text": "stay tuned for the weather", "cond": "clean", "stt": "Stay tuned for the weather.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "76d6bb22f2", "text": "cancel my dentist appointment please", "cond": "clean", "stt": "Cancel my dentist appointment, please.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "5ecf5e129d", "text": "they cancelled the flight", "cond": "clean", "stt": "They cancelled the flight.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ea54664943", "text": "the two errors cancel out", "cond": "clean", "stt": "The two errors cancel out.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "50d0c5bab4", "text": "I'd like to go home now", "cond": "clean", "stt": "I'd like to go home now.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "9e64e0b795", "text": "where did you go on vacation", "cond": "clean", "stt": "Where did you go on vacation?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c125478b91", "text": "how's it going today", "cond": "clean", "stt": "How's it going today?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "1ba6e81448", "text": "there goes the neighborhood", "cond": "clean", "stt": "that goes the neighbourhood.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "692153395f", "text": "go figure", "cond": "clean", "stt": "Go figure.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "1b2a7d1628", "text": "the batteries are about to go", "cond": "clean", "stt": "The batteries are about to go.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "906eed6a23", "text": "it goes without saying", "cond": "clean", "stt": "It goes without saying.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "dc0cf5c9fe", "text": "tell me a story about a dragon who would not stop dancing", "cond": "clean", "stt": "Tell me a story about a dragon who would not stop dancing.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "18036904d1", "text": "what would you do if I told you to stop", "cond": "clean", "stt": "What would you do if I told you to stop?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d8a4b81b63", "text": "why do people say look before you leap", "cond": "clean", "stt": "Why do people say look before you leap?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0b27f59b72", "text": "my brother always says follow me when we hike", "cond": "clean", "stt": "My brother always says follow me when we hike.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8435be5997", "text": "the coach yelled freeze during the game", "cond": "clean", "stt": "The coach yelled freeze during the game.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f8ab6ab2ca", "text": "in the song the singer says turn around", "cond": "clean", "stt": "In the song, the singer says, turn around.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "043761047b", "text": "the sign said do not move the barrier", "cond": "clean", "stt": "The sign said do not move the barrier.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "5daad1649a", "text": "grandpa used to say stop and smell the roses", "cond": "clean", "stt": "Grandpa used to say stop and smell the roses.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "45b53e0c24", "text": "she said don't look at me like that to her cat", "cond": "clean", "stt": "She said don't look at me like that to her cat.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "878989ff73", "text": "the teacher told us to walk forward one at a time", "cond": "clean", "stt": "The teacher told us to walk forward one at a time.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "57d435f51a", "text": "do you know why robots spin in cartoons", "cond": "clean", "stt": "Do you know why robots spin in cartoons?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "56bb5237f6", "text": "what does it mean to back up a computer", "cond": "clean", "stt": "What does it mean to back up a computer?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a43b657098", "text": "can you explain what follow through means in golf", "cond": "clean", "stt": "Can you explain what follow-through means in golf?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "53e92b0c86", "text": "how do you spell pirouette", "cond": "clean", "stt": "How do you spell pirouette?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "97d52b6479", "text": "what's the difference between halt and stop", "cond": "clean", "stt": "What's the difference between HALT and STOP?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "38a56bd61a", "text": "is it rude to tell someone to be still", "cond": "clean", "stt": "Is it rude to tell someone to be still?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a8cbec7254", "text": "good morning", "cond": "clean", "stt": "Good morning.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "07b9359beb", "text": "how are you feeling today", "cond": "clean", "stt": "How are you feeling today?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "79243d4e28", "text": "what's your name", "cond": "clean", "stt": "What's your name?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b3455d5ec7", "text": "do you remember me", "cond": "clean", "stt": "Do you remember me?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8b8caefa9a", "text": "I'm home", "cond": "clean", "stt": "I'm home.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e2e29af4aa", "text": "what did you dream about", "cond": "clean", "stt": "What did you dream about?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "acbcb75675", "text": "tell me a joke", "cond": "clean", "stt": "Tell me a joke.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "afa9d23245", "text": "what do you see right now", "cond": "clean", "stt": "What do you see right now?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a36cb04ec6", "text": "I had a rough day at work", "cond": "clean", "stt": "I had a rough day at work.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c7edf030a3", "text": "do you like music", "cond": "clean", "stt": "Do you like music?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "95d9bcadb8", "text": "what's the weather like", "cond": "clean", "stt": "What's the weather like?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "da34cd6ffe", "text": "guess what happened today", "cond": "clean", "stt": "Guess what happened today?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6550cdc638", "text": "are you hungry", "cond": "clean", "stt": "Are you hungry?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e12ca6da2d", "text": "I made pancakes this morning", "cond": "clean", "stt": "I made pancakes this morning.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ba8764d441", "text": "my friend is coming over later", "cond": "clean", "stt": "My friend is coming over later.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "34cea0b4cd", "text": "what do you think about cats", "cond": "clean", "stt": "What do you think about cats?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "df6d8b08aa", "text": "it's getting late", "cond": "clean", "stt": "It's getting late.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a66617879c", "text": "I'm going to bed soon", "cond": "clean", "stt": "I'm going to bed soon.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "af467c4997", "text": "you're a funny little thing", "cond": "clean", "stt": "You're a funny little thing.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "066fe594e7", "text": "what's two plus two", "cond": "clean", "stt": "What's two plus two?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f5ca1b616c", "text": "do you know any stories", "cond": "clean", "stt": "Do you know any stories?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0afac2a416", "text": "I love this time of year", "cond": "clean", "stt": "I love this time of year.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0dd35d9797", "text": "the garden is looking great", "cond": "clean", "stt": "The garden is looking great!", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b0f73fa3dc", "text": "have you ever seen snow", "cond": "clean", "stt": "Have you ever seen snow?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b91cc8f6f0", "text": "what color is the sky to you", "cond": "clean", "stt": "What color is the sky to you?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "7699b1f9cd", "text": "I'm thinking about getting a dog", "cond": "clean", "stt": "I'm thinking about getting a dog.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b6fb51e55e", "text": "this coffee is too hot", "cond": "clean", "stt": "This coffee is too hot.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2bcf5d6cf1", "text": "did you hear that noise", "cond": "clean", "stt": "Did you hear that noise?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "7810ceaa93", "text": "what's your favorite color", "cond": "clean", "stt": "What's your favorite color?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "5af8306936", "text": "tell me about yourself", "cond": "clean", "stt": "Tell me about yourself.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "fad788041c", "text": "I can't find my glasses anywhere", "cond": "clean", "stt": "I can't find my glasses anywhere.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "4d2eddceec", "text": "how old are you", "cond": "clean", "stt": "How old are you?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "5a7e31babd", "text": "what day is it", "cond": "clean", "stt": "What day is it?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2244193561", "text": "that was a good movie", "cond": "clean", "stt": "That was a good movie.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "011544c385", "text": "I missed you today", "cond": "clean", "stt": "I missed you today.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "30603447a3", "text": "do you get bored when I'm gone", "cond": "clean", "stt": "Do you get bored when I'm gone?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "73613fbe08", "text": "what are you thinking about", "cond": "clean", "stt": "What are you thinking about?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e8ef42c6ff", "text": "my hands are cold", "cond": "clean", "stt": "My hands are cold.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2f85d48b1f", "text": "we should clean this room", "cond": "clean", "stt": "We should clean this room.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a3ed91c8ac", "text": "it smells like rain", "cond": "clean", "stt": "It smells like rain.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2086b70b84", "text": "who made you", "cond": "clean", "stt": "Who made you?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "59906f1f4e", "text": "are you a robot or a creature", "cond": "clean", "stt": "Are you a robot or a creature?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "32d86af0c4", "text": "what do you want to learn", "cond": "clean", "stt": "What do you want to learn?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "56b5558d25", "text": "I'm reading a great book", "cond": "clean", "stt": "I'm reading a great book.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "d39fbd0e1d", "text": "the neighbors are being loud again", "cond": "clean", "stt": "The neighbors are being loud again.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "1eaa94d0ac", "text": "happy birthday to me", "cond": "clean", "stt": "Happy birthday to me.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c35c3ca40f", "text": "I got a new job", "cond": "clean", "stt": "I got a new job.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "53c4b31729", "text": "thanks for listening", "cond": "clean", "stt": "Thanks for listening.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "bf8dbfd8fa", "text": "you always cheer me up", "cond": "clean", "stt": "You always cheer me up.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8e3211db7e", "text": "let's talk about space", "cond": "clean", "stt": "Let's talk about space.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6476fcf42c", "text": "why is the ocean salty", "cond": "clean", "stt": "Why is the ocean salty?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f139385f59", "text": "I feel sleepy", "cond": "clean", "stt": "I feel sleepy.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "dfa28d7c8a", "text": "can you count to ten", "cond": "clean", "stt": "Can you count to 10?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "661ff7dfb5", "text": "what's for dinner", "cond": "clean", "stt": "What's for dinner?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e621d92955", "text": "the cat knocked over a plant", "cond": "clean", "stt": "The cat knocked over a plant.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2e570ad53a", "text": "I bought new shoes", "cond": "clean", "stt": "I bought new shoes.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "54c360e7bc", "text": "it's so quiet in here", "cond": "clean", "stt": "It's so quiet in here.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "538555e6cc", "text": "tell me something interesting", "cond": "clean", "stt": "Tell me something interesting.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6a0bb65b30", "text": "what should we name the fish", "cond": "clean", "stt": "What should we name the fish?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ad9c2deda1", "text": "I think it's going to snow", "cond": "clean", "stt": "I think it's going to snow.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "04ec41eb53", "text": "do you like it here", "cond": "clean", "stt": "Do you like it here?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "35b0ead59c", "text": "my tea went cold", "cond": "clean", "stt": "My tea went cold.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a1fcd16f26", "text": "what time is it", "cond": "clean", "stt": "What time is it?", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "1f4fd0f4d8", "text": "I'm so proud of my daughter", "cond": "clean", "stt": "I'm so proud of my daughter.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "abe801ce85", "text": "we're out of bread", "cond": "clean", "stt": "We're out of bread.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "4bd1ae712d", "text": "I wonder what's on TV", "cond": "clean", "stt": "I wonder what's on TV.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "289017b2dc", "text": "say hello to my mom", "cond": "clean", "stt": "Say hello to my mom.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f1680f79bc", "text": "this is my friend Sam", "cond": "clean", "stt": "This is my friend Sam.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "7255ce0aba", "text": "do you ever get tired", "cond": "clean", "stt": "Do you ever get tired?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "1b75e17028", "text": "that's a pretty song on the radio", "cond": "clean", "stt": "That's a pretty song on the radio.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b3fd2368bf", "text": "I forgot my umbrella", "cond": "clean", "stt": "I forgot mine umbrella.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2ca7b1a345", "text": "what's the capital of France", "cond": "clean", "stt": "What's the capital of France?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "5c4da6dc36", "text": "you have a nice face", "cond": "clean", "stt": "You have a nice face.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "32cc0a08d0", "text": "I need a nap", "cond": "clean", "stt": "I need a nap.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "68314c341f", "text": "the wifi is slow today", "cond": "clean", "stt": "The Wi-Fi is slow today.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8746525b5f", "text": "my phone is almost dead", "cond": "clean", "stt": "My phone is almost dead.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "cecd3c49af", "text": "what's your favorite thing to do", "cond": "clean", "stt": "What's your favorite thing to do?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8a32c8325f", "text": "I'm learning to play guitar", "cond": "clean", "stt": "I'm learning to play guitar.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "595cced46c", "text": "take a step back", "cond": "noisy", "stt": "take a step back.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "b4e40c6749", "text": "come a little closer", "cond": "noisy", "stt": "Come a little closer.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "18d702c584", "text": "I never mind the rain much", "cond": "noisy", "stt": "I never mind the rain much.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "311672a178", "text": "I said stop", "cond": "noisy", "stt": "I said stop.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "ec10d29c4d", "text": "did the rain stop yet", "cond": "noisy", "stt": "Did the rain stop yet?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "5df3625146", "text": "put it in reverse", "cond": "noisy", "stt": "put it in reverse.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "692153395f", "text": "go figure", "cond": "noisy", "stt": "Go figure!", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8df908f4ee", "text": "the meeting got moved to Friday", "cond": "noisy", "stt": "The meeting got moved to Friday.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a098e9103a", "text": "the engine hums when it idles", "cond": "noisy", "stt": "The engine hums when it idles.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c2788a223f", "text": "just stay there", "cond": "noisy", "stt": "Just stay there.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "0c69e7aaeb", "text": "steady", "cond": "noisy", "stt": "Diddy.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a33feb3643", "text": "remain where you are", "cond": "noisy", "stt": "Remain where you are.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "f5a348d750", "text": "sing it", "cond": "noisy", "stt": "Sing it.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "24459879c0", "text": "they called a halt to the game because of rain", "cond": "noisy", "stt": "They called a halt to the game because of rain.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "81734767e5", "text": "pack it in", "cond": "noisy", "stt": "Pack it in.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "92585a99f4", "text": "back away", "cond": "noisy", "stt": "back away.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "38a56bd61a", "text": "is it rude to tell someone to be still", "cond": "noisy", "stt": "Is it rude to tell someone to be still?", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "396f9974da", "text": "stay", "cond": "noisy", "stt": "day", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "2a68a46da6", "text": "time out", "cond": "noisy", "stt": "Time out.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "58e7baf41d", "text": "do your singing thing", "cond": "noisy", "stt": "Do your singing thing.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6ef7c4c194", "text": "advance", "cond": "noisy", "stt": "Advance.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8435be5997", "text": "the coach yelled freeze during the game", "cond": "noisy", "stt": "The coach yelled freeze during the game.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "1ff8ea5407", "text": "hold your position", "cond": "noisy", "stt": "Hold your position.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "a229f163f3", "text": "spin it", "cond": "noisy", "stt": "Senate", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "49c5b9e270", "text": "sing a lullaby", "cond": "noisy", "stt": "Sing a lullaby.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "216fe9e868", "text": "stop the walking", "cond": "noisy", "stt": "Start the walking.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6d13e37b2e", "text": "stop!", "cond": "noisy", "stt": "Stop.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "bfd5ba9fad", "text": "I want to hear you sing", "cond": "noisy", "stt": "I want to hear you sing.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c6699055b3", "text": "spin class starts at six", "cond": "noisy", "stt": "Spin class starts at 6.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "706c9b5bf4", "text": "do a full turn", "cond": "noisy", "stt": "Do a full turn.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "6b4c6e3bd0", "text": "wait until the paint dries", "cond": "noisy", "stt": "Wait until the paint dries.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "e4aa375496", "text": "lock in place", "cond": "noisy", "stt": "Lock in place.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "c84b238e28", "text": "things took a turn for the worse", "cond": "noisy", "stt": "Things took a turn for the worse.", "voice": "en_US-ryan-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "18eb08a42b", "text": "quit moving around", "cond": "noisy", "stt": "Quit moving around.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "09e3a60926", "text": "would you stop", "cond": "noisy", "stt": "Would you stop?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "04a33fbac4", "text": "easy, easy, stop", "cond": "noisy", "stt": "Easy, easy, stop.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "71da9a8892", "text": "can you follow me", "cond": "noisy", "stt": "Can you follow me?", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "7770be1ce2", "text": "don't keep looking at me", "cond": "noisy", "stt": "Don't keep looking at me.", "voice": "en_US-lessac-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "8ae0b22d4b", "text": "hey hey hey stop that", "cond": "noisy", "stt": "He he he, stop that.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}
+{"id": "cab0971697", "text": "move toward me", "cond": "noisy", "stt": "Move towards me.", "voice": "en_GB-alba-medium", "whisper": "large-v3-turbo/int8"}

@@ -1,0 +1,149 @@
+{
+ "_": "The benchmark arms (R-EVAL-2). Each arm is one provider configuration. Prices are per million INPUT tokens, with the page they were read from and the date. Edit this file to add an engine: no code changes.",
+ "read_on": "2026-11-17",
+ "arms": {
+  "readers": {
+   "kind": "readers",
+   "note": "Brit's own regex readers, sliced unchanged from app/v3/next.html. The baseline System One provider. Covers halt, still, follow, unfollow only."
+  },
+  "ngram": {
+   "kind": "ngram",
+   "note": "On-device linear model over hashed n-grams, trained on the tuning split. One JSON file per route."
+  },
+  "minilm-zeroshot": {
+   "kind": "embed",
+   "note": "On-device all-MiniLM-L6-v2 (ONNX, quantized). No training: nearest option description."
+  },
+  "minilm-head": {
+   "kind": "embed",
+   "head": true,
+   "note": "Same embeddings, one linear layer trained on the tuning split."
+  },
+  "jev": {
+   "kind": "http",
+   "model": "typesafe/jev-1.14",
+   "provider": {
+    "only": [
+     "typesafe"
+    ]
+   },
+   "usdPerMTok": 0.042,
+   "price_source": "https://openrouter.ai/api/v1/models/typesafe/jev-1.14/endpoints",
+   "note": "TypeSafe's own serving, reached through OpenRouter."
+  },
+  "clef": {
+   "kind": "http",
+   "model": "cloudflare/clef",
+   "provider": {
+    "only": [
+     "cloudflare"
+    ]
+   },
+   "usdPerMTok": 0.24,
+   "price_source": "https://developers.cloudflare.com/workers-ai/platform/pricing/",
+   "note": "Cloudflare Workers AI's own serving, reached through OpenRouter."
+  },
+  "clef-flash": {
+   "kind": "http",
+   "model": "cloudflare/clef-flash",
+   "provider": {
+    "only": [
+     "cloudflare"
+    ]
+   },
+   "usdPerMTok": 0.038,
+   "price_source": "https://developers.cloudflare.com/workers-ai/platform/pricing/",
+   "note": "Cloudflare Workers AI's own serving, reached through OpenRouter."
+  },
+  "clef@primeintellect": {
+   "kind": "http",
+   "model": "cloudflare/clef",
+   "provider": {
+    "only": [
+     "primeintellect"
+    ]
+   },
+   "usdPerMTok": 0.24,
+   "price_source": "https://openrouter.ai/api/v1/models/cloudflare/clef/endpoints",
+   "note": "The same open weights on another host (PrimeIntellect), to show what the host changes."
+  },
+  "clef-flash@primeintellect": {
+   "kind": "http",
+   "model": "cloudflare/clef-flash",
+   "provider": {
+    "only": [
+     "primeintellect"
+    ]
+   },
+   "usdPerMTok": 0.038,
+   "price_source": "https://openrouter.ai/api/v1/models/cloudflare/clef-flash/endpoints",
+   "note": "The same open weights on another host (PrimeIntellect), to show what the host changes."
+  },
+  "llama8b-groq": {
+   "kind": "chat",
+   "model": "meta-llama/llama-3.1-8b-instruct",
+   "provider": {
+    "only": [
+     "groq"
+    ]
+   },
+   "usdPerMTok": 0.05,
+   "price_source": "https://openrouter.ai/api/v1/models/meta-llama/llama-3.1-8b-instruct/endpoints",
+   "note": "The fast small generative model Brit named (Groq). No logprobs on this host: the pick carries p = 1."
+  },
+  "llama8b-logprobs": {
+   "kind": "chat",
+   "model": "meta-llama/llama-3.1-8b-instruct",
+   "provider": {
+    "only": [
+     "coreweave"
+    ]
+   },
+   "usdPerMTok": 0.22,
+   "price_source": "https://openrouter.ai/api/v1/models/meta-llama/llama-3.1-8b-instruct/endpoints",
+   "note": "The same model on a host that returns logprobs, so its confidence can be calibrated."
+  },
+  "gemini-flash": {
+   "kind": "chat",
+   "model": "google/gemini-3.8-flash",
+   "extra": {
+    "max_tokens": 200,
+    "reasoning": {
+     "effort": "low"
+    },
+    "logprobs": false
+   },
+   "usdPerMTok": 0.75,
+   "price_source": "https://openrouter.ai/api/v1/models",
+   "note": "The model family the app's brain runs on (next.html), asked ONLY this route's question. Not today's full brain turn: no 13k-token prompt, no reply to write. A reference for what a large model makes of the same question. No logprobs: the pick carries p = 1."
+  }
+ },
+ "hybrids": {
+  "readers>ngram": [
+   "readers",
+   "ngram"
+  ],
+  "readers>minilm-head": [
+   "readers",
+   "minilm-head"
+  ],
+  "readers>jev": [
+   "readers",
+   "jev"
+  ],
+  "readers>clef-flash": [
+   "readers",
+   "clef-flash"
+  ],
+  "readers>ngram>jev": [
+   "readers",
+   "ngram",
+   "jev"
+  ],
+  "readers>ngram>clef-flash": [
+   "readers",
+   "ngram",
+   "clef-flash"
+  ]
+ }
+}
