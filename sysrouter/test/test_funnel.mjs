@@ -86,4 +86,17 @@ time(original, undefined); time(patched.text, live.sr);                         
 const a = time(original, undefined), b = time(patched.text, live.sr), add = b.map((v, i) => v - a[i]);
 console.log("  funnel call, ms:  today p50 " + round(pct(a, 50), 3) + " p99 " + round(pct(a, 99), 3) + "   with 2 shadow routes p50 " + round(pct(b, 50), 3) + " p99 " + round(pct(b, 99), 3) + "   added p50 " + round(pct(add, 50), 3) + " p99 " + round(pct(add, 99), 3));
 check("the added cost stays under 1 ms at the 99th percentile on this machine", pct(add, 99) < 1, pct(add, 99));
+
+// reply-handler slice (2C.1, #11): replied(o, kind) runs on both mood and no-mood turns, for event and tick
+{
+  const pLines = patched.text.split("\n"), idx = pLines.findIndex((l) => l.includes("if(!(o.scratchpad&&o.scratchpad.mood)){"));
+  const block = pLines.slice(idx - 2, idx + 3).join("\n");
+  const seen = [];
+  for (const hasMood of [false, true]) for (const kind of ["event", "tick"]) {
+    const box = { o: { scratchpad: hasMood ? { mood: { v: 0.2, e: 0.5 } } : {}, emotion: "happy", say: "hi" }, kind, _live: { scratch: {} }, EMO2MOOD: { happy: { v: 0.5, e: 0.6 } }, emotion: "happy",
+      SysRouter: { replied: (o, k) => seen.push([hasMood, k, o.emotion]) } };
+    vm.runInNewContext(block, box);
+  }
+  check("reply-handler slice calls SysRouter.replied(o, kind) on mood and no-mood turns for event and tick", seen.length === 4 && JSON.stringify(seen.map((x) => x.slice(0, 2))) === '[[false,"event"],[false,"tick"],[true,"event"],[true,"tick"]]', seen);
+}
 done("funnel integration");

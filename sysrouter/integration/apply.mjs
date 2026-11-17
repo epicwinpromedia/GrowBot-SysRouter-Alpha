@@ -14,8 +14,8 @@ export const HUNKS = [
     line: '<!--SYSROUTER{--><script type="module" src="/sysrouter/boot.js?v=1117"></script><!--}SYSROUTER-->   <!-- 1117: off unless ?sysrouter=1; every route starts in shadow (decides, logs, acts on nothing) -->' },
   { name: "hear", step: 1, before: true, anchor: '  if(!_bsnd&&typeof _imitationRequest==="function"&&_imitationRequest(t))return;',
     line: '/*SYSROUTER{*/  try{ if(!_bsnd&&typeof SysRouter!=="undefined"&&SysRouter) SysRouter.hear(t); }catch(_sr){}   /* 1117 SYSROUTER (shadow): the registered System One routes hear the same words, AFTER every local reader above has acted and BEFORE the queue, so they decide while a thought is in flight. Shadow rows only (logEv "sysroute"): nothing here can act, return, or change what reaches the turn. Guarded like its neighbours: this funnel is sliced on its own by several harnesses */\n/*}SYSROUTER*/' },
-  { name: "replied", step: 1, before: true, anchor: '      var _mm=_live.scratch.mood||(_live.scratch.mood={v:0,e:0.4}), _tgt=EMO2MOOD[emotion];',
-    line: '/*SYSROUTER{*/      try{ if(typeof SysRouter!=="undefined"&&SysRouter) SysRouter.replied(o); }catch(_sr){}   /* 1117 SYSROUTER (shadow): one "agree" row per route: did the reply\'s emotion match what the fast engine decided for the same words */\n/*}SYSROUTER*/' }
+  { name: "replied", step: 1, before: true, anchor: '    if(!(o.scratchpad&&o.scratchpad.mood)){',
+    line: '/*SYSROUTER{*/    try{ if(typeof SysRouter!=="undefined"&&SysRouter) SysRouter.replied(o,kind); }catch(_sr){}   /* 1117 SYSROUTER (shadow): one "agree" row per person event, plus creature say onto speech */\n/*}SYSROUTER*/' }
 ];
 
 export function patch(text) {
