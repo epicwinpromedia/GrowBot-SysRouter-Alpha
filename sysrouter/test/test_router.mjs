@@ -489,6 +489,26 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   });
   const r2 = await cap.sr.invoke("budget_cap", "hi");
   check("spent budget in step 1 skips step 2 with timeout", !r2.ok && r2.why === "timeout" && !step2Ran && cap.rows.some((r) => r.r === "budget_cap" && r.why === "timeout"), [r2, step2Ran, cap.rows]);
+
+  // triggers (1D.5): stream+type filtering, person:true via port.request, seal check
+  const tr = mk(); let fired = [];
+  tr.sr.stream({ id: "sensors", types: ["ir", "sound"] });
+  tr.sr.command({ id: "on_ir", run: (ctx) => fired.push("ir:" + JSON.stringify(ctx.args)) });
+  tr.sr.command({ id: "on_person", run: (ctx) => fired.push("person:" + JSON.stringify(ctx.args)) });
+  tr.sr.trigger({ id: "t_ir", on: { stream: "sensors", type: "ir" }, command: "on_ir", mode: "live" });
+  tr.sr.trigger({ id: "t_person", on: { person: true }, command: "on_person", mode: "live" });
+  tr.sr.emit("sensors", { type: "sound", data: { v: 1 } });
+  check("trigger ignores non-matching stream type", fired.length === 0, fired);
+  tr.sr.emit("sensors", { type: "ir", data: { dist: 2 } });
+  check("trigger fires on matching stream and type", fired.length === 1 && fired[0] === 'ir:{"dist":2}', fired);
+  const p = tr.sr.port();
+  p.request("on_person", { ok: true }, { from: "creature" });
+  check("person:true trigger does not fire for creature request", fired.length === 1, fired);
+  p.request("on_person", { ok: true }, { from: "person" });
+  check("person:true trigger fires via port.request(..., { from: 'person' })", fired.length === 2 && fired[1] === 'person:{"ok":true}', fired);
+  tr.sr.seal();
+  throws("capability() throws after seal()", () => tr.sr.capability({ id: "late_c", steps: [{ primitive: "embed", engines: ["emb"] }] }), /sealed/);
+  throws("trigger() throws after seal()", () => tr.sr.trigger({ id: "late_t", on: { person: true }, command: "on_person", mode: "live" }), /sealed/);
 }
 
 done("router laws");

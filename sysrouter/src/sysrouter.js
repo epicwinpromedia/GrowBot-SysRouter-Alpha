@@ -27,13 +27,13 @@
 //   sr.seal();                                                   // no reserved action or core route after this
 //   // in sendTxtFrom, after the local readers:  try{ if(typeof SysRouter!=="undefined") SysRouter.hear(t); }catch(_sr){}
 
+import { ID, KEY, GATE, dict, copyDict, checkArgs, readPrimitive as checkPrim } from './registry.js';
+
 const TIERS = { core: 0, system: 1, extension: 2 };          // lower number = higher priority
 const MODES = ['shadow', 'live'], POLICIES = ['single', 'cascade', 'race'], TYPES = ['noul', 'choice', 'score'];
 const PRIMITIVES = ['noul', 'choice', 'score', 'generate', 'match', 'embed', 'query', 'sense', 'actuate'];
 const EXPOSE_TO = ['third-party', 'creature', 'person'], ARG_TYPES = ['number', 'string', 'boolean', 'enum'];
 const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
-const ID = /^[a-z][a-z0-9_.-]{0,39}$/, KEY = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,39}$/, GATE = /^[a-z][A-Za-z0-9_.@\/:~-]{0,95}$/;
-const dict = () => Object.create(null);   // no prototype: a key named __proto__ or constructor is just a key (test_router "hostile keys")
 
 // Kill switch and per-route modes, the codebase's way: read from the URL, persisted to
 // localStorage, so a link turns it off and it stays off (?bodysnd=0, ?stream=0 do the same).
@@ -73,51 +73,14 @@ export function readAnswer(q, a) {
   return { pick, p, second };
 }
 
-export function readPrimitive(prim, spec, raw) {
-  if (prim === 'noul' || prim === 'choice' || prim === 'score' || prim === 'match') return readAnswer(spec, raw);
-  if (prim === 'generate') return typeof raw === 'string' ? (raw.length > 2000 ? raw.slice(0, 2000) : raw) : null;
-  if (prim === 'embed') return Array.isArray(raw) && raw.length > 0 && raw.every((v) => typeof v === 'number' && Number.isFinite(v)) ? raw.slice() : null;
-  if (prim === 'query') {
-    if (!Array.isArray(raw)) return null;
-    const schema = spec && spec.out && typeof spec.out === 'object' && !Array.isArray(spec.out) ? spec.out : null;
-    const out = [];
-    for (const item of raw) {
-      if (!item || typeof item !== 'object' || Array.isArray(item)) return null;
-      const rec = {};
-      if (schema) {
-        for (const k of Object.keys(schema)) {
-          if (!KEY.test(k) || (k in Object.prototype) || !has(item, k)) return null;
-          const t = schema[k], v = item[k];
-          if (t === 'number' ? (typeof v !== 'number' || !Number.isFinite(v)) : typeof v !== t) return null;
-          rec[k] = v;
-        }
-      } else {
-        for (const k of Object.keys(item)) if (KEY.test(k) && !(k in Object.prototype)) rec[k] = item[k];
-      }
-      out.push(rec);
-    }
-    return out;
-  }
-  if (prim === 'sense') {
-    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
-    if (typeof raw.stream !== 'string' || !ID.test(raw.stream) || typeof raw.type !== 'string' || !KEY.test(raw.type)) return null;
-    const data = typeof raw.data === 'string' ? (raw.data.length > 600 ? raw.data.slice(0, 600) : raw.data) : raw.data;
-    return { stream: raw.stream, type: raw.type, data };
-  }
-  if (prim === 'actuate') {
-    if (typeof raw === 'boolean') return { ok: raw };
-    if (raw && typeof raw === 'object' && !Array.isArray(raw) && typeof raw.ok === 'boolean') return { ok: raw.ok };
-    return null;
-  }
-  return null;
-}
+export function readPrimitive(prim, spec, raw) { return checkPrim(prim, spec, raw, readAnswer); }
 
 export function createRouter(opts) {
   opts = opts || {};
   const log = typeof opts.log === 'function' ? opts.log : () => {};
   const now = opts.now || (() => Date.now());
   const flags = opts.flags || { off: false, routes: {} };
-  const actions = dict(), providers = dict(), routes = dict(), capabilities = dict(), gates = dict(), held = dict(), last = dict(), seqOf = dict(), spend = dict(), lastPick = dict(), flight = dict(), health = dict(), paid = dict(), streams = dict();
+  const actions = dict(), providers = dict(), routes = dict(), capabilities = dict(), triggers = dict(), gates = dict(), held = dict(), last = dict(), seqOf = dict(), spend = dict(), lastPick = dict(), flight = dict(), health = dict(), paid = dict(), streams = dict();
   // reliability limits, all overridable: a provider that fails BREAK.fails times in a row is left alone for BREAK.ms; hosted engines stop being asked once the session has spent maxUsd
   const BREAK = { fails: Math.max(1, +(opts.breaker && opts.breaker.fails) || 3), ms: Math.max(0, +(opts.breaker && opts.breaker.ms) || 30000) }, maxUsd = opts.maxUsd >= 0 ? +opts.maxUsd : 0.25;
   const maxHops = Number.isInteger(opts.maxHops) && opts.maxHops >= 0 ? opts.maxHops : 3;
@@ -160,7 +123,13 @@ export function createRouter(opts) {
     const ev = Object.freeze({ stream: streamId, type: event.type, data, t: now(), seq: ++evSeq, hop });
     s.latest = ev;
     const prevHop = activeHop; activeHop = hop;
-    try { for (const fn of s.watchers.slice()) { try { fn(ev); } catch (e) {} } }
+    try {
+      for (const fn of s.watchers.slice()) { try { fn(ev); } catch (e) {} }
+      for (const tid in triggers) {
+        const tr = triggers[tid];
+        if (tr.on.stream === streamId && (!tr.on.type || tr.on.type === ev.type)) fireTrigger(tr, ev.data);
+      }
+    }
     finally { activeHop = prevHop; }
     return ev;
   }
@@ -170,21 +139,6 @@ export function createRouter(opts) {
     const ws = streams[streamId].watchers;
     ws.push(fn);
     return () => { const i = ws.indexOf(fn); if (i >= 0) ws.splice(i, 1); };
-  }
-
-  function checkArgs(schema, raw) {
-    if (!schema) return {};
-    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
-    const out = {};
-    for (const k of Object.keys(schema)) {
-      const d = schema[k], v = has(raw, k) ? raw[k] : undefined;
-      if (d.type === 'number') { if (typeof v !== 'number' || !Number.isFinite(v) || (d.min !== undefined && v < d.min) || (d.max !== undefined && v > d.max)) return null; }
-      else if (d.type === 'string') { if (typeof v !== 'string' || (d.maxLen !== undefined && v.length > d.maxLen)) return null; }
-      else if (d.type === 'boolean') { if (typeof v !== 'boolean') return null; }
-      else if (d.type === 'enum') { if (typeof v !== 'string' || !d.values.includes(v)) return null; }
-      out[k] = v;
-    }
-    return out;
   }
 
   function addCommand(rawSpec, who) {
@@ -255,8 +209,6 @@ export function createRouter(opts) {
     for (const rid of Object.keys(table)) { if (!ID.test(rid) || !table[rid] || typeof table[rid] !== 'object') continue; gates[rid] = gates[rid] || dict();
       for (const k of Object.keys(table[rid])) { const g = table[rid][k]; if (GATE.test(k) && g && g.p > 0.5 && g.p <= 1) gates[rid][k] = { p: +g.p, pn: g.pn > 0.5 && g.pn <= 1 ? +g.pn : +g.p, margin: +g.margin || 0 }; } }
   }
-
-  const copyDict = (o) => { if (!o || typeof o !== 'object' || Array.isArray(o)) return null; const d = dict(); for (const k of Object.keys(o)) d[k] = o[k]; return d; };
 
   // Registration is DATA: no function crosses this line, so the same call works from a Worker
   // or an iframe by message (R-TRUST-5). `who` is set by the loader, never read from the spec.
@@ -354,6 +306,7 @@ export function createRouter(opts) {
     last[r.id + '>' + aid] = t;
     if (a.reserved) clearHolds();                                                        // a stop clears every hold, whoever owns it
     else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };
+    if (!a.run && a.capability && has(capabilities, a.capability)) resolveCapability(capabilities[a.capability], checkedArgs, mode);
     x.did = 1;
     return row(r, 'acted', x);
   }
@@ -554,6 +507,51 @@ export function createRouter(opts) {
     } finally { clearTimeout(timer); }
   }
 
+  function addTrigger(rawSpec, who) {
+    if (!rawSpec || typeof rawSpec !== 'object') throw new Error('sysrouter: bad trigger');
+    const id = rawSpec.id, ro = rawSpec.on, cmd = rawSpec.command, ra = rawSpec.args;
+    const rawMode = rawSpec.mode || 'shadow', mode = rawMode === 'parallel' ? 'live' : rawMode, cooldownMs = Math.max(0, +rawSpec.cooldownMs || 0);
+    if (!ID.test(id || '')) throw new Error('sysrouter: bad trigger id ' + id);
+    if (has(triggers, id)) throw new Error('sysrouter: trigger exists: ' + id);
+    if (!MODES.includes(mode)) throw new Error('sysrouter: bad trigger mode');
+    if (!cmd || !has(actions, cmd)) throw new Error('sysrouter: unknown command ' + cmd);
+    const a = actions[cmd];
+    if (a.reserved && who.tier === 'extension') throw new Error('sysrouter: extensions cannot reach reserved actions');
+    if (who.grants && !who.grants.actions.includes(cmd)) throw new Error('sysrouter: no grant for action ' + cmd);
+    if (!ro || typeof ro !== 'object') throw new Error('sysrouter: bad trigger on');
+    let onSnap;
+    if (ro.stream) {
+      if (!has(streams, ro.stream)) throw new Error('sysrouter: unknown stream ' + ro.stream);
+      if (who.grants && who.grants.streams && !who.grants.streams.includes(ro.stream)) throw new Error('sysrouter: no grant for stream ' + ro.stream);
+      const t = ro.type;
+      if (t !== undefined && (typeof t !== 'string' || !has(streams[ro.stream].types, t))) throw new Error('sysrouter: bad trigger stream type ' + t);
+      onSnap = { stream: ro.stream, type: t || '' };
+    } else if (ro.person === true) onSnap = { person: true };
+    else if (ro.creature === true) onSnap = { creature: true };
+    else throw new Error('sysrouter: bad trigger on');
+    const argsSnap = ra === undefined ? undefined : (ra && typeof ra === 'object' && !Array.isArray(ra) ? copyDict(ra) : ra);
+    triggers[id] = { id, tier: who.tier, owner: who.name || '', on: Object.freeze(onSnap), command: cmd, args: argsSnap, mode, cooldownMs };
+    return id;
+  }
+
+  function fireTrigger(tr, rawData) {
+    if (flags.off || modeOf(tr) === 'off') return null;
+    const r = { id: tr.id, tier: tr.tier, owner: tr.owner, mode: tr.mode, on: { go: tr.command }, cooldownMs: tr.cooldownMs };
+    return act(r, 'go', {}, tr.args !== undefined ? tr.args : rawData);
+  }
+
+  function request(commandId, args, reqOpts) {
+    if (flags.off) return { did: 0, why: 'off' };
+    const from = reqOpts && reqOpts.from;
+    if (from !== 'person' && from !== 'creature') return { did: 0, why: 'refused' };
+    let res = null;
+    for (const tid in triggers) {
+      const tr = triggers[tid];
+      if (tr.on[from] === true && tr.command === commandId) res = fireTrigger(tr, args);
+    }
+    return res || { did: 0, why: 'refused' };
+  }
+
   const release = (resource) => { delete held[resource]; };
   const spent = () => usd;
   const list = () => Object.keys(routes).map((id) => ({ id, tier: routes[id].tier, owner: routes[id].owner, mode: modeOf(routes[id]), providers: routes[id].providers.slice(), on: Object.assign({}, routes[id].on) }));
@@ -561,7 +559,7 @@ export function createRouter(opts) {
     hear, replied,
     read,
     watch,
-    request: () => ({ did: 0, why: 'refused' }),
+    request,
     list,
     extensions: () => [],
     install: async () => { throw new Error('sysrouter: install not available'); },
@@ -574,6 +572,7 @@ export function createRouter(opts) {
     action, command: (spec) => addCommand(spec, { tier: 'system' }), provider, calibrate, extension, hear, replied, read, watch, emit,
     stream: (decl) => { assertOpen(); return addStream(decl, { tier: 'system' }); },
     capability: (spec) => { assertOpen(); return addCapability(spec, { tier: 'system' }); },
+    trigger: (spec) => { assertOpen(); return addTrigger(spec, { tier: 'system' }); },
     invoke: (id, input, mode) => { const c = has(capabilities, id) ? capabilities[id] : null; if (!c) throw new Error('sysrouter: unknown capability ' + id); return resolveCapability(c, input, mode); },
     route: (spec) => { assertOpen(); return addRoute(spec, { tier: 'system' }); },
     core: (spec) => { if (sealed) throw new Error('sysrouter: core routes are registered before seal()'); return addRoute(spec, { tier: 'core' }); },
