@@ -163,6 +163,14 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   const one = b.sr.hear("spin around"); await sleep(2); const two = b.sr.hear("the weather is nice"); await sleep(2);
   open[0](choice("spin", 0.99)); open[1](choice("none", 0.99)); await one.done; await two.done;
   check("an engine mid-answer is aborted as stale when newer words arrive, and its late answer does not act", aborted === "stale" && b.ran.length === 0 && b.rows.map((r) => r.why).sort().join() === "none,stale", [aborted, b.why()]);
+
+  let b3Calls = 0; const b3Rows = [], b3Ran = [];
+  const b3Sr = createRouter({ log: (e, d) => b3Rows.push(d), now: () => { if (++b3Calls === 2) b3Sr.hear("never mind"); return 1e6; } });
+  b3Sr.action("spin", { run: () => b3Ran.push("spin") });
+  b3Sr.provider("p", fake(() => Promise.resolve(b3Calls <= 2 ? choice("spin", 0.99) : choice("none", 0.99))));
+  b3Sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" }); b3Sr.calibrate({ r: { p: { p: 0.6 } } });
+  await b3Sr.hear("spin around").done; await sleep(5);
+  check("an answer overtaken between settle and act is dropped as stale", b3Ran.length === 0 && b3Rows.some((r) => r.why === "stale"), [b3Ran, b3Rows]);
 }
 
 // ---- policies: cascade, race, shadow arms (R-RT-1, R-RT-4; CLAIMS-LEDGER #37) ----
@@ -187,6 +195,15 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   c.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin", halt: "halt" }, providers: ["fast", "slow"], policy: "race", mode: "parallel", addsRecall: true }); c.sr.calibrate({ r: { fast: { p: 0.9 }, slow: { p: 0.9 } } });
   await c.sr.hear("spin").done;
   check("race: the first CONFIDENT answer wins, not the first to arrive", c.ran.join() === "spin" && c.rows.some((r) => r.p === "slow" && r.did), c.rows);
+
+  const c2 = mk(); let fastAbstain = false;
+  c2.sr.provider("fast", fake(async () => fastAbstain ? { answers: { q: { abstain: true } } } : choice("perk", 0.99)));
+  c2.sr.provider("slow", fake((req, ctx) => new Promise((res, rej) => { const t = setTimeout(() => res(choice("spin", 0.99)), 40); ctx.signal.addEventListener("abort", () => { clearTimeout(t); rej(new Error("aborted")); }); })));
+  c2.sr.route({ id: "r", question: { type: "choice", instructions: "race breaker", criteria: { spin: "spin", perk: "perk", none: "none" } }, notFor: NOT, on: { spin: "spin", perk: "perk" }, providers: ["fast", "slow"], policy: "race", mode: "parallel" });
+  c2.sr.calibrate({ r: { fast: { p: 0.9 }, slow: { p: 0.9 } } });
+  for (let i = 0; i < 4; i++) await c2.sr.hear("perk").done;
+  fastAbstain = true; await c2.sr.hear("spin").done;
+  check("race loser (lost) never trips the breaker: slow acts on the 5th call", !c2.rows.some((r) => r.why === "open") && c2.ran[4] === "spin", [c2.ran, c2.rows]);
 
   const d = mk(); d.sr.provider("readers", fake({ answers: { q: { abstain: true } } }, { sync: true, exact: true })); d.sr.provider("cand", fake(choice("spin", 0.99)));
   d.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["readers"], shadow: ["cand"], mode: "parallel" }); d.sr.calibrate({ r: { cand: { p: 0.5001 } } });

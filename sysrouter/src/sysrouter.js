@@ -206,7 +206,7 @@ export function createRouter(opts) {
     if (signal.aborted) return skip(whyAbort());                                                  // the budget is spent or newer words arrived: nobody else is asked (found by test/fuzz_router.mjs: a second engine asked after the deadline never settled)
     if (h.until > t0) return skip('open');                                                       // circuit breaker: this engine just failed several times running, so it is not asked and the cascade moves on
     if (paid[pid] && usd >= maxUsd) return skip('budget');                                       // spend cap: an engine that charges is not asked once the session has spent its limit
-    const mark = (res) => { if (res.why === 'error' || res.why === 'timeout' || res.why === 'bad_answer') { if (++h.fails >= BREAK.fails) { h.fails = 0; h.until = now() + BREAK.ms; } } else if (res.why !== 'stale') h.fails = 0; return res; };
+    const mark = (res) => { if (res.why === 'error' || res.why === 'timeout' || res.why === 'bad_answer') { if (++h.fails >= BREAK.fails) { h.fails = 0; h.until = now() + BREAK.ms; } } else if (res.why !== 'stale' && res.why !== 'lost') h.fails = 0; return res; };
     let onAbort;
     const aborted = new Promise((_, rej) => { onAbort = () => rej(new Error('aborted')); signal.addEventListener('abort', onAbort, { once: true }); });
     const p = Promise.resolve().then(() => providers[pid].ask(req, { signal, route: r.id }));
