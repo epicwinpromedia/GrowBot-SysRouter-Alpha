@@ -47,7 +47,7 @@ while (hears < TOTAL) {
       return Promise.resolve(good());
     } }); }
   // routes: system, core and extension, valid and invalid; invalid ones must be refused whole
-  const routes = {}, exts = [0, 1].map((i) => ({ name: "ext" + i, actions: Object.keys(actMeta).filter(() => rand() < 0.5), providers: Object.keys(provs).filter(() => rand() < 0.7) }));
+  const routes = {}, exts = [0, 1].map((i) => ({ name: "ext" + i, actions: Object.keys(actMeta).filter((a) => !actMeta[a].reserved && rand() < 0.5), providers: Object.keys(provs).filter(() => rand() < 0.7) }));
   const facades = exts.map((g) => sr.extension(g.name, { actions: g.actions, providers: g.providers, perMin: 1 + int(40) }));
   for (let i = 0; i < 2 + int(5); i++) {
     const noul = rand() < 0.3, opts = noul ? ["true", "false"] : Array.from({ length: 2 + int(4) }, (_, k) => "o" + k), on = {};

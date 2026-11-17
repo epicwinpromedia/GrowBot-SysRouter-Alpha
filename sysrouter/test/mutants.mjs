@@ -22,7 +22,7 @@ const MUTANTS = [
   // the kill switch is enforced twice (hear() returns at once, and every route's mode reads "off"), so breaking it takes both edits
   ["the kill switch is ignored", ["if (flags.off || typeof text !== 'string'", "const modeOf = (r) => flags.off ? 'off' : "], ["if (typeof text !== 'string'", "const modeOf = (r) => "]],
   ["a probability alone reaches a reserved action", "fail('reserved action needs exact providers, or addsRecall:true');", "void 0;"],
-  ["an extension reaches a reserved action", "if (a.reserved && spec.addsRecall && who.tier === 'extension') fail('extensions cannot reach reserved actions');", ""],
+  ["an extension reaches a reserved action", "if (a.reserved && who.tier === 'extension') fail('extensions cannot reach reserved actions');", ""],
   ["an extension uses an action outside its grant", "if (who.grants && !who.grants.actions.includes(on[k])) fail('no grant for action ' + on[k]);", ""],
   ["an extension uses a provider outside its grant", "if (!who.grants.providers.includes(pid)) fail('no grant for provider ' + pid);", "void 0;"],
   ["an extension pre-empts the brain", "if (who.grants && mode === 'preempt') fail('extensions cannot pre-empt the brain');", ""],
@@ -43,14 +43,15 @@ const MUTANTS = [
   ["an action can loop words back into the router without limit", "|| !text.trim() || depth > 1)", "|| !text.trim())"],
   ["an option may be named like a built-in object member", "KEY.test(k) && !(k in Object.prototype) && ", "KEY.test(k) && "],
   ["a registered question can be edited afterwards by its author", "Object.freeze(Object.assign({}, q.criteria));", "q.criteria;"],
-  ["a registered answer table can be edited afterwards by its author", "on: Object.freeze(Object.assign(dict(), on)),", "on,"],
+  ["a registered answer table can be edited afterwards by its author", "on: Object.freeze(Object.assign(dict(), on)),", "on: rawSpec.on,"],
   ["engines still working on older words are not told to stop", "if (flight[rid]) flight[rid].abort('stale');", ""],
   ["an engine's reported name goes into the journal unchecked", ".replace(/[^\\w.\\/:@~-]/g, '')", ""],
   ["a confident \"nothing\" does not end a cascade", "          if (res.d) { finish(res); return true; }", "          if (res.d && has(r.on, res.d.pick)) { finish(res); return true; }"],
   ["a late answer past the budget acts", "return Promise.race([p, aborted]).finally(() => signal.removeEventListener('abort', onAbort)).then(\n      (res) => signal.aborted ? { d: null, x: { p: pid, ms: Math.round(now() - t0) }, why: whyAbort() } : settle(r, pid, res, t0),", "return p.then(\n      (res) => settle(r, pid, res, t0),"],
   ["a race loser trips the breaker", "signal.reason === 'won' ? 'lost'", "signal.reason === 'won' ? 'timeout'"],
   ["an unversioned gate acts", "return g[pid + '@' + model] || null;", "return g[pid + '@' + model] || g[pid] || null;"],
-  ["a getter changes `on` after validation", "on: ro === undefined ? dict() : copyDict(ro),", "on: ro,"]
+  ["a getter changes `on` after validation", "on: ro === undefined ? dict() : copyDict(ro),", "on: ro,"],
+  ["an extension reaches a stop", "if (acts.some((id) => actions[id] && actions[id].reserved)) throw new Error('sysrouter: extensions cannot be granted reserved actions');", ""]
 ];
 
 const dir = mkdtempSync(tmpdir() + "/sysrouter-mutants-");

@@ -153,7 +153,7 @@ export function createRouter(opts) {
       const a = actions[on[k]];
       // a reserved action (stop, halt) is reachable only through an exact provider chain: a probability may never be the only thing between words and a stop, in either direction (R-SAFE-1)
       if (a.reserved && !(who.tier === 'core' || ps.every((pid) => providers[pid].exact) || spec.addsRecall === true)) fail('reserved action needs exact providers, or addsRecall:true');
-      if (a.reserved && spec.addsRecall && who.tier === 'extension') fail('extensions cannot reach reserved actions');
+      if (a.reserved && who.tier === 'extension') fail('extensions cannot reach reserved actions');
       if (who.grants && !who.grants.actions.includes(on[k])) fail('no grant for action ' + on[k]);
     }
     if (who.grants) for (const pid of ps.concat(sh)) if (!who.grants.providers.includes(pid)) fail('no grant for provider ' + pid);
@@ -173,7 +173,9 @@ export function createRouter(opts) {
   // remove ITS OWN routes, over the actions and providers it was granted, at its own rate cap.
   function extension(name, grants) {
     if (!ID.test(name)) throw new Error('sysrouter: bad extension name');
-    const who = { tier: 'extension', name, grants: { actions: (grants && grants.actions || []).slice(), providers: (grants && grants.providers || []).slice(), perMin: Math.max(1, Math.min(120, +(grants && grants.perMin) || 20)) } };
+    const acts = (grants && grants.actions || []).slice();
+    if (acts.some((id) => actions[id] && actions[id].reserved)) throw new Error('sysrouter: extensions cannot be granted reserved actions');
+    const who = { tier: 'extension', name, grants: { actions: acts, providers: (grants && grants.providers || []).slice(), perMin: Math.max(1, Math.min(120, +(grants && grants.perMin) || 20)) } };
     return Object.freeze({ route: (spec) => addRoute(spec, who), unroute: (id) => dropRoute(id, who), grants: () => JSON.parse(JSON.stringify(who.grants)) });
   }
 

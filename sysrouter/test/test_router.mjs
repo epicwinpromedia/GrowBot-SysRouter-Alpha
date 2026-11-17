@@ -80,8 +80,10 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   check("a deterministic stop runs in the same tick, before any await", a.ran.join() === "halt" && out.acted.join() === "halt");
   throws("a probability alone may not be the path to a reserved action", () => a.sr.route({ id: "r2", question: { type: "choice", instructions: "other", criteria: Q.criteria }, notFor: NOT, on: { halt: "halt" }, providers: ["model"] }), /reserved/);
   check("…unless the route only ADDS recall", !!a.sr.route({ id: "r3", question: { type: "choice", instructions: "other 2", criteria: Q.criteria }, notFor: NOT, on: { halt: "halt" }, providers: ["readers", "model"], policy: "cascade", addsRecall: true }));
-  const ext = a.sr.extension("toy", { actions: ["halt", "spin"], providers: ["model", "readers"] });
-  throws("an extension cannot reach a reserved action through a model", () => ext.route({ id: "x", question: { type: "choice", instructions: "ext q", criteria: Q.criteria }, notFor: NOT, on: { halt: "halt" }, providers: ["model"], addsRecall: true }), /reserved|extensions/);
+  throws("granting halt to an extension throws at extension()", () => a.sr.extension("toy", { actions: ["halt", "spin"], providers: ["model", "readers"] }), /reserved/);
+  const lateExt = a.sr.extension("late_ext", { actions: ["limp_pre"], providers: ["readers"] });
+  a.sr.action("limp_pre", { run() {}, reserved: true });
+  throws("an extension holding an exact provider cannot reach a reserved action", () => lateExt.route({ id: "x", question: { type: "choice", instructions: "ext q", criteria: Q.criteria }, notFor: NOT, on: { halt: "limp_pre" }, providers: ["readers"] }), /reserved|extensions/);
   a.sr.seal();
   throws("no reserved action after seal()", () => a.sr.action("limp", { run() {}, reserved: true }), /before seal/);
   throws("no core route after seal()", () => a.sr.core({ id: "c", question: Q, notFor: NOT, on: {}, providers: ["readers"] }), /before seal/);
