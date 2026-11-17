@@ -8,6 +8,7 @@
 // the way the page fences its other flags, so it can be cut out again in one pass.
 
 import { readFileSync, writeFileSync } from "node:fs";
+import { applyCommandProposal } from "./proposals/apply-command.mjs";
 
 export const HUNKS = [
   { name: "load", step: 1, before: false, anchor: '<script type="module" src="/forward-choice.mjs?v=1001"></script>',
@@ -24,8 +25,13 @@ export const SENSOR_HUNK = {
 };
 
 export function patch(text, opts) {
+  let cur = text, extraMissing = [];
+  if (opts && opts.proposal === "apply-command") {
+    const p = applyCommandProposal(cur);
+    cur = p.text; extraMissing = extraMissing.concat(p.missing);
+  }
   const hunks = opts && opts.withSensors ? HUNKS.concat([SENSOR_HUNK]) : HUNKS;
-  const lines = text.split("\n"), out = [], hit = {};
+  const lines = cur.split("\n"), out = [], hit = {};
   for (const l of lines) {
     const h = hunks.find((x) => l.startsWith(x.anchor) && !hit[x.name]);
     if (h && h.before) out.push(h.line);
@@ -33,17 +39,23 @@ export function patch(text, opts) {
     if (h && !h.before) out.push(h.line);
     if (h) hit[h.name] = out.length;
   }
-  const missing = hunks.filter((h) => !hit[h.name]).map((h) => h.name);
+  const missing = extraMissing.concat(hunks.filter((h) => !hit[h.name]).map((h) => h.name));
   return { text: out.join("\n"), missing, at: hit };
 }
 
 if (process.argv[1] && process.argv[1].endsWith("apply.mjs")) {
   const withSensors = process.argv.includes("--with-sensors"), hunks = withSensors ? HUNKS.concat([SENSOR_HUNK]) : HUNKS;
-  const src = new URL("../../app/v3/next.html", import.meta.url), text = readFileSync(src, "utf8"), r = patch(text, { withSensors });
+  const pi = process.argv.indexOf("--proposal"), proposal = pi > 0 ? process.argv[pi + 1] : null;
+  if (proposal === "creature-door") {
+    console.log(readFileSync(new URL("./proposals/creature-door.md", import.meta.url), "utf8"));
+    process.exit(0);
+  }
+  if (proposal && proposal !== "apply-command") { console.error("unknown proposal: " + proposal); process.exit(1); }
+  const src = new URL("../../app/v3/next.html", import.meta.url), text = readFileSync(src, "utf8"), r = patch(text, { withSensors, proposal });
   if (r.missing.length) { console.log("FAIL anchors not found: " + r.missing.join(", ") + " (app/ moved: re-pin the anchors)"); process.exit(1); }
   const i = process.argv.indexOf("--out");
   if (i > 0) { writeFileSync(process.argv[i + 1], r.text); console.log("wrote patched copy to " + process.argv[i + 1]); }
   if (process.argv.includes("--diff")) for (const h of hunks) console.log("@@ " + h.name + " (" + (h.before ? "before" : "after") + " the line starting: " + h.anchor.slice(0, 70) + ")\n" + h.line.split("\n").map((l) => "+" + l).join("\n") + "\n");
   const added = r.text.split("\n").length - text.split("\n").length;
-  console.log("anchors ok: " + hunks.map((h) => h.name).join(", ") + "  (+" + added + " lines, 0 lines changed, 0 removed)");
+  console.log("anchors ok: " + hunks.map((h) => h.name).join(", ") + (proposal ? " + proposal:" + proposal : "") + "  (+" + added + " lines, 0 lines changed, 0 removed)");
 }

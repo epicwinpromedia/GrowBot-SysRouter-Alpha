@@ -120,4 +120,42 @@ check("the added cost stays under 1 ms at the 99th percentile on this machine", 
   }
   check("--with-sensors keeps fireReflex calls identical and publishes to body.sense", same && port.read("body.sense").data === "poke", [same, port.read("body.sense")]);
 }
+
+// apply-command proposal slice (2C.4): 0-diff vs original sendTxtFrom across all lines/states, with null and mock _faceTrack
+{
+  const prop = patch(original, { proposal: "apply-command" });
+  check("--proposal apply-command finds all anchors", prop.missing.length === 0, prop.missing);
+  const propScripts = NEED.concat(["_applyCommand"]).map((n) => new vm.Script(slice(prop.text, n)));
+  const mkBox = (text, isProp, state, hasFt) => {
+    const calls = [], rec = (name) => (...a) => { calls.push(name + "(" + a.map((x) => typeof x === "string" ? JSON.stringify(x) : typeof x === "object" ? JSON.stringify(x) : String(x)).join(",") + ")"); return undefined; };
+    const ftObj = hasFt ? { owns: true, disable: rec("ft.disable"), personFollow: rec("ft.personFollow") } : null;
+    const box = { calls, Date: { now: () => 1700000000000 }, String, JSON, Math, Array, Object, RegExp, console,
+      paused: state === "paused", inFlight: state === "thinking", coolUntil: 0, pendingUser: "", seekGoal: "", actOn: false, _autoRetryUsed: true, _brainSpeechHush: 0,
+      _epUserT: 0, _humanT: 0, _quietWordT: 0, _dreamBootT: 5, _live: { scratch: { pt: 0, dreamAt: 0 } }, window: { _faceTrack: ftObj },
+      _getupBrainOn: () => true, _gsLive: () => false, _namedHandOff: rec("_namedHandOff"), _recHandOff: rec("_recHandOff"),
+      logEv: rec("logEv"), toast: rec("toast"), setErr: rec("setErr"), _humanAsk: rec("_humanAsk"), clearSeek: rec("clearSeek"), setSeek: rec("setSeek"), _languagePerson: rec("_languagePerson"),
+      _clearReplyRetry: rec("_clearReplyRetry"), _bodyHalt: () => true, _partsHalt: rec("_partsHalt"), _namedHalt: rec("_namedHalt"), vmInvalidate: rec("vmInvalidate"),
+      REDACTNOW: () => true, h8: (s) => { let h = 5381; for (let i = 0; i < s.length; i++) h = (((h << 5) + h) + s.charCodeAt(i)) >>> 0; return ("0000000" + h.toString(16)).slice(-8); } };
+    vm.createContext(box);
+    for (const sc of (isProp ? propScripts : scripts(text))) sc.runInContext(box);
+    return (said) => {
+      box.calls.length = 0; box.paused = state === "paused"; box.inFlight = state === "thinking"; box.coolUntil = 0; box.pendingUser = ""; box.seekGoal = ""; box.actOn = false;
+      box._autoRetryUsed = true; box._brainSpeechHush = 0; box._epUserT = 0; box._humanT = 0; box._quietWordT = 0; box._dreamBootT = 5;
+      box._live.scratch.pt = 0; box._live.scratch.dreamAt = 0;
+      box.sendTxtFrom(said);
+      return box.calls.join("\n") + "\n#" + JSON.stringify([box.pendingUser, box.paused, box.inFlight, box._autoRetryUsed, box._humanT, box._live.scratch, box._brainSpeechHush]);
+    };
+  };
+  let propDiff = 0, propFirst = null;
+  for (const hasFt of [false, true]) {
+    for (const state of ["idle", "thinking", "paused"]) {
+      const wantFn = mkBox(original, false, state, hasFt), gotFn = mkBox(prop.text, true, state, hasFt);
+      for (const said of lines) {
+        const want = wantFn(said), got = gotFn(said);
+        if (got !== want) { propDiff++; if (!propFirst) propFirst = { hasFt, said, state, want: want.slice(0, 300), got: got.slice(0, 300) }; }
+      }
+    }
+  }
+  check("--proposal apply-command has 0 diff across all " + (lines.length * 6) + " (line, state, faceTrack) runs", propDiff === 0, propFirst);
+}
 done("funnel integration");
