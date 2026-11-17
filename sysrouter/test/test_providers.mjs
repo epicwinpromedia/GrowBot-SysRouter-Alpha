@@ -155,5 +155,36 @@ for (const name of ["jev", "clef", "clef-flash"]) {
   await sr.hear("spin").done;
   check("workerEngine works as a router choice provider", ran.join() === "spin" && sr.spent() === 0.0001, [ran, sr.spent()]);
   await w.terminate();
+
+  // mock siren attachment worker (1D.8): IR sense -> trigger -> siren.on -> actuate with checked args
+  const sirenCode = `
+    const { parentPort } = require('node:worker_threads');
+    parentPort.on('message', (m) => {
+      if (m.triggerSense) { parentPort.postMessage({ sense: 'siren_ir', type: 'ir', data: { motion: 1 } }); return; }
+      if (m.primitive === 'actuate') {
+        parentPort.postMessage({ sense: 'siren_ir', type: 'ack', data: m.input });
+        parentPort.postMessage({ id: m.id, ok: true, output: { ok: true }, model: 'siren-v1' });
+      }
+    });
+  `;
+  const sw = new Worker(sirenCode, { eval: true });
+  const sEng = workerEngine(sw, { primitives: { sense: {}, actuate: {} }, model: "siren-v1" });
+  const sRows = [], sSr = createRouter({ log: (e, d) => sRows.push(d) });
+  sSr.provider("siren_w", sEng);
+  sSr.seal();
+  await sSr.port().install({
+    name: "siren_ext",
+    streams: [{ id: "siren_ir", types: ["ir", "ack"] }],
+    capabilities: [{ id: "siren_act", steps: [{ primitive: "actuate", engines: ["siren_w"] }], mode: "live" }],
+    commands: [{ id: "siren.on", capability: "siren_act", args: { seconds: { type: "number", min: 1, max: 30 } } }],
+    triggers: [{ id: "ir_siren", on: { stream: "siren_ir", type: "ir" }, command: "siren.on", args: { seconds: 5 }, mode: "live" }]
+  }, { streams: ["siren_ir"], commands: ["siren.on"], engines: ["siren_w"] });
+  let ack = null;
+  const unwatch = sSr.watch("siren_ir", (ev) => { if (ev.type === "ack") ack = ev.data; });
+  sw.postMessage({ triggerSense: true });
+  await new Promise((r) => setTimeout(r, 80));
+  unwatch();
+  check("mock siren attachment: IR sense -> trigger -> siren.on -> actuate with checked args", ack && ack.seconds === 5 && sRows.some((r) => r.r === "ir_siren" && r.why === "acted" && r.act === "siren.on"), [ack, sRows]);
+  await sw.terminate();
 }
 done("providers and registrations");

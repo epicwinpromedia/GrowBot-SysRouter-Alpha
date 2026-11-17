@@ -212,6 +212,11 @@ export function createRouter(opts) {
       }
     }
     providers[id] = { ask: p.ask, sync: !!p.sync, exact: !!p.exact, inFunnel: !!p.inFunnel, model: String(p.model || ''), types: Object.keys(prims), primitives: prims };
+    if (has(prims, 'sense') && typeof p.subscribeSense === 'function') {
+      p.subscribeSense((ev) => {
+        if (!flags.off && ev && has(streams, ev.stream) && has(streams[ev.stream].types, ev.type)) emit(ev.stream, { type: ev.type, data: ev.data });
+      });
+    }
   }
   function calibrate(table) {   // { routeId: { 'providerId' or 'providerId@model': { p, pn, margin } } }
     assertOpen();
@@ -507,6 +512,7 @@ export function createRouter(opts) {
           finalDecision = res; cur = res.d.pick;
         } else {
           const pid = st.engines[0], P = providers[pid], t0 = now();
+          if (st.primitive === 'actuate' && modeOf(r) === 'shadow') { row(r, 'shadow', { p: pid }); return { ok: true, output: { ok: false }, decision: null }; }
           let raw;
           try {
             const p = P.sync ? P.ask({ state: cur, input: cur, primitive: st.primitive, signal: ctl.signal }, { signal: ctl.signal, route: cap.id })

@@ -9,8 +9,7 @@ export function workerEngine(worker, decl) {
   const pending = new Map();
   let nextId = 1;
 
-  function onMessage(raw) {
-    const msg = raw && typeof raw === 'object' && raw.data !== undefined && typeof raw.type === 'string' ? raw.data : raw;
+  function onMessage(msg) {
     if (!msg || typeof msg !== 'object') return;
     if (msg.sense !== undefined) {
       if (typeof decl.onSense === 'function') {
@@ -32,7 +31,7 @@ export function workerEngine(worker, decl) {
     else entry.resolve({ model: m, usd, output: checked });
   }
 
-  if (typeof worker.addEventListener === 'function') worker.addEventListener('message', onMessage);
+  if (typeof worker.addEventListener === 'function') worker.addEventListener('message', (e) => onMessage(e && e.data));
   else if (typeof worker.on === 'function') worker.on('message', onMessage);
   else throw new Error('sysrouter: workerEngine needs a Worker');
 
@@ -57,7 +56,7 @@ export function workerEngine(worker, decl) {
     });
   }
 
-  const out = { ask, sync: false, exact: !!decl.exact, inFunnel: !!decl.inFunnel, model };
+  const out = { ask, sync: false, exact: !!decl.exact, inFunnel: !!decl.inFunnel, model, subscribeSense: (fn) => { decl.onSense = fn; } };
   if (prims) out.primitives = prims; else out.types = types;
   return out;
 }
