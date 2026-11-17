@@ -58,7 +58,8 @@ const MUTANTS = [
   ["a failed cascade step writes no row", "if (k === rest.length - 1 || res.why !== 'abstain') row(r, res.why, res.x);", "if (k === rest.length - 1) row(r, res.why, res.x);"],
   ["a readers match is requested again", "if (x.p && providers[x.p] && providers[x.p].inFunnel) {", "if (false) {"],
   ["an event past the hop limit is dispatched", "if (hop > maxHops) {", "if (false) {"],
-  ["out-of-range args reach the capability", "if (a.args) { const okArgs = checkArgs(a.args, checkedArgs); if (!okArgs) return row(r, 'bad_args', x); checkedArgs = okArgs; }", "if (false) {}"]
+  ["out-of-range args reach the capability", "if (a.args) { const okArgs = checkArgs(a.args, checkedArgs); if (!okArgs) return row(r, 'bad_args', x); checkedArgs = okArgs; }", "if (false) {}"],
+  ["a blocked hash installs", "if (blockList.hashes.has(hash)) throw new Error('sysrouter: blocked extension hash ' + hash);", ""]
 ];
 
 const dir = mkdtempSync(tmpdir() + "/sysrouter-mutants-");

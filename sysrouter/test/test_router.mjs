@@ -509,6 +509,34 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   tr.sr.seal();
   throws("capability() throws after seal()", () => tr.sr.capability({ id: "late_c", steps: [{ primitive: "embed", engines: ["emb"] }] }), /sealed/);
   throws("trigger() throws after seal()", () => tr.sr.trigger({ id: "late_t", on: { person: true }, command: "on_person", mode: "live" }), /sealed/);
+
+  // port.install, permissions, blockList, uninstall, hash stability (1D.6)
+  const ins = mk(); let insRan = 0;
+  ins.sr.stream({ id: "ext_ev", types: ["ping"] });
+  ins.sr.command({ id: "ext_cmd", run: () => { insRan++; } });
+  const ip = ins.sr.port();
+  const man1 = { name: "ext_one", triggers: [{ id: "et1", on: { stream: "ext_ev", type: "ping" }, command: "ext_cmd", mode: "live" }] };
+  const man2 = { triggers: [{ mode: "live", command: "ext_cmd", on: { type: "ping", stream: "ext_ev" }, id: "et1" }], name: "ext_one" };
+  const info1 = await ip.install(man1, { streams: ["ext_ev"], commands: ["ext_cmd"] });
+  check("install registers extension and extensions() lists hash and permissions", ip.extensions().length === 1 && ip.extensions()[0].hash === info1.hash && ip.extensions()[0].permissions.streams[0] === "ext_ev", ip.extensions());
+  ins.sr.emit("ext_ev", { type: "ping", data: "hi" });
+  check("installed extension trigger fires", insRan === 1, insRan);
+  check("uninstall returns true and removes trigger", ip.uninstall("ext_one") === true && ip.extensions().length === 0, ip.extensions());
+  ins.sr.emit("ext_ev", { type: "ping", data: "hi2" });
+  check("uninstalled extension leaves no trigger behind", insRan === 1, insRan);
+  const info2 = await ip.install(man2, { streams: ["ext_ev"], commands: ["ext_cmd"] });
+  check("manifest hash is stable across key order", info1.hash === info2.hash, [info1.hash, info2.hash]);
+  ip.uninstall("ext_one");
+
+  let ungrantedErr = "";
+  try { await ip.install({ name: "ext_bad_stream", triggers: [{ id: "et2", on: { stream: "ext_ev", type: "ping" }, command: "ext_cmd", mode: "live" }] }, { streams: [], commands: ["ext_cmd"] }); } catch (e) { ungrantedErr = e.message; }
+  check("ungranted stream cannot be extension trigger source", /no grant for stream/.test(ungrantedErr), ungrantedErr);
+
+  ins.sr.setBlockList({ names: ["blocked_ext"], hashes: [info1.hash] });
+  let blockedNameErr = "", blockedHashErr = "";
+  try { await ip.install({ name: "blocked_ext" }, {}); } catch (e) { blockedNameErr = e.message; }
+  try { await ip.install(man1, { streams: ["ext_ev"], commands: ["ext_cmd"] }); } catch (e) { blockedHashErr = e.message; }
+  check("blocked name and blocked hash are both refused", /blocked extension name/.test(blockedNameErr) && /blocked extension hash/.test(blockedHashErr), [blockedNameErr, blockedHashErr]);
 }
 
 done("router laws");

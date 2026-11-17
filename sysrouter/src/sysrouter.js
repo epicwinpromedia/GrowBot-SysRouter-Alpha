@@ -27,7 +27,7 @@
 //   sr.seal();                                                   // no reserved action or core route after this
 //   // in sendTxtFrom, after the local readers:  try{ if(typeof SysRouter!=="undefined") SysRouter.hear(t); }catch(_sr){}
 
-import { ID, KEY, GATE, dict, copyDict, checkArgs, readPrimitive as checkPrim } from './registry.js';
+import { ID, KEY, GATE, dict, copyDict, checkArgs, readPrimitive as checkPrim, sha256Hex } from './registry.js';
 
 const TIERS = { core: 0, system: 1, extension: 2 };          // lower number = higher priority
 const MODES = ['shadow', 'live'], POLICIES = ['single', 'cascade', 'race'], TYPES = ['noul', 'choice', 'score'];
@@ -80,11 +80,21 @@ export function createRouter(opts) {
   const log = typeof opts.log === 'function' ? opts.log : () => {};
   const now = opts.now || (() => Date.now());
   const flags = opts.flags || { off: false, routes: {} };
-  const actions = dict(), providers = dict(), routes = dict(), capabilities = dict(), triggers = dict(), gates = dict(), held = dict(), last = dict(), seqOf = dict(), spend = dict(), lastPick = dict(), flight = dict(), health = dict(), paid = dict(), streams = dict();
+  const actions = dict(), providers = dict(), routes = dict(), capabilities = dict(), triggers = dict(), installed = dict(), gates = dict(), held = dict(), last = dict(), seqOf = dict(), spend = dict(), lastPick = dict(), flight = dict(), health = dict(), paid = dict(), streams = dict();
   // reliability limits, all overridable: a provider that fails BREAK.fails times in a row is left alone for BREAK.ms; hosted engines stop being asked once the session has spent maxUsd
   const BREAK = { fails: Math.max(1, +(opts.breaker && opts.breaker.fails) || 3), ms: Math.max(0, +(opts.breaker && opts.breaker.ms) || 30000) }, maxUsd = opts.maxUsd >= 0 ? +opts.maxUsd : 0.25;
   const maxHops = Number.isInteger(opts.maxHops) && opts.maxHops >= 0 ? opts.maxHops : 3;
   let sealed = false, seq = 0, evSeq = 0, activeHop = -1, usd = 0;
+  let blockList = { names: new Set(), hashes: new Set() };
+  function setBlockList(bl) {
+    const names = new Set(Array.isArray(bl && bl.names) ? bl.names.map(String) : []);
+    const hashes = new Set(Array.isArray(bl && bl.hashes) ? bl.hashes.map((h) => String(h).toLowerCase()) : []);
+    blockList = { names, hashes };
+    for (const n of Object.keys(installed)) {
+      if (names.has(n) || hashes.has(installed[n].hash)) uninstall(n);
+    }
+  }
+  if (opts.blockList) setBlockList(opts.blockList);
 
   streams['speech'] = { id: 'speech', tier: 'core', owner: '', types: { person: true, creature: true }, latest: null, watchers: [] };
 
@@ -273,13 +283,23 @@ export function createRouter(opts) {
 
   // The loader hands an extension this facade and nothing else (R-TRUST-1..4): it can add and
   // remove ITS OWN routes, over the actions and providers it was granted, at its own rate cap.
+  function normPerms(p) {
+    const acts = ((p && (p.commands || p.actions)) || []).slice();
+    if (acts.some((id) => actions[id] && actions[id].reserved)) throw new Error('sysrouter: extensions cannot be granted reserved actions');
+    const engs = ((p && (p.engines || p.providers)) || []).slice();
+    const strms = ((p && p.streams) || []).slice();
+    const perMin = Math.max(1, Math.min(120, +(p && p.perMin) || 20));
+    const pMaxUsd = p && p.maxUsd >= 0 ? +p.maxUsd : 0;
+    return { actions: acts, providers: engs, streams: strms, perMin, maxUsd: pMaxUsd };
+  }
   function extension(name, grants) {
     assertOpen();
     if (!ID.test(name)) throw new Error('sysrouter: bad extension name');
-    const acts = (grants && grants.actions || []).slice();
-    if (acts.some((id) => actions[id] && actions[id].reserved)) throw new Error('sysrouter: extensions cannot be granted reserved actions');
-    const who = { tier: 'extension', name, grants: { actions: acts, providers: (grants && grants.providers || []).slice(), perMin: Math.max(1, Math.min(120, +(grants && grants.perMin) || 20)) } };
-    return Object.freeze({ route: (spec) => addRoute(spec, who), unroute: (id) => dropRoute(id, who), grants: () => JSON.parse(JSON.stringify(who.grants)) });
+    if (blockList.names.has(name)) throw new Error('sysrouter: blocked extension name ' + name);
+    const p = normPerms(grants);
+    const who = { tier: 'extension', name, grants: p };
+    const snap = () => JSON.parse(JSON.stringify(who.grants));
+    return Object.freeze({ route: (spec) => addRoute(spec, who), unroute: (id) => dropRoute(id, who), grants: snap });
   }
 
   function act(r, pick, x, rawArgs) {
@@ -552,6 +572,54 @@ export function createRouter(opts) {
     return res || { did: 0, why: 'refused' };
   }
 
+  function uninstall(name) {
+    if (!has(installed, name)) return false;
+    for (const k in triggers) if (triggers[k].tier === 'extension' && triggers[k].owner === name) delete triggers[k];
+    for (const k in routes) if (routes[k].tier === 'extension' && routes[k].owner === name) delete routes[k];
+    for (const k in capabilities) if (capabilities[k].tier === 'extension' && capabilities[k].owner === name) delete capabilities[k];
+    for (const k in actions) if (actions[k].tier === 'extension' && actions[k].owner === name) delete actions[k];
+    for (const k in streams) if (streams[k].tier === 'extension' && streams[k].owner === name) delete streams[k];
+    delete installed[name];
+    return true;
+  }
+
+  async function install(manifest, permissions) {
+    if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) throw new Error('sysrouter: bad manifest');
+    const name = manifest.name;
+    if (!ID.test(name || '')) throw new Error('sysrouter: bad extension name');
+    if (blockList.names.has(name)) throw new Error('sysrouter: blocked extension name ' + name);
+    const hash = await sha256Hex(manifest);
+    if (blockList.hashes.has(hash)) throw new Error('sysrouter: blocked extension hash ' + hash);
+    if (has(installed, name)) throw new Error('sysrouter: extension already installed: ' + name);
+    const p = normPerms(permissions);
+    const who = { tier: 'extension', name, grants: p };
+    const created = { streams: [], actions: [], capabilities: [], triggers: [], routes: [] };
+    try {
+      for (const s of (manifest.streams || [])) {
+        if (!p.streams.includes(s && s.id)) throw new Error('sysrouter: no grant for stream ' + (s && s.id));
+        created.streams.push(addStream(s, who));
+      }
+      for (const c of (manifest.capabilities || [])) created.capabilities.push(addCapability(c, who));
+      for (const c of (manifest.commands || [])) {
+        if (!p.actions.includes(c && c.id)) throw new Error('sysrouter: no grant for action ' + (c && c.id));
+        created.actions.push(addCommand(c, who));
+      }
+      for (const t of (manifest.triggers || [])) created.triggers.push(addTrigger(t, who));
+      for (const r of (manifest.routes || [])) created.routes.push(addRoute(r, who));
+    } catch (e) {
+      for (const k of created.routes) delete routes[k];
+      for (const k of created.triggers) delete triggers[k];
+      for (const k of created.actions) delete actions[k];
+      for (const k of created.capabilities) delete capabilities[k];
+      for (const k of created.streams) delete streams[k];
+      throw e;
+    }
+    installed[name] = { name, hash, permissions: p };
+    return { name, hash, permissions: JSON.parse(JSON.stringify(p)) };
+  }
+
+  const extensions = () => Object.keys(installed).map((k) => ({ name: installed[k].name, hash: installed[k].hash, permissions: JSON.parse(JSON.stringify(installed[k].permissions)) }));
+
   const release = (resource) => { delete held[resource]; };
   const spent = () => usd;
   const list = () => Object.keys(routes).map((id) => ({ id, tier: routes[id].tier, owner: routes[id].owner, mode: modeOf(routes[id]), providers: routes[id].providers.slice(), on: Object.assign({}, routes[id].on) }));
@@ -561,9 +629,9 @@ export function createRouter(opts) {
     watch,
     request,
     list,
-    extensions: () => [],
-    install: async () => { throw new Error('sysrouter: install not available'); },
-    uninstall: () => false,
+    extensions,
+    install,
+    uninstall,
     spent, release,
     flags: () => ({ off: !!flags.off, routes: Object.assign({}, flags.routes) })
   });
@@ -577,6 +645,7 @@ export function createRouter(opts) {
     route: (spec) => { assertOpen(); return addRoute(spec, { tier: 'system' }); },
     core: (spec) => { if (sealed) throw new Error('sysrouter: core routes are registered before seal()'); return addRoute(spec, { tier: 'core' }); },
     unroute: (id) => { assertOpen(); const r = routes[id]; if (!r || r.tier === 'extension') return false; delete routes[id]; return true; },
+    setBlockList,
     seal: () => { sealed = true; },
     release,
     spent,                                                                               // what hosted engines have cost this session, for the page to show
