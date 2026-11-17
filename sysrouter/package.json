@@ -1,0 +1,14 @@
+{
+  "name": "growbot-sysrouter",
+  "private": true,
+  "type": "module",
+  "description": "GrowBot System Router: reference implementation, tests and benchmarks. The shipped path (src/) has zero dependencies; onnxruntime-node is only for the on-device embedding arm of the benchmark.",
+  "scripts": {
+    "test": "node test/run-all.mjs",
+    "data": "node data/build.mjs",
+    "bench": "node bench/run.mjs"
+  },
+  "devDependencies": {
+    "onnxruntime-node": "1.19.2"
+  }
+}

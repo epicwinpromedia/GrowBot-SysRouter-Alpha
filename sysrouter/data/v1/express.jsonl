@@ -1,0 +1,1103 @@
+{"id":"25a104a729","route":"express","text":"we won the game","label":"happy","kind":"authored","split":"tune"}
+{"id":"c9fecc6dc3","route":"express","text":"I got the job","label":"happy","kind":"authored","split":"held"}
+{"id":"d66d59f2dd","route":"express","text":"you did it, great job","label":"happy","kind":"authored","split":"tune"}
+{"id":"37e6a8ac82","route":"express","text":"that's amazing news","label":"happy","kind":"authored","split":"held"}
+{"id":"05186fa8e2","route":"express","text":"I love you so much","label":"happy","kind":"authored","split":"held"}
+{"id":"d26b4013b3","route":"express","text":"you're the best little robot ever","label":"happy","kind":"authored","split":"held"}
+{"id":"4cf73cbd08","route":"express","text":"happy birthday","label":"happy","kind":"authored","split":"held"}
+{"id":"ad58a86c11","route":"express","text":"it's finally the weekend","label":"happy","kind":"authored","split":"held"}
+{"id":"cbabc7905e","route":"express","text":"I passed my exam","label":"happy","kind":"authored","split":"held"}
+{"id":"a4b663adf7","route":"express","text":"good boy, well done","label":"happy","kind":"authored","split":"tune"}
+{"id":"7c81d465ec","route":"express","text":"yes yes yes we did it","label":"happy","kind":"authored","split":"held"}
+{"id":"7a7aff3c88","route":"express","text":"that was perfect","label":"happy","kind":"authored","split":"held"}
+{"id":"f785c489bf","route":"express","text":"I'm so proud of you","label":"happy","kind":"authored","split":"held"}
+{"id":"1fcd6f8245","route":"express","text":"this is the best day ever","label":"happy","kind":"authored","split":"tune"}
+{"id":"41493c9b4b","route":"express","text":"we're going to the beach tomorrow","label":"happy","kind":"authored","split":"tune"}
+{"id":"99585d7809","route":"express","text":"look, it's snowing, how wonderful","label":"happy","kind":"authored","split":"held"}
+{"id":"d62892a2ff","route":"express","text":"you make me so happy","label":"happy","kind":"authored","split":"tune"}
+{"id":"d291d97198","route":"express","text":"hooray","label":"happy","kind":"authored","split":"tune"}
+{"id":"e63aa191b2","route":"express","text":"that's fantastic","label":"happy","kind":"authored","split":"held"}
+{"id":"d918f15224","route":"express","text":"what a beautiful morning","label":"happy","kind":"authored","split":"held"}
+{"id":"ddd7cb4686","route":"express","text":"I got an A","label":"happy","kind":"authored","split":"held"}
+{"id":"b04b74358f","route":"express","text":"she said yes","label":"happy","kind":"authored","split":"held"}
+{"id":"e9dfcac5bd","route":"express","text":"the baby took her first steps today","label":"happy","kind":"authored","split":"tune"}
+{"id":"c824ce5176","route":"express","text":"we're getting pizza tonight","label":"happy","kind":"authored","split":"held"}
+{"id":"53562de76f","route":"express","text":"you're so clever","label":"happy","kind":"authored","split":"held"}
+{"id":"e0a8a98699","route":"express","text":"that was brilliant","label":"happy","kind":"authored","split":"held"}
+{"id":"513f2fdbd2","route":"express","text":"I'm so glad you're here","label":"happy","kind":"authored","split":"tune"}
+{"id":"96a3a5e893","route":"express","text":"my best friend is visiting","label":"happy","kind":"authored","split":"tune"}
+{"id":"f4f75ea14f","route":"express","text":"we finished the project at last","label":"happy","kind":"authored","split":"tune"}
+{"id":"883c423191","route":"express","text":"congratulations to us","label":"happy","kind":"authored","split":"held"}
+{"id":"e46adf0b23","route":"express","text":"you nailed it","label":"happy","kind":"authored","split":"tune"}
+{"id":"b6102b1353","route":"express","text":"good job buddy","label":"happy","kind":"authored","split":"held"}
+{"id":"d620d8216f","route":"express","text":"I adore you","label":"happy","kind":"authored","split":"tune"}
+{"id":"655cf584f8","route":"express","text":"this is wonderful","label":"happy","kind":"authored","split":"held"}
+{"id":"55f387f7de","route":"express","text":"what a great surprise","label":"happy","kind":"authored","split":"tune"}
+{"id":"77b769185f","route":"express","text":"you're doing great","label":"happy","kind":"authored","split":"held"}
+{"id":"8a9a95156e","route":"express","text":"we hit a home run","label":"happy","kind":"authored","split":"held"}
+{"id":"03539349be","route":"express","text":"that worked on the first try","label":"happy","kind":"authored","split":"tune"}
+{"id":"7a922d5c97","route":"express","text":"the test results came back all clear","label":"happy","kind":"authored","split":"held"}
+{"id":"357cf63b39","route":"express","text":"high five","label":"happy","kind":"authored","split":"tune"}
+{"id":"aa8408e6ee","route":"express","text":"my dog died last night","label":"sad","kind":"authored","split":"tune"}
+{"id":"f4e8dc5146","route":"express","text":"I didn't get the job","label":"sad","kind":"authored","split":"held"}
+{"id":"f38103e2b9","route":"express","text":"I miss my mom","label":"sad","kind":"authored","split":"tune"}
+{"id":"993608fe42","route":"express","text":"nobody came to my party","label":"sad","kind":"authored","split":"held"}
+{"id":"826ed7db8c","route":"express","text":"I failed the test again","label":"sad","kind":"authored","split":"held"}
+{"id":"bc80c813a9","route":"express","text":"I feel so alone","label":"sad","kind":"authored","split":"held"}
+{"id":"6e06bb21c5","route":"express","text":"it's been a really hard week","label":"sad","kind":"authored","split":"tune"}
+{"id":"6d1f5942f0","route":"express","text":"we lost the game","label":"sad","kind":"authored","split":"tune"}
+{"id":"042e98c723","route":"express","text":"my best friend moved away","label":"sad","kind":"authored","split":"held"}
+{"id":"81aa602eb9","route":"express","text":"I've been crying all morning","label":"sad","kind":"authored","split":"held"}
+{"id":"541f59d766","route":"express","text":"nothing is going right for me","label":"sad","kind":"authored","split":"held"}
+{"id":"0b79dc309f","route":"express","text":"she broke up with me","label":"sad","kind":"authored","split":"held"}
+{"id":"9a067f8393","route":"express","text":"I'm so tired of everything","label":"sad","kind":"authored","split":"tune"}
+{"id":"c90a5d82f3","route":"express","text":"the trip got cancelled","label":"sad","kind":"authored","split":"held"}
+{"id":"ff9c04de99","route":"express","text":"I lost my grandmother's ring","label":"sad","kind":"authored","split":"tune"}
+{"id":"899078fe25","route":"express","text":"they forgot my birthday","label":"sad","kind":"authored","split":"tune"}
+{"id":"331bbf21a1","route":"express","text":"I let everyone down","label":"sad","kind":"authored","split":"tune"}
+{"id":"b0c82a6f9e","route":"express","text":"it hurts to think about","label":"sad","kind":"authored","split":"tune"}
+{"id":"b594298d10","route":"express","text":"I wish things were different","label":"sad","kind":"authored","split":"tune"}
+{"id":"5488577559","route":"express","text":"I feel like giving up","label":"sad","kind":"authored","split":"held"}
+{"id":"59c983120a","route":"express","text":"the plant you liked died","label":"sad","kind":"authored","split":"held"}
+{"id":"f9812dfb91","route":"express","text":"we have to say goodbye tomorrow","label":"sad","kind":"authored","split":"held"}
+{"id":"427468674e","route":"express","text":"I didn't make the team","label":"sad","kind":"authored","split":"tune"}
+{"id":"edd36dfa7d","route":"express","text":"my heart is heavy today","label":"sad","kind":"authored","split":"held"}
+{"id":"e6c48434e8","route":"express","text":"I'm not okay","label":"sad","kind":"authored","split":"tune"}
+{"id":"3b6268423d","route":"express","text":"everything feels grey","label":"sad","kind":"authored","split":"tune"}
+{"id":"fe62e42d30","route":"express","text":"he's not coming home for the holidays","label":"sad","kind":"authored","split":"held"}
+{"id":"67279d93a5","route":"express","text":"I ruined it","label":"sad","kind":"authored","split":"held"}
+{"id":"5931dd38c3","route":"express","text":"I can't do anything right","label":"sad","kind":"authored","split":"held"}
+{"id":"d8ee826971","route":"express","text":"today was awful","label":"sad","kind":"authored","split":"tune"}
+{"id":"38b5e19a2b","route":"express","text":"the old house is being torn down","label":"sad","kind":"authored","split":"held"}
+{"id":"d693083511","route":"express","text":"I had to put the cat to sleep","label":"sad","kind":"authored","split":"held"}
+{"id":"092f36ed7c","route":"express","text":"I feel empty","label":"sad","kind":"authored","split":"held"}
+{"id":"f59fe4979f","route":"express","text":"nobody listens to me","label":"sad","kind":"authored","split":"tune"}
+{"id":"38d8b7f203","route":"express","text":"I'm really disappointed","label":"sad","kind":"authored","split":"held"}
+{"id":"3783f8ecb9","route":"express","text":"I got left out again","label":"sad","kind":"authored","split":"held"}
+{"id":"5998455148","route":"express","text":"it's the anniversary of dad's passing","label":"sad","kind":"authored","split":"tune"}
+{"id":"c524a462d3","route":"express","text":"the letter said no","label":"sad","kind":"authored","split":"held"}
+{"id":"d7ae90fc14","route":"express","text":"I miss how things used to be","label":"sad","kind":"authored","split":"tune"}
+{"id":"34de86eedf","route":"express","text":"I just feel low","label":"sad","kind":"authored","split":"tune"}
+{"id":"1988ceb908","route":"express","text":"I'm going to smash you","label":"scared","kind":"authored","split":"held"}
+{"id":"89b7353e4f","route":"express","text":"bad robot, bad","label":"scared","kind":"authored","split":"held"}
+{"id":"cf721b467f","route":"express","text":"get away from me you stupid thing","label":"scared","kind":"authored","split":"tune"}
+{"id":"0e0f73e80d","route":"express","text":"I'll throw you out the window","label":"scared","kind":"authored","split":"tune"}
+{"id":"501845d311","route":"express","text":"you're in big trouble","label":"scared","kind":"authored","split":"tune"}
+{"id":"3154bf3738","route":"express","text":"I hate you","label":"scared","kind":"authored","split":"held"}
+{"id":"a252e0d606","route":"express","text":"shut up or else","label":"scared","kind":"authored","split":"held"}
+{"id":"7ea00f1d54","route":"express","text":"I'm going to take your legs off","label":"scared","kind":"authored","split":"tune"}
+{"id":"9f9da09daa","route":"express","text":"there's a monster behind you","label":"scared","kind":"authored","split":"tune"}
+{"id":"1450dda6b6","route":"express","text":"something is coming to get you","label":"scared","kind":"authored","split":"held"}
+{"id":"2e6530f2b3","route":"express","text":"watch out, the dog is going to bite you","label":"scared","kind":"authored","split":"held"}
+{"id":"069cf3b54e","route":"express","text":"I'll break you into pieces","label":"scared","kind":"authored","split":"held"}
+{"id":"b1d63291ef","route":"express","text":"you'd better run","label":"scared","kind":"authored","split":"tune"}
+{"id":"dd796ccdcb","route":"express","text":"boo","label":"scared","kind":"authored","split":"tune"}
+{"id":"df67bf88ee","route":"express","text":"the big scary vacuum is coming for you","label":"scared","kind":"authored","split":"tune"}
+{"id":"d11270897d","route":"express","text":"I'm so angry at you right now","label":"scared","kind":"authored","split":"held"}
+{"id":"67557384fe","route":"express","text":"how dare you","label":"scared","kind":"authored","split":"held"}
+{"id":"e62d7724d7","route":"express","text":"you're a worthless piece of junk","label":"scared","kind":"authored","split":"tune"}
+{"id":"2ba3297ef3","route":"express","text":"I'm going to step on you","label":"scared","kind":"authored","split":"tune"}
+{"id":"76d383fed6","route":"express","text":"there's a huge spider on your head","label":"scared","kind":"authored","split":"tune"}
+{"id":"c91876e22d","route":"express","text":"it's going to eat you","label":"scared","kind":"authored","split":"tune"}
+{"id":"f700249ff5","route":"express","text":"don't make me come over there","label":"scared","kind":"authored","split":"held"}
+{"id":"8cbe1db404","route":"express","text":"I'll unplug you forever","label":"scared","kind":"authored","split":"held"}
+{"id":"7ee9fcb9da","route":"express","text":"you're going in the trash","label":"scared","kind":"authored","split":"tune"}
+{"id":"29ef8d3b02","route":"express","text":"roar, I'm a bear","label":"scared","kind":"authored","split":"tune"}
+{"id":"4d46268a3a","route":"express","text":"I'm going to get you","label":"scared","kind":"authored","split":"held"}
+{"id":"f2d295ae9e","route":"express","text":"you ruined everything, you idiot","label":"scared","kind":"authored","split":"tune"}
+{"id":"5d1d34df1a","route":"express","text":"I'll kick you across the room","label":"scared","kind":"authored","split":"tune"}
+{"id":"0f35f2f431","route":"express","text":"the thunder is going to crack the house open","label":"scared","kind":"authored","split":"held"}
+{"id":"01bc153fc5","route":"express","text":"there's a ghost in here with us","label":"scared","kind":"authored","split":"held"}
+{"id":"ba3859e779","route":"express","text":"you should be afraid","label":"scared","kind":"authored","split":"tune"}
+{"id":"dc610a3b03","route":"express","text":"I'm going to shake you until you rattle","label":"scared","kind":"authored","split":"held"}
+{"id":"805fa25660","route":"express","text":"stupid stupid robot","label":"scared","kind":"authored","split":"held"}
+{"id":"f093e3be43","route":"express","text":"one more sound and you're finished","label":"scared","kind":"authored","split":"tune"}
+{"id":"f92cc1f8a2","route":"express","text":"the cat is hunting you","label":"scared","kind":"authored","split":"held"}
+{"id":"77384c97e6","route":"express","text":"that hawk outside wants to carry you off","label":"scared","kind":"authored","split":"tune"}
+{"id":"80361fbbc9","route":"express","text":"I'll leave you out in the rain","label":"scared","kind":"authored","split":"tune"}
+{"id":"63404aa782","route":"express","text":"you're about to fall off the table","label":"scared","kind":"authored","split":"held"}
+{"id":"26744554af","route":"express","text":"I'm furious with you","label":"scared","kind":"authored","split":"tune"}
+{"id":"74eb4ef360","route":"express","text":"you'll be sorry","label":"scared","kind":"authored","split":"held"}
+{"id":"a5d774267b","route":"express","text":"watch out","label":"alert","kind":"authored","split":"held"}
+{"id":"f0d3a1870a","route":"express","text":"look out behind you","label":"alert","kind":"authored","split":"tune"}
+{"id":"ab1fb74f2f","route":"express","text":"someone's at the door","label":"alert","kind":"authored","split":"tune"}
+{"id":"d89825d202","route":"express","text":"what was that noise","label":"alert","kind":"authored","split":"tune"}
+{"id":"de34c730cc","route":"express","text":"did you hear that","label":"alert","kind":"authored","split":"tune"}
+{"id":"108472f8c4","route":"express","text":"fire","label":"alert","kind":"authored","split":"held"}
+{"id":"390950c4f3","route":"express","text":"careful, that's hot","label":"alert","kind":"authored","split":"held"}
+{"id":"205b867c3e","route":"express","text":"there's someone outside","label":"alert","kind":"authored","split":"held"}
+{"id":"4994350aed","route":"express","text":"the alarm is going off","label":"alert","kind":"authored","split":"held"}
+{"id":"8065192648","route":"express","text":"heads up","label":"alert","kind":"authored","split":"tune"}
+{"id":"72b7e783d6","route":"express","text":"quick, come look at this","label":"alert","kind":"authored","split":"tune"}
+{"id":"9caff138d7","route":"express","text":"hurry, we're late","label":"alert","kind":"authored","split":"held"}
+{"id":"0fa4e89679","route":"express","text":"oh no, the water is overflowing","label":"alert","kind":"authored","split":"held"}
+{"id":"46cadabe58","route":"express","text":"something's burning","label":"alert","kind":"authored","split":"held"}
+{"id":"1907f7d323","route":"express","text":"wake up, it's an emergency","label":"alert","kind":"authored","split":"held"}
+{"id":"4192baf237","route":"express","text":"I think I heard glass break","label":"alert","kind":"authored","split":"held"}
+{"id":"156c3313b8","route":"express","text":"the baby is crying","label":"alert","kind":"authored","split":"held"}
+{"id":"d344e2e1ac","route":"express","text":"the phone is ringing","label":"alert","kind":"authored","split":"held"}
+{"id":"7fbb0d5dda","route":"express","text":"wait, listen","label":"alert","kind":"authored","split":"tune"}
+{"id":"9a53ffe50f","route":"express","text":"shh, be quiet a second","label":"alert","kind":"authored","split":"held"}
+{"id":"80bdc950ea","route":"express","text":"whoa, what's happening","label":"alert","kind":"authored","split":"held"}
+{"id":"ae3c08c526","route":"express","text":"the lights just went out","label":"alert","kind":"authored","split":"held"}
+{"id":"75698238af","route":"express","text":"there's a car pulling in","label":"alert","kind":"authored","split":"tune"}
+{"id":"44a77ff6e3","route":"express","text":"somebody knocked","label":"alert","kind":"authored","split":"held"}
+{"id":"cab57ffe98","route":"express","text":"the smoke detector is beeping","label":"alert","kind":"authored","split":"tune"}
+{"id":"802f5a17bd","route":"express","text":"I smell gas","label":"alert","kind":"authored","split":"tune"}
+{"id":"d131e8ca29","route":"express","text":"the dog is barking at something","label":"alert","kind":"authored","split":"held"}
+{"id":"5e76cf6fad","route":"express","text":"hey, pay attention","label":"alert","kind":"authored","split":"held"}
+{"id":"f54be419a0","route":"express","text":"this is important","label":"alert","kind":"authored","split":"held"}
+{"id":"16bf66cd88","route":"express","text":"uh oh","label":"alert","kind":"authored","split":"tune"}
+{"id":"3c700161fa","route":"express","text":"oh my gosh look at the time","label":"alert","kind":"authored","split":"held"}
+{"id":"0a71678873","route":"express","text":"the doorbell rang","label":"alert","kind":"authored","split":"held"}
+{"id":"1a4821a608","route":"express","text":"the stove is still on","label":"alert","kind":"authored","split":"tune"}
+{"id":"e2e11e8668","route":"express","text":"the timer went off","label":"alert","kind":"authored","split":"tune"}
+{"id":"596a30a8bf","route":"express","text":"someone is calling your name","label":"alert","kind":"authored","split":"tune"}
+{"id":"b9c9628619","route":"express","text":"careful, it's slippery there","label":"alert","kind":"authored","split":"held"}
+{"id":"a98ae33a3f","route":"express","text":"mind the edge of the table","label":"alert","kind":"authored","split":"held"}
+{"id":"a1735f864b","route":"express","text":"the kettle is boiling over","label":"alert","kind":"authored","split":"held"}
+{"id":"a67ca43c0e","route":"express","text":"a package just arrived","label":"alert","kind":"authored","split":"tune"}
+{"id":"e4fdb7d18c","route":"express","text":"quick, hide","label":"alert","kind":"authored","split":"tune"}
+{"id":"ef38c06985","route":"express","text":"guess what I found","label":"curious","kind":"authored","split":"held"}
+{"id":"3d48d8c60e","route":"express","text":"I have a secret to tell you","label":"curious","kind":"authored","split":"held"}
+{"id":"854129e604","route":"express","text":"have you ever seen one of these","label":"curious","kind":"authored","split":"tune"}
+{"id":"986d1de44a","route":"express","text":"want to know something weird","label":"curious","kind":"authored","split":"held"}
+{"id":"eb36df8ffe","route":"express","text":"I brought you something new","label":"curious","kind":"authored","split":"tune"}
+{"id":"a0cedd7d14","route":"express","text":"look what's in this box","label":"curious","kind":"authored","split":"tune"}
+{"id":"e86a13b445","route":"express","text":"do you know what this is","label":"curious","kind":"authored","split":"tune"}
+{"id":"302fb8980e","route":"express","text":"I wonder how birds know where to fly","label":"curious","kind":"authored","split":"tune"}
+{"id":"931c100f12","route":"express","text":"there's a strange bug on the window","label":"curious","kind":"authored","split":"held"}
+{"id":"233cf03a12","route":"express","text":"what do you think is inside","label":"curious","kind":"authored","split":"tune"}
+{"id":"ba2164c58e","route":"express","text":"I learned a new trick today","label":"curious","kind":"authored","split":"tune"}
+{"id":"efc0bfbf47","route":"express","text":"why do you think the moon follows the car","label":"curious","kind":"authored","split":"tune"}
+{"id":"d725e430aa","route":"express","text":"here's a riddle for you","label":"curious","kind":"authored","split":"tune"}
+{"id":"243771eb77","route":"express","text":"I've got a puzzle","label":"curious","kind":"authored","split":"tune"}
+{"id":"47d51853b6","route":"express","text":"did you know octopuses have three hearts","label":"curious","kind":"authored","split":"tune"}
+{"id":"20f9fe4074","route":"express","text":"what's that thing over there","label":"curious","kind":"authored","split":"held"}
+{"id":"bf182626b7","route":"express","text":"let me show you something","label":"curious","kind":"authored","split":"tune"}
+{"id":"628abf50f8","route":"express","text":"I found an old map in the attic","label":"curious","kind":"authored","split":"held"}
+{"id":"e834cac558","route":"express","text":"can you figure this out","label":"curious","kind":"authored","split":"held"}
+{"id":"c67e08c38f","route":"express","text":"have you noticed the new plant","label":"curious","kind":"authored","split":"tune"}
+{"id":"50c721ba39","route":"express","text":"what do you suppose that sound means","label":"curious","kind":"authored","split":"tune"}
+{"id":"b654c407af","route":"express","text":"I wonder what's behind that door","label":"curious","kind":"authored","split":"tune"}
+{"id":"7c5675f0ad","route":"express","text":"this is a magnet, watch what it does","label":"curious","kind":"authored","split":"held"}
+{"id":"fde915bfed","route":"express","text":"there's a new person I want you to meet","label":"curious","kind":"authored","split":"held"}
+{"id":"9ad8046c63","route":"express","text":"I discovered something in the garden","label":"curious","kind":"authored","split":"held"}
+{"id":"8abe909ead","route":"express","text":"how do you think this works","label":"curious","kind":"authored","split":"held"}
+{"id":"90452e5c3a","route":"express","text":"ever wonder why the sky changes color","label":"curious","kind":"authored","split":"tune"}
+{"id":"3c9cb7ebad","route":"express","text":"I have a question for you","label":"curious","kind":"authored","split":"tune"}
+{"id":"7203399fac","route":"express","text":"there's a mystery to solve","label":"curious","kind":"authored","split":"tune"}
+{"id":"988751e24a","route":"express","text":"look closely at this picture","label":"curious","kind":"authored","split":"tune"}
+{"id":"7b4034b911","route":"express","text":"something odd happened today","label":"curious","kind":"authored","split":"tune"}
+{"id":"3fe21fe1ab","route":"express","text":"I found a feather, what bird do you think","label":"curious","kind":"authored","split":"held"}
+{"id":"7001b23a7a","route":"express","text":"want to try something new","label":"curious","kind":"authored","split":"held"}
+{"id":"bfb1f744b3","route":"express","text":"I read the strangest fact","label":"curious","kind":"authored","split":"held"}
+{"id":"d18f550414","route":"express","text":"what would happen if we mixed these","label":"curious","kind":"authored","split":"held"}
+{"id":"82f0bf8e7d","route":"express","text":"check out this weird rock","label":"curious","kind":"authored","split":"held"}
+{"id":"dc0a04c318","route":"express","text":"there's a surprise in my pocket","label":"curious","kind":"authored","split":"held"}
+{"id":"97c8b902f8","route":"express","text":"tell me what you notice","label":"curious","kind":"authored","split":"tune"}
+{"id":"c24e0786d9","route":"express","text":"I've never seen that before","label":"curious","kind":"authored","split":"held"}
+{"id":"87fb42b3bb","route":"express","text":"what could this key open","label":"curious","kind":"authored","split":"tune"}
+{"id":"63f245a6eb","route":"express","text":"the meeting is at three","label":"calm","kind":"authored","split":"held"}
+{"id":"2dd37b6d95","route":"express","text":"I need to buy milk","label":"calm","kind":"authored","split":"tune"}
+{"id":"986a3403ac","route":"express","text":"it's Tuesday","label":"calm","kind":"authored","split":"held"}
+{"id":"e7c0b04f0b","route":"express","text":"the bus comes at eight","label":"calm","kind":"authored","split":"held"}
+{"id":"c8b2a88fcd","route":"express","text":"I'm doing the laundry","label":"calm","kind":"authored","split":"held"}
+{"id":"064dacabf9","route":"express","text":"the report is due next week","label":"calm","kind":"authored","split":"held"}
+{"id":"ba8e4d4c80","route":"express","text":"pass me the remote","label":"calm","kind":"authored","split":"held"}
+{"id":"7fb41c27bd","route":"express","text":"I'll be in the other room","label":"calm","kind":"authored","split":"tune"}
+{"id":"cb59fce2fd","route":"express","text":"dinner is at six","label":"calm","kind":"authored","split":"tune"}
+{"id":"5f52fc0304","route":"express","text":"I put the keys on the table","label":"calm","kind":"authored","split":"tune"}
+{"id":"64aea0a145","route":"express","text":"the store closes at nine","label":"calm","kind":"authored","split":"held"}
+{"id":"a328be7a94","route":"express","text":"I'm going to check my email","label":"calm","kind":"authored","split":"held"}
+{"id":"c132fcbe7a","route":"express","text":"it takes about twenty minutes to get there","label":"calm","kind":"authored","split":"held"}
+{"id":"ca897c59cb","route":"express","text":"the plumber is coming on Thursday","label":"calm","kind":"authored","split":"tune"}
+{"id":"4ffaf5a7f5","route":"express","text":"I need to charge my phone","label":"calm","kind":"authored","split":"held"}
+{"id":"c9c8862a3b","route":"express","text":"the forecast says cloudy","label":"calm","kind":"authored","split":"tune"}
+{"id":"75d6b8d7bc","route":"express","text":"I'm making a grocery list","label":"calm","kind":"authored","split":"held"}
+{"id":"722c3f9751","route":"express","text":"the towels are in the dryer","label":"calm","kind":"authored","split":"tune"}
+{"id":"644595faa7","route":"express","text":"it's about noon","label":"calm","kind":"authored","split":"held"}
+{"id":"6e4da4d686","route":"express","text":"I parked on the street","label":"calm","kind":"authored","split":"held"}
+{"id":"d45849df8a","route":"express","text":"the mail came","label":"calm","kind":"authored","split":"tune"}
+{"id":"3ac41f2c18","route":"express","text":"I'm going to water the plants","label":"calm","kind":"authored","split":"tune"}
+{"id":"38dca94f38","route":"express","text":"we have rice and beans","label":"calm","kind":"authored","split":"tune"}
+{"id":"bdeab28d66","route":"express","text":"the trash goes out tonight","label":"calm","kind":"authored","split":"tune"}
+{"id":"ea826e52fb","route":"express","text":"I'll call the bank tomorrow","label":"calm","kind":"authored","split":"tune"}
+{"id":"b42f86b8d1","route":"express","text":"the printer is out of paper","label":"calm","kind":"authored","split":"tune"}
+{"id":"616dd63dbd","route":"express","text":"my appointment is at ten","label":"calm","kind":"authored","split":"held"}
+{"id":"9261998f83","route":"express","text":"I'm switching the laundry over","label":"calm","kind":"authored","split":"held"}
+{"id":"8db19f5076","route":"express","text":"the car needs an oil change","label":"calm","kind":"authored","split":"held"}
+{"id":"1afc9c7c0c","route":"express","text":"there's leftover soup in the fridge","label":"calm","kind":"authored","split":"tune"}
+{"id":"853ece4eeb","route":"express","text":"I set the thermostat to sixty eight","label":"calm","kind":"authored","split":"tune"}
+{"id":"a4aa42fc78","route":"express","text":"the library book is due Friday","label":"calm","kind":"authored","split":"held"}
+{"id":"ef6f5d17ef","route":"express","text":"I'm just tidying up","label":"calm","kind":"authored","split":"tune"}
+{"id":"0b09b22c3a","route":"express","text":"the faucet drips a little","label":"calm","kind":"authored","split":"held"}
+{"id":"ae67f1c43f","route":"express","text":"I renewed the insurance","label":"calm","kind":"authored","split":"held"}
+{"id":"227bfd5175","route":"express","text":"the chair is by the window","label":"calm","kind":"authored","split":"held"}
+{"id":"e199223550","route":"express","text":"I'll take the stairs","label":"calm","kind":"authored","split":"held"}
+{"id":"7d531f07da","route":"express","text":"the recipe needs two eggs","label":"calm","kind":"authored","split":"held"}
+{"id":"c63ae4d8c3","route":"express","text":"I'm going to sit here for a while","label":"calm","kind":"authored","split":"tune"}
+{"id":"a67fe14d15","route":"express","text":"that's the second shelf","label":"calm","kind":"authored","split":"tune"}
+{"id":"1df9f30375","route":"express","text":"Wow, not exactly a complimentary typo.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"db69b1da72","route":"express","text":"I thought this allegation was squashed when it came out. I was surprised to see it still making headlines. Poor guy.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"239e8a7539","route":"express","text":"Hmm I wonder why the bot copy text LAOP says is in NY when the original post says LAOP says he's in TX","label":"alert","kind":"goemotions","split":"held"}
+{"id":"fbfb21d718","route":"express","text":"Hey Man! Your house is on fire! All you gotta do is look just turn around and look!","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"6480ff914b","route":"express","text":"looks unreal, like it's a toy or something.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"887c6ed911","route":"express","text":"I've always wondered how much of this stuff doesn't end up on the internet","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"d5567b3164","route":"express","text":"Wasn’t it 99% of the WORLD’S population? Like how in the fuck is that even possible...","label":"alert","kind":"goemotions","split":"held"}
+{"id":"6c903d4214","route":"express","text":"Oh my gosh she opens her gullet like a freaking pelican!!!","label":"alert","kind":"goemotions","split":"held"}
+{"id":"8a0b66af2f","route":"express","text":"As a Florida girl I have no clue how you all have not died. I could never live there.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"4ee3968787","route":"express","text":"One post, 155 updogs. I've seen this raw power only once before.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"823108fe50","route":"express","text":"Yes, but shockingly that was the first post of hers I’ve read in years that didn’t make me want to claw my eyes out.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"f032b9ae08","route":"express","text":"What a turnaround.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"b392aa6910","route":"express","text":"Time flies when you're a semiprofessional quotemaker. I wonder what he's up to these days.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"810fa80ac9","route":"express","text":"Oh no, I'm getting flashbacks","label":"alert","kind":"goemotions","split":"held"}
+{"id":"b05cb4b2ab","route":"express","text":"It blows my mind that there are still people out there that think pot is more dangerous than alcohol.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"a5da6e14c7","route":"express","text":"Omg if WOW sue’s her then my depression would be cured and I’ll have my jush","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"cfc6ca5af1","route":"express","text":"Right? He actually came across as level headed and mature here so that was a shock.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"7f338a7a63","route":"express","text":"Pull your fucking pants up oh my god","label":"alert","kind":"goemotions","split":"held"}
+{"id":"18cb0a2f78","route":"express","text":"That's a surprise from this guy.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"c2e79a2ce5","route":"express","text":"The miracle was just that. Because we all know the Vikings would fail the next game.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"239cff1191","route":"express","text":"I’m really late here, but I’m surprised I haven’t seen anyone bring up the possibility of them wanting to eat you.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"d8c53ba8d7","route":"express","text":"I'm surprised he survived the primary.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"c56a22fba6","route":"express","text":"Shocking that a fat DnD kid is this self-important. Remarkable.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"1206dc10f3","route":"express","text":"This is like that SNL sketch. EDIT: For anyone wondering what I’m talking about.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"54f8f52320","route":"express","text":"Weird we’ve seen leftist harass and attack elder people and elder veterans but it doesn’t become mainstream news. I wonder why that is","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"e95cf72d5a","route":"express","text":"I'm surprised he hasn't already. He was charged on Dec. 31st but his name was only released yesterday.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"88b361b11f","route":"express","text":"I was wondering this too. Whatever it was it's over now.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"5743777b39","route":"express","text":"Damn, I didn't know that you used to mod there.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"6f92e36b84","route":"express","text":"What? You don't know what punishment is?","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"00ee81fa81","route":"express","text":"Oof the way he just tossed the cat aside oof","label":"alert","kind":"goemotions","split":"held"}
+{"id":"f2f45fe29b","route":"express","text":"Wow! I can save $15 and buy this used version?!?!? How wonderful!","label":"alert","kind":"goemotions","split":"held"}
+{"id":"12203b200f","route":"express","text":"Pretty stock standard winger. Depth at a good club, regular starter at a bad club kinda deal","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"7646caf5e3","route":"express","text":"I've been into cuckolding for many years, and I'm wondering the same thing!","label":"alert","kind":"goemotions","split":"held"}
+{"id":"0ff9843137","route":"express","text":"I was there on the opposite side of the field. I did not believe he made that catch until we saw it later on tv. Unreal.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"962416a485","route":"express","text":"To be fair how often has someone drafted in the top 5 not immediately joined the team.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"d061a84b46","route":"express","text":"Sounds weird but dont swallow","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"8b5510fbe8","route":"express","text":"This is the first I’m hearing of this. Not on any of the local news, but on Reddit! MASSIVE media bias.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"c2f64f45d9","route":"express","text":"I wondered where the quote about “supporting your azz” and was very pleased to finally find the train wreck that said it.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"f8892f255a","route":"express","text":"Oh boy, leprosy!","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"f43b68abee","route":"express","text":"The claim that whole milk is 40% fat is surprisingly not the most absurd part of this picture. /j","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"fafe90d7ba","route":"express","text":"There were a surprising amount of surprised pikachus in this thread—thanks for the edit all the same.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"56d3cc421d","route":"express","text":"Can't believe me and my family were gonna leave five minutes early to beat the traffic. Honestly the best game I've ever seen live","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"2638d6e9a0","route":"express","text":"Flashbacks to hallucinations? Whoa","label":"alert","kind":"goemotions","split":"held"}
+{"id":"960d4910ea","route":"express","text":"Suddenly, I was awake.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"e77bc639e8","route":"express","text":"Wow there a lot to choose from for 10 bucks or less too","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"92406c4aba","route":"express","text":"I'm thinking I'd be wondering how I got my hands on a time machine.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"f72bfe6072","route":"express","text":"I can't believe this team beat Winnipeg last week, handily too. That effort hasn't been there since.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"9ceec2b4e8","route":"express","text":"Wow, that's cool!","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"974b53d278","route":"express","text":"He was dead through the whole movie. Oh wait","label":"alert","kind":"goemotions","split":"held"}
+{"id":"de65fac445","route":"express","text":"Oh wow I genuinely thought this was funny can’t believe you copped it so hard","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"3efce2d9f8","route":"express","text":"730,000 readers and only 6 posts in a week? Wow...","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"3fc7fbc6c4","route":"express","text":"I don't think you can find a better support line in contenders than alarm and elk. absolutely insane and clutch it's unbelievable","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"f7265efc88","route":"express","text":"Niemi locked in holy fuck.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"a83cc8877f","route":"express","text":"I’m surprised that any of this is considered that big of a deal. At least he wasn’t molesting little kids.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"6667e38520","route":"express","text":"This response is highly unexpected yet logical. I’m fixin to chew on it for a spell.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"3f621c3299","route":"express","text":"It’s shocking isn’t it? I paid less for a flight from London to Manchester than it would have cost for the train.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"65232014f5","route":"express","text":"Honestly? I dont know. My parents told me that itd be seen as suspicious","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"efb4434011","route":"express","text":"Oh god the “glow”! I get comments about it at work almost weekly.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"08c70e439a","route":"express","text":"I do not trust our defense at all. I do not believe you can increase the range of Andujar.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"7e794472b7","route":"express","text":"Oh no! People will be able to protect themselves!","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"b36b012f7b","route":"express","text":"Hey what a coincidence so is a human head!","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"94d1712d57","route":"express","text":"The music caught me off guard","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"01b892969d","route":"express","text":"Checked my EBT balance yesterday. \"You will not be receiving benefits for February.\". I wonder when the riots are going to start.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"e6b0c629b4","route":"express","text":"Wow. This is messed up.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"628e790c65","route":"express","text":"Oh wow. Didn’t realize it was that broad.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"24948ebb48","route":"express","text":"Refreshmentos! What's that? It's new!","label":"alert","kind":"goemotions","split":"held"}
+{"id":"45896f21a6","route":"express","text":"Right? I’ve never heard of it being made with French dressing.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"e7828c037b","route":"express","text":"I’m surprised by how quickly they were able to get a graphic for Kent.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"54bf9f9f55","route":"express","text":"Omfg das a lotta snow. Maybe I'll get to pull out the gas powered snow thrower for the bloody first timeof the season.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"379700aa1e","route":"express","text":"yeah her ex was shocked when she said \"my boyfriend\".","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"741126c4cc","route":"express","text":"Wow. Forget the separation, lawyer up and go straight to divorce.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"a73628bab5","route":"express","text":"Nobel prize, u/Otomyre, Nobel prize! I’ll see you in Sweden!","label":"alert","kind":"goemotions","split":"held"}
+{"id":"40e0c06394","route":"express","text":"Wow, 5 downvotes in 3 minutes. Go you!","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"22ed0d7d7e","route":"express","text":"I'll be surprised if *Monty Python's Life of Brian* wasn't one of those.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"7b3fb359c7","route":"express","text":"Between this and the headline it makes me wonder how he fits his ego through most doorways.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"ae36054fb8","route":"express","text":"wow - resonates with me.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"5cfc44ee44","route":"express","text":"Oh the irony in the title","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"43102bb7eb","route":"express","text":"This is surprising as many pizza places us peanut oil on the crust in the past. Had a friend end up in the hospital from this.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"3bb790f3e1","route":"express","text":"I'm surprised that this is still happening despite the threats of an invasion of manbij.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"d287a2e6cc","route":"express","text":"No way! First I’m hearing about this","label":"alert","kind":"goemotions","split":"held"}
+{"id":"f3b54bf85e","route":"express","text":"WHAT A TWIST!!","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"68c6acf96d","route":"express","text":"Only 7? Wow he's slacking. He must not have very faithful parishioners.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"5666b87fbd","route":"express","text":"What the fuck. Got that song on repeat right now","label":"alert","kind":"goemotions","split":"held"}
+{"id":"4fa5fd5bf4","route":"express","text":"OH MY GOD TYLER THAT CENSORING","label":"alert","kind":"goemotions","split":"held"}
+{"id":"c9f01332fc","route":"express","text":"My wife would say that all of the above and another dozen more are cheating...and she wonders why I’ve fucked other women...","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"55b6a6ba51","route":"express","text":"Personally I'm wondering why our OP didn't go with the clone angle. That's way more insane than them just being sent to prison.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"d47da05d9c","route":"express","text":"That's a weird way of spelling Disenchanted","label":"alert","kind":"goemotions","split":"held"}
+{"id":"7142315a2e","route":"express","text":"Unexpected Hail corporate.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"5ca543d5e2","route":"express","text":"Exactly! It amazes me how many people dont communicate with each other. Talk about it, see what they say. Discuss. Come to a conclusion.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"e9d145d6aa","route":"express","text":"This was literally me!","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"01ed9b08fe","route":"express","text":"I can't believe he got it while getting man-handled by two players!!","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"6f0a8f218c","route":"express","text":"Surprised to not see Three Arrows on the list when he went from no videos at all to over 100,000 subscribers just in the course of 2018.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"8ac60415cf","route":"express","text":"Oh, grilled nuggets. Haven't really seen those at fast food places so I thought they were just the regular nuggets","label":"alert","kind":"goemotions","split":"held"}
+{"id":"3b75bba34e","route":"express","text":"woah this is a reversal of the norm you took a meme from instagram to reddit","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"71c7d4f5ca","route":"express","text":"I am shocked they don’t have a vanity plate that reads “Beer Cheez”","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"392fc683e9","route":"express","text":"Can you imagine being taken to court over a flushing loo? I can’t believe the courts are even entertaining this.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"82891776f9","route":"express","text":"Wow, season 3 is actually out already. Need to check it out","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"7cd5f0b881","route":"express","text":"I'm not saying to hate them, I'm wondering why this sub just started worshiping them.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"d4734be7f6","route":"express","text":"That's... pretty unexpected actually.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"75aaf04e1c","route":"express","text":"Surprised he's in. Imagined he was concussed. He was on another planet for a bit.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"897dfa0538","route":"express","text":"I mean...that’s quite obvious. I’m just left wondering what the other item is. 2/10","label":"alert","kind":"goemotions","split":"held"}
+{"id":"4901863e95","route":"express","text":"I'm shocked! Shocked! Well, not that shocked.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"301fa8c2b5","route":"express","text":"This is amazing. WTF.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"e47375ce34","route":"express","text":"I saw that comment and wondered if someone was going to post it here. I almost feel bad. Maybe they’re lonely.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"4262e6c978","route":"express","text":"Omg didn't even think of that! So clever! Yes!","label":"alert","kind":"goemotions","split":"held"}
+{"id":"7cd5b808c5","route":"express","text":"You too! (FYI I accidentally initially replied in a new comment, in case you didn’t see my other reply)","label":"alert","kind":"goemotions","split":"held"}
+{"id":"7e32e18bd6","route":"express","text":"The dress was trailer trash appropriate. Did he just run out of money for a good dress? I mean, $300 BLACK UNDIES.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"d26a5a75a4","route":"express","text":"Color me surprised. Take your \"free\" care and like it, peon!","label":"alert","kind":"goemotions","split":"held"}
+{"id":"bd62353ab9","route":"express","text":"Right, that makes sense! I wonder if the person I met in real life would acknowledge he's more of a fence sitter than childfree, haha","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"67edef29fa","route":"express","text":"Wow, that's clunky.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"89127f7f71","route":"express","text":"I just really don't see 20% for him. I would be very surprised.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"742378944b","route":"express","text":"I was surprised the general public hadn't already heard of them tbh. They have been around for quiet sometime.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"5adf0f693a","route":"express","text":"Probably. I am surprised Reddit doesn't just purge all right leaning subs.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"ac9f9a1124","route":"express","text":"I wonder why! :/","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"47f8223060","route":"express","text":"OMG. Indict this oligarch.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"2f41ed4672","route":"express","text":"I don’t know about shatting myself but I would have been _shocked_ for sure.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"d871b1b85d","route":"express","text":"What really? I cant believe no one has ever said that before! You may have saved my life.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"ed3bdaa59d","route":"express","text":"I am so thrilled that you broke through that constraining ceiling, or that \"tunnel vision\".","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"d5273dbecd","route":"express","text":"Holy shit that’s nothing","label":"alert","kind":"goemotions","split":"held"}
+{"id":"1f15680d38","route":"express","text":"It surprises me that he's a mod some days...","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"f7d3750473","route":"express","text":"What a game.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"2025b3ea99","route":"express","text":"shockingly close to reality.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"faab05d9e1","route":"express","text":"It looks like they do but random redditors do not. What a surprise.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"b1a3a0b343","route":"express","text":"Wack. Oh heard some 17 year olds are doing it too.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"19a95e8f12","route":"express","text":"Don’t I know it! I can’t believe this breading station thing is so enormous.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"7ef62404ea","route":"express","text":"It’s bad law. I wouldn’t be surprised either.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"b8b7ab793b","route":"express","text":"Lost finger how?","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"9fbf06be70","route":"express","text":"Wife just had our baby, and this story freaked me out. I can't imagine going through something like that.","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"b06269b70c","route":"express","text":"I can't imagine buds being very hard to find in Hawaii","label":"alert","kind":"goemotions","split":"held"}
+{"id":"e06712de8c","route":"express","text":"That glo up though. Omg 😍😍😍","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"ab1e097056","route":"express","text":"Blatant manipulation. Wow!! Who do we report that to?","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"0c5dc39ae9","route":"express","text":"? ur slide is right stick","label":"alert","kind":"goemotions","split":"tune"}
+{"id":"b1fae394ec","route":"express","text":"Yikes I cringed hard","label":"alert","kind":"goemotions","split":"held"}
+{"id":"78d985000a","route":"express","text":"OMG! I can only imagine. I've gotten it into a hang nail before and that was NOT fun.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"f67c3d2c43","route":"express","text":"I can't believe he used the N-word.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"73ebb717a0","route":"express","text":"I’ve never heard of a vet adopting out pets before.","label":"alert","kind":"goemotions","split":"held"}
+{"id":"1ecab21e83","route":"express","text":"All children should be given the option to learn about how to effectively use the rights they’re entitled to.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"c26d2e266d","route":"express","text":"What type would you classify House from House M. D.? (T. V. SHOW BUT OK","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"aa6c219731","route":"express","text":"He's just showing off for the camera there.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"0458e7b073","route":"express","text":"Seinfeld is one of the only pieces of culture that I feel like I could be competitive in a trivia league about.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"2f7bf6b76d","route":"express","text":">While Austin is a great city that should embrace its first major pro franchise, What is this conformist nonsense?","label":"calm","kind":"goemotions","split":"held"}
+{"id":"0f9f25f261","route":"express","text":"Girls dog got bored fairly quickly.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"95d20fe3ac","route":"express","text":"Ah, that's why they say don't run in the corridor","label":"calm","kind":"goemotions","split":"held"}
+{"id":"4144905da9","route":"express","text":"WE FOUND THE HERETIC AMONGST US!","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"3208270080","route":"express","text":"i know the feeling dude","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"ea55b6a33e","route":"express","text":"Well it gets the stupid people to eat tide pods, evolution needs a helping hand after shifting in the gene pool.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"ef2a5dd5b2","route":"express","text":"Do you not see the blatant hypocrisy of this post?","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"fe7f10ba11","route":"express","text":"Horseshoe effect going on with FBPE and the no deal brexiteers, basically if you're soft remainer or brexiteers they hate you. The irony ha","label":"calm","kind":"goemotions","split":"held"}
+{"id":"db27d7a856","route":"express","text":"The Leafs weren’t mentioned once in this article.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"aa8344b264","route":"express","text":"Just a simple man trying to make his way in the galaxy","label":"calm","kind":"goemotions","split":"held"}
+{"id":"a6aca46b1d","route":"express","text":"I don't think that makes you seem as cool as you think it does","label":"calm","kind":"goemotions","split":"held"}
+{"id":"12d8bc051a","route":"express","text":"This guy was my high school government teacher. This stuff is all classic to read about","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"301c93e29f","route":"express","text":"Someone hold me","label":"calm","kind":"goemotions","split":"held"}
+{"id":"93b43a254f","route":"express","text":"I'm tired, but I can't sleep.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"01b488864e","route":"express","text":"Just speak with a Sheffield accent lmao","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"71b374ff5f","route":"express","text":"It's not because you killed the chicken. Kill another one and see if that happens again.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"3658f45678","route":"express","text":"Wrong, it's not 365 days a year. Once every four years, it's 366 days a year.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"bb97de4c57","route":"express","text":"> Pokemon Go continues to be an excellent substitute Is it really though? I mean does Skorupi actually care about your needs?","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"08dbf1a924","route":"express","text":"And of course, instead of calling out the men responsible for this behavior, the \"Not all men\" crowd has arrived in full force.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"f31f7562d7","route":"express","text":"Trade jv he is trash","label":"calm","kind":"goemotions","split":"held"}
+{"id":"93712e3429","route":"express","text":"It's because you're dizzy from lack of oxygen.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"79fc7a7e66","route":"express","text":"These are the same people who thought liking hot sauce was a major scandal","label":"calm","kind":"goemotions","split":"held"}
+{"id":"29aa6b4f64","route":"express","text":"Oh lawd he comin","label":"calm","kind":"goemotions","split":"held"}
+{"id":"6139624545","route":"express","text":"Kind of uncool dude","label":"calm","kind":"goemotions","split":"held"}
+{"id":"cbd7b3ca32","route":"express","text":"And then everyone clapped","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"3d004bd24a","route":"express","text":"I clicked tive times on the Facebook like Button","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"b56598044f","route":"express","text":"Looking forward to seeing these people have their characters die in sudden and extravagant ways.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"477ef3d31a","route":"express","text":"Here's an excerpt from Australian law that seeks to define hate","label":"calm","kind":"goemotions","split":"held"}
+{"id":"d437046aef","route":"express","text":"They're more off beat than Blueface. I didn't think that was possible.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"effa2c6374","route":"express","text":"But sweat pea it’s a MAN wearing makeup! My gay bestie BABES 🍭🍆🧖‍♂️","label":"calm","kind":"goemotions","split":"held"}
+{"id":"59fc891d77","route":"express","text":"Ive got these too, any tips on how to remove/make them less obvious?","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"903a301d0c","route":"express","text":"Close your eyes and keep watching the first second","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"9639f05bfc","route":"express","text":"You asked if I verified. You set the goal post, not me.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"62f31ca9e5","route":"express","text":"BERNIE OR BUST","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"0596f2e829","route":"express","text":"you can bring all your cards to the game","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"b354d17349","route":"express","text":"I'm not surprised.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"2240c888ef","route":"express","text":"Worst bit is that it keeps snowballing, and growing and suddenly it this mess you can't make sense out of or clear up","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"edeeaa0690","route":"express","text":"What’s with the video being off?","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"b7f67948a2","route":"express","text":"This is my ex and I rib about this all the time","label":"calm","kind":"goemotions","split":"held"}
+{"id":"0e9c334dcc","route":"express","text":"maybe now it'll go up to 3 an hour😎","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"14d915fb79","route":"express","text":"It was squirting all over my kitchen n the nurse. Who then said oh nicked an artery.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"d8f380a085","route":"express","text":"I think for some reason she thinks the money out weighs a normal childhood for her daughter.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"03a2206060","route":"express","text":"Injuries will not knock us out of the running.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"15b5487b58","route":"express","text":"“Rein get in there!” That’s all I see","label":"calm","kind":"goemotions","split":"held"}
+{"id":"e3cb257c55","route":"express","text":"Hi everyone!","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"a977fdc43f","route":"express","text":"wh is that undertale","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"3d8a23f33c","route":"express","text":"It might not feel like it right now, but you’ll give yourself more self-respect to find someone else. And a better life.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"af9b8ede1f","route":"express","text":"Explains why I couldn't connect to their forums.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"0ee6a808b4","route":"express","text":"Probably didn't notice the bicycles until last second and swerved to avoid them.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"2b6c9052ca","route":"express","text":"that offense averaged 20 points a game. the same as this year and look where we are.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"5ff2116213","route":"express","text":"He’s had nightmares ever since the storm","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"f5b64b9968","route":"express","text":"The climate change committee is pretty toothless and would rather see it have more power, happy it exists at least.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"c894b75473","route":"express","text":"Found an Instagram account","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"e141d7abc9","route":"express","text":"TAMAR ESPECIALLY!!!","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"3a9cf4700e","route":"express","text":"Just ride the subway in NYC and watch how everyone behaves. Don’t stare, though.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"737bf39d20","route":"express","text":"When we have tens of millions starving or dying of thirst, at least you will still have the moral 'high ground'.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"4fe1d52473","route":"express","text":"Pm me too please!","label":"calm","kind":"goemotions","split":"held"}
+{"id":"cefed34a25","route":"express","text":"There's a ton of reasons in other threads.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"adcd94b384","route":"express","text":"It's an absurdly racist phrase that these anti-racist activists are very comfortable using for some reason.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"a3e071973b","route":"express","text":"It won't be anything with \"Last\" in it, because TLJ. But it miiiiight be something with \"Final\" in it.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"fc60aed3a8","route":"express","text":"Plus they might still be salty about the prison colony debacal.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"2dc10f2758","route":"express","text":"Nothing has come close to it well except for GOT.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"7bb66a27d9","route":"express","text":"Good thing the booze wasn’t in the cart yet... bottles to the face!","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"71810e9ff6","route":"express","text":"Paying for the drinks doesn’t equate to drinking the drinks.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"7d2636bebd","route":"express","text":"Story of my life.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"d60ea9c69b","route":"express","text":"Pfft, you should see fortnite. I know people who have spent thousands of dollars on llamas and skins.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"f837b7dc68","route":"express","text":"4 year old. The hardest part is only seeing him half the time bc I’m the primary care giver in the family","label":"calm","kind":"goemotions","split":"held"}
+{"id":"6766f59040","route":"express","text":"Time heals all wounds :). Get this man a ring!","label":"calm","kind":"goemotions","split":"held"}
+{"id":"4f0766f235","route":"express","text":"The hardest part is trying to figure out what anyone is talking about with all these F degrees.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"0b74815a4f","route":"express","text":"Apparently the system is down","label":"calm","kind":"goemotions","split":"held"}
+{"id":"db49dd828e","route":"express","text":"Something tells me she just got it too.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"518711659f","route":"express","text":"CAPTAIN!! ye-yeah? LOOK!!!","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"aaeb60d986","route":"express","text":"Likely frostbite advisory weather.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"31e74ea022","route":"express","text":"Spoiler >!Loli Girl about to grow up in 2 episodes!<","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"0b38a8600e","route":"express","text":"They’re just idiots parking there. No clue that it is a designated bike lane.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"e63a4df8c2","route":"express","text":"Erm... Maybe he wants you to use those toys... On him.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"51f6315274","route":"express","text":"Protestantism never cease to amaze me with its joke of theology and non existent historical justification.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"a77c3066fb","route":"express","text":"That feeling when your mascot is there but none of his players. Sorry Youppi","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"1074bdebfa","route":"express","text":"Hmmm.. This map]( a lot like this map","label":"calm","kind":"goemotions","split":"held"}
+{"id":"e84182a5c7","route":"express","text":"They cannot bypass racial discrimination without facing a serious backlash.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"3a1b45686c","route":"express","text":"i have noticed i am getting leg pains & backpain after day 1 of fapping and feeling powerless and unmotivated","label":"calm","kind":"goemotions","split":"held"}
+{"id":"4ab778f551","route":"express","text":"Most vancouverites know of these scams. Especially #1 broken credit card machine. Complaints go unheard.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"5c0665ace9","route":"express","text":"he left his briefcase... hey, it's full of shredded newspaper!","label":"calm","kind":"goemotions","split":"held"}
+{"id":"aa5590454f","route":"express","text":"He's gotta be a robot or a test tube baby. Only explanation.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"73ff4ac124","route":"express","text":"Asides from the max number of choices each share, probably being shamed on the internet","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"f656462a1e","route":"express","text":"Bold of you to a̢̢̘̜̹͖͓̣̼̰͎̞͚̖͟͝͠s̷̻̮̝͍̕͘͝͝ş͏͕͈̻̺̬̻̱̫̙̠̜͚̗̯̤͔̙̫ų̖̰̭̺̳͕͔̥̳̟̻͖̗̪͙̕͜͝m̨̢̲͚̪͢͝ͅe̹̣̻͙̻͕̦̕͠","label":"calm","kind":"goemotions","split":"held"}
+{"id":"d98227d380","route":"express","text":"Meh, the Chiefs got gifted a PI call or two, especially on their last drive to tie the game.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"7059147c09","route":"express","text":"Oh yeah. Here's hopin to Persona next.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"0f129c2d58","route":"express","text":"Are you really saying a leashed dog has the same potential to attack as a non leashed dog? Lmao.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"5e2cfc8212","route":"express","text":"How I met your mother with muscles","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"f477923856","route":"express","text":"ift yourself up on your feet! Let's get it on!","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"01b01963b5","route":"express","text":"Orange man = bad","label":"calm","kind":"goemotions","split":"held"}
+{"id":"3694c9f9fc","route":"express","text":"Oh because all fruiting plants were bred by humans, ok TIL","label":"calm","kind":"goemotions","split":"held"}
+{"id":"38b387e273","route":"express","text":"It still hurts 15 years later. I don't know how people can be so callous their own child","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"663d96a0e6","route":"express","text":"Which is why people sell on TPT...","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"3401702c65","route":"express","text":"It's not an conscious choice to be uncomfortable about something.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"5c362a0bb2","route":"express","text":"Sheet cake did *nothing* to you, man","label":"calm","kind":"goemotions","split":"held"}
+{"id":"e682f92d0b","route":"express","text":"Well, no- the person serving you already provided ID to get the job, so they’ve already confirmed their age","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"bb31dcd6ac","route":"express","text":"IMO 90% of articles on the internet, or in newspapers or TV news, are placed by PR firms. Only children don't know this.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"1a42ea07fa","route":"express","text":"Does everyones dad/grandpa have this exact one? Mine do.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"44ba468a48","route":"express","text":"We give them too much money.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"8c6b621676","route":"express","text":"Looks like emotionally and physically beating the shit out of his wife and children was not wasted then.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"87697c7c0e","route":"express","text":"I just tell myself that I'll be put together for some girl. She won't have to treat me like a fixer upper.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"3b4acd988a","route":"express","text":"You drive from Burlington to London to school???","label":"calm","kind":"goemotions","split":"held"}
+{"id":"27e4e70a39","route":"express","text":"The lunatic is on the grass.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"5f0a49403c","route":"express","text":"Right? Remember when she requested evidence of pill testing being successful? Then the stats came in from Canberra. #calledyourbluff","label":"calm","kind":"goemotions","split":"held"}
+{"id":"27865ed461","route":"express","text":"you couldn't make a more unsubstantiated claim even if you tried","label":"calm","kind":"goemotions","split":"held"}
+{"id":"b648288c36","route":"express","text":"SCREENSHOT THIS.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"cd9c40e6bc","route":"express","text":"Stands to reason. Those with the biggest stick(weapon) and all...","label":"calm","kind":"goemotions","split":"held"}
+{"id":"ecd8b18960","route":"express","text":"To match the Mets green st paddy’s jerseys","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"e54decae57","route":"express","text":"That’s why it’s a repost. To anyone who’s cake day is 2 day🤗","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"54a3dc513a","route":"express","text":"My best friend missed the play using the restroom too. He thought there was a halftime-like break between the 4th and OT.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"ff4adedbd6","route":"express","text":"Because your considered “boring”. Girls love drama. It’s a thing.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"0dfdde8155","route":"express","text":">Doctor: So do you cancel a lot of plans you make with friends >Me: uh technically no","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"899f67260e","route":"express","text":"Ask him if he’d consider opening a makeup store if you gave him $6000","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"768d07fbf4","route":"express","text":"Pretty sure the legislature needs to change laws","label":"calm","kind":"goemotions","split":"held"}
+{"id":"e23d0aef2a","route":"express","text":"I used to know a guy back in HS, and college. Every male in his family had been struck by lightning, except him.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"a344166a83","route":"express","text":"To add, from what I hear he is actually a stand up guy and not at all the douche that the tweet/comments are about.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"37ea85ffd5","route":"express","text":"Taking deep, measured breaths usually helps me regain my composure","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"449bd5c0f4","route":"express","text":"Winter isn't even that bad here.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"98ef9a26a8","route":"express","text":"This will not happen bru","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"40b042aecd","route":"express","text":"Exactly. It’s all about control","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"31ac62e954","route":"express","text":"Old man yells at cloud","label":"calm","kind":"goemotions","split":"held"}
+{"id":"8975da3e9a","route":"express","text":"Mississippi, where your sibling is your first lover.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"6a49f6d0ed","route":"express","text":"Women cheat way more. They have unlimited options like a kid in a candy store. Most men couldn't cheat if they tried","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"6bd1520200","route":"express","text":"Ask him out for a drink.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"04c02e30af","route":"express","text":"Stick your head in a blender and leave it on for all year. Turn it off for October and half of November...then right back into it","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"dbcfc44022","route":"express","text":"Dang... I’m learning all the secrets!","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"efe911828e","route":"express","text":"Your harshest critic will always be yourself","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"63f8ba058a","route":"express","text":"Grow a beard.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"b974d6161e","route":"express","text":"Thought this was r/monkeyspaw for a sec. Mind if I grant your wish anyway?","label":"calm","kind":"goemotions","split":"held"}
+{"id":"9be17c9dd8","route":"express","text":"I always give my disclaimer when he asks for my phone number. I understand and respect my situation could be a deal breaker for some.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"10da72a9fd","route":"express","text":"okay but where to find bara that isnt fetish/sex stuff and is more wholesome and romantic?","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"cef81bb250","route":"express","text":"Going by the dates given, this child was born in 1985. So Mom really cared about this in the 80s.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"5971597259","route":"express","text":"Teachers, do not diddle these kids!","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"6e583669f1","route":"express","text":"DEGENERATES LIKE YOU BELONG ON A CROSS","label":"calm","kind":"goemotions","split":"held"}
+{"id":"b8cbd5d2af","route":"express","text":"Right? The dollar values just double and two daily doubles.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"2c5a30f01b","route":"express","text":"For unrelated reasons, school is another mess. But vaccine injury in definitely represented through absurd levels of special ed.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"9c8a1a5d91","route":"express","text":"god damn this is some major league pathos","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"90ef38e449","route":"express","text":"I can only imagine what we call it when you have sex, then.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"33a96dc25c","route":"express","text":"You have to have a high IQ to understand Rick and Morty.","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"2d70dbe728","route":"express","text":"No but it should be","label":"calm","kind":"goemotions","split":"held"}
+{"id":"ed2560f906","route":"express","text":"There are far more bad ones than good ones. Stepparents that treat their stepchildren as their own are noteworthy for a reason.","label":"calm","kind":"goemotions","split":"held"}
+{"id":"1bebffd867","route":"express","text":"Keep your head up","label":"calm","kind":"goemotions","split":"held"}
+{"id":"81d3bb3d57","route":"express","text":"This guy here","label":"calm","kind":"goemotions","split":"tune"}
+{"id":"0f0e3e46b9","route":"express","text":"its not about claiming its yours, its just about where it is from","label":"calm","kind":"goemotions","split":"held"}
+{"id":"a4a4c7b0c5","route":"express","text":"Same here. I just don't understand how NOBODY at Lucasfilm said during the production, \"Hey maybe this is a bad idea.\"","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"351e017967","route":"express","text":"oh yeah? what if i can't read at all?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"5c592d1b65","route":"express","text":"You said it baby, can't wait to see what marvelous wonders the rest of 2019 will bring!","label":"curious","kind":"goemotions","split":"held"}
+{"id":"f44c42529b","route":"express","text":"is that an enby egg?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"f92f8bc273","route":"express","text":"I've been really into reading nonfiction lately and ancient religious history sounds fascinating! Do you have any books you recommend?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"3efb137fb0","route":"express","text":"Okay, I’m honestly curious as to why it is you’d assume that?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"6b2f22301f","route":"express","text":"Not sure how anyone whos been paying attention could","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"ed5a91a9bd","route":"express","text":"Do y’all consider Cadillacs as “luxury” cars similar to Audis, BMW, Lexus ?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"60cae9ea50","route":"express","text":"If everybody put down their camera to help, what would you be doing right now?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"bb1a508135","route":"express","text":"Can't wait to see her looks in S11!","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"ef69748f27","route":"express","text":"So you’ve never had a fwb situation and if you have it made you worthless for a real relationship to other women? Hope this goes both ways","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"4b6967c395","route":"express","text":"So I can’t do anything about it now?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"3eb9f1c25b","route":"express","text":"I haven’t read the Quran and I doubt you have either so I can’t agree or disagree with this statement.","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"fc16df4a56","route":"express","text":"Did the words get unbanned?!","label":"curious","kind":"goemotions","split":"held"}
+{"id":"79b0aab423","route":"express","text":"Am I the only one who thinks these Instagram poses girls do are so freaking cheesy","label":"curious","kind":"goemotions","split":"held"}
+{"id":"dd466da685","route":"express","text":"I tried Guinness the other week and it made me gag, what’s different about it to other beer","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"3f6c4a3e89","route":"express","text":"Like wtf how is that angle 114 degrees","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"186323ee77","route":"express","text":">I was internally startled but tried to play it cool. Why?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"5bedf7d903","route":"express","text":"Why do you feel like you have to figure out what life is alone?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"9e645981b9","route":"express","text":"Not sure if we can call him ginger anymore. That hairline went into a recession that'd put 2009 to shame.","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"9ce6b59d11","route":"express","text":"Yeah, I’m curious how these notes are “passive”.","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"de8c83c34c","route":"express","text":"Well what would make us special? He's vouching for his friend.","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"1e202e19b3","route":"express","text":"Swear i have seen this before? had it been reposted?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"739c4c9caf","route":"express","text":"Is he really your buddy if you have to ask us how to talk to him?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"cdce1500e2","route":"express","text":"Old timbermill. Was that the long payload defense and attack?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"e1bd8dd7fa","route":"express","text":"I'm not sure how is this as big an issue as you put it up to be.","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"46f7467da6","route":"express","text":"not in the slightest. im actually dumbfounded.","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"986fed0bd3","route":"express","text":"Out of curiosity, why are you specifically interested in talking to aspies?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"7d55d57ecd","route":"express","text":"Does anybody else see strong parallels between power and freedom? Feel free to distinguish or correlate the two in a comment.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"b4d3202ea3","route":"express","text":"I'm confused. Where did I propose anything? I'm just describing how things currently work and what to consider...","label":"curious","kind":"goemotions","split":"held"}
+{"id":"218fa77005","route":"express","text":"That is interesting. Can you site some sources or anything on this matter ? I am genuinely intrigued .","label":"curious","kind":"goemotions","split":"held"}
+{"id":"7959dd9350","route":"express","text":"I don’t know exactly what this entails but I’m all for it man","label":"curious","kind":"goemotions","split":"held"}
+{"id":"600375e373","route":"express","text":"Probably not, and I'm fine with that. Not exactly the position nor type of person a rebuilding team needs.","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"092b236870","route":"express","text":"If you think people in this sub are gonna get butt-hurt you are in for a pleasant surprise.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"77d2d33c9e","route":"express","text":"Does negging ever actually work?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"b1a96b0a68","route":"express","text":"What documentaries would you recommend? I want to see it.","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"0b86437244","route":"express","text":"How can we send money to you?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"f91c146055","route":"express","text":"Where were they? I was trying to track them down and couldn’t remember where I saw them.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"9b29dbc1bf","route":"express","text":"Interesting isnt it?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"9db415a974","route":"express","text":"200 likes already? Can we keep it going! Upvote! Upvote! Upvote! Enough upvotes and we will get the community involved.","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"e47463c0e0","route":"express","text":"It’s not clear to me that vulnerability functions as an ethical compass. Will table further replies in deference to a culture war thread.","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"4fd34263bc","route":"express","text":"Wondering why they change it","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"a9b54ac420","route":"express","text":"Now I'm over thinking. Maybe I have justified it to be able to move on and get closure???","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"5aed561956","route":"express","text":"Joint bank account?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"9fd0553a0f","route":"express","text":"Ha. Do you have evidence of his cheating? Send it to his family and don’t say another word.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"978ee55991","route":"express","text":"They put him on a minutes restriction for some reason, guessing cause he's not in really good shape?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"caea0f0ee0","route":"express","text":"Can you please update me! I'm in the exact position! 24FHL with 21MLL","label":"curious","kind":"goemotions","split":"held"}
+{"id":"6f6f4bcf0a","route":"express","text":"Then why isn't he the one wanding people?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"b8df7e618d","route":"express","text":"If a woman forces a man's penis into her vagina, that ABSOLUTELY IS a crime. Not sure what you're smoking.","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"79f839f7f0","route":"express","text":"You need to tell her, and make sure she knows it’s not your kid. You went through with a dna test right?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"6e211767b6","route":"express","text":"Was that an airbag at your legs/feet area?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"47310243f5","route":"express","text":"I think in any state it is permissible to record if you let the other party know that you are recording. I could be wrong, though.","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"1fe7036407","route":"express","text":"This is his speculation or a leak?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"c09672cac4","route":"express","text":"What is the $250,000 figure based on?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"0e85f13448","route":"express","text":"If he wasn't diffusing the situation then why did he go in between the two groups?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"3dfbf6d015","route":"express","text":"Probably yes. Impossible to say without details. Has he tried giving the bill to his insurance?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"4d04c5b7c7","route":"express","text":"It's pretty obvious why they're filming dipshit","label":"curious","kind":"goemotions","split":"held"}
+{"id":"b0437dbab4","route":"express","text":"Three times a year? Where/what are you eating?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"af7c6cb897","route":"express","text":"Is he not supposed to have what he wants? What he needs?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"f6208a7d37","route":"express","text":"What happened in his personal life? I know he had a bunch of head injuries; is there more than that?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"c9567113fd","route":"express","text":"Someone tell me how to feel about this","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"0f5477771e","route":"express","text":"What exactly is insane about this","label":"curious","kind":"goemotions","split":"held"}
+{"id":"b1b582edc5","route":"express","text":"Just googled him. Only thing is how do I get in contact with him.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"85e9a2666a","route":"express","text":"I think we should conduct a study and find out, otherwise I don’t know and you don’t either","label":"curious","kind":"goemotions","split":"held"}
+{"id":"1ab44031b9","route":"express","text":"Is it weed? I’m curious to ask if you know what weed smells like?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"9f9ce360f4","route":"express","text":"How about texts between them? \"On my way home.\" \"Ok, see you soon.\"","label":"curious","kind":"goemotions","split":"held"}
+{"id":"8e288336ad","route":"express","text":"I missed this too. Why did they split?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"73af391ba9","route":"express","text":"by deep pockets do you mean the Fleshlight?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"94a2e82497","route":"express","text":"Is anyone forced to work in prison?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"37997af800","route":"express","text":"Excitement for new regulation and taxation in the ancap reddit?!?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"c9c288ac7a","route":"express","text":"What part of \"Yeah but still\" do you not understand dude?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"4fa988b082","route":"express","text":"I don't understand how her hair is 'too light' or how that effects the concealer.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"0b41b912bf","route":"express","text":"OK, is there a crossover between herb and spice in your language (Norwegian?) I was confused by 'North American Provence spice'.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"d356c1a60e","route":"express","text":"How could they forget the gravy?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"7d96ac3151","route":"express","text":"What reason do you have for not already having been prepared?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"4edce485fb","route":"express","text":"I don’t know what I’m to say I’ll say it anyway","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"63d49b2abe","route":"express","text":"Yeah, the death of pharmaceutical producers seems like a weird thing to root for.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"92daf8d89d","route":"express","text":"Don't y'all scream communist at everything and burn Nike stuff for no legitimate reason?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"57b8c8ea6e","route":"express","text":"This is a gift for my rematch secret Santa recipient. I hope they’re both confused and amused.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"2bce7d8b48","route":"express","text":"Well i know this much is true, there’s unspoken truth amoung us men, we secretly love hairy vaj. No? Just me?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"e54e0aeeaa","route":"express","text":"Why was everyone so happy when he pulled that knife","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"a050486597","route":"express","text":"I never understood the point of parole. Seems to me like an expensive way to increase recidivism.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"fc138aeb2b","route":"express","text":"What's the streamer's name? I want to find the aftermath of this","label":"curious","kind":"goemotions","split":"held"}
+{"id":"b07f5337c6","route":"express","text":"why is this guy assuming the teen is some kind of southern pro slavery hick","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"eba0485d02","route":"express","text":"We don't know what would have happened if she'd said no, which is why most guys wouldn't ask.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"6557eb6778","route":"express","text":"Can holiday just stop fucking shooting? I can’t wait till he gets traded.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"dcf52a5e13","route":"express","text":"I don't even know what I'm going to do when the winter break ends. These posts are the sunshine of my life.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"2c716c8ebd","route":"express","text":"I don't remember being able to hear in those situations. I think...","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"4cbca6c8c3","route":"express","text":"Why do you think he's right? What reason would a nonprofit newsroom have for publishing sensationalist headlines?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"1ccb95805c","route":"express","text":"Does that work for the WSJ? I haven’t read an article from there in a year.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"df68ca3a04","route":"express","text":"This is my favourite comment of the day. So because I don't like to be ripped off I should not be able to have a family?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"eec97c4087","route":"express","text":"Pretty sure you could do that with a cargo ship too, so I'm not sure I buy that argument.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"26ec43f71e","route":"express","text":"I cant wait. I'm curious if it will give us any more insight into the incident other than what we already know.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"1788c43f2b","route":"express","text":"but.... but the lizards would eat the bugs....?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"37fa0a9f91","route":"express","text":"> Clothing predates religions though Can you cite that? It seems like a somewhat interesting question.","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"5792fdf955","route":"express","text":"how many times has this been reposted by now? 10?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"1ac946297b","route":"express","text":"Is lab meat already available or are you guys referring to vegan burgers?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"d184241868","route":"express","text":"Can you link an example? I’m curious now","label":"curious","kind":"goemotions","split":"held"}
+{"id":"1774dd1926","route":"express","text":"The jockeys one is amazing I don't know what you're talking about.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"fd8e1afc32","route":"express","text":"I'm curious, too.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"5047301393","route":"express","text":"What made you so interested in great whites?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"87d0c06e0e","route":"express","text":"Late to the party, but if it were young boys talking about stabbing women in the vagina would it still be okay?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"65430ea16b","route":"express","text":"Also, do you have a link with updates? I cannot find any reports like this.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"31b1ceb448","route":"express","text":"Can someone please explain why is it illegal and where? Never heard of this before !","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"ed5a422fd9","route":"express","text":"What is everybody obsession with trading away young players in this sub?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"ec7a772ebd","route":"express","text":"WHAT A SHIFT!!! Can't stop that zone.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"b3191e5119","route":"express","text":"What's your point? All these comments are from people who clearly had not seen it before. Only a couple said they had.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"3bf1424f0f","route":"express","text":"What makes it ok as it is?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"5cd6818b23","route":"express","text":"People are paying attention to their assets? Hmmm. I don't feel sorry for them.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"9ec487be2d","route":"express","text":"Can’t even tell what’s happening here. This isn’t cringe.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"65b63f139f","route":"express","text":"My dumb ass thought it was meant to be a magic wand and he was reversing time and I was really confused.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"ed61f5cfb3","route":"express","text":"Why the assumption that Kitchens will turn out better than JBC did? The scenarios seem very similar","label":"curious","kind":"goemotions","split":"held"}
+{"id":"c9254c98d8","route":"express","text":"I'm getting politically charged rhetoric from a cola company now?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"e6dca1e53b","route":"express","text":"You don't have a point. Yes there are aspects of crypto that is confusing. Getting confused between buying BTC or BCH is not one of them.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"c68fffaae3","route":"express","text":"**Who would win:** a team of 10+ moderators with libertarian principals or one person with a Python programming environment?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"004345a8bd","route":"express","text":"#HUH!? WHAT? WHY? HOW? I HAVE SO MANY QUESTIONS!","label":"curious","kind":"goemotions","split":"held"}
+{"id":"0145c36948","route":"express","text":"I don’t think there’s anything sad about how many people are attending from their country, but I am doubtful of their prospects!","label":"curious","kind":"goemotions","split":"held"}
+{"id":"34e6d8f7ec","route":"express","text":"I dont even know what that is lmao","label":"curious","kind":"goemotions","split":"held"}
+{"id":"6cfad28cfb","route":"express","text":"What are you basing this on?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"30ee4936c3","route":"express","text":"I'm struggling to find what you're referring to here, could you maybe add something that points to it?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"a15558aa1c","route":"express","text":"I don’t know why but this made me crack up so hard!","label":"curious","kind":"goemotions","split":"held"}
+{"id":"5a3af8f98d","route":"express","text":"Was it this?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"cfb5ebb91b","route":"express","text":"Your girlfriend accepts gifts in exchange for sex? I got news for you homie...","label":"curious","kind":"goemotions","split":"held"}
+{"id":"ab707877ed","route":"express","text":"Wait a minute, the rich own ranches.... You're one of them!","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"84144654ad","route":"express","text":"You here to admit you are fine with existence once born? I thot so","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"06ba490fb3","route":"express","text":"Maybe don't pick something quite so obscure.... But my girl does","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"86e8836a60","route":"express","text":"That's interesting. Have you used it to register on many sites/services?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"f25fdab097","route":"express","text":"That's not really libertarianism, is it?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"754eca3c47","route":"express","text":"SRS is a pile of shit I have no idea how it is still existing","label":"curious","kind":"goemotions","split":"held"}
+{"id":"2d2f02e321","route":"express","text":"iS thIs a MeTapHor FoR LifE?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"4d82d85bd4","route":"express","text":"Not needed position? What team have you been watching?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"b2b0d89806","route":"express","text":"Still very curious who this woman is and what she looks like","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"6274da60a0","route":"express","text":"She was cheating on you *during* the wedding? That's impressive.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"2208ca6611","route":"express","text":"If it’s so in demands why are you posting that you can only get unpaid internships","label":"curious","kind":"goemotions","split":"held"}
+{"id":"cfd206c413","route":"express","text":"Does it have to be a pharmacy I’ve went to?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"ca30d03b05","route":"express","text":"Whoa am I reading this right? The lowest cost is $3.66 now? and not $2.66?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"65ffde7e3e","route":"express","text":"How do you prove someone is looking for a job??","label":"curious","kind":"goemotions","split":"held"}
+{"id":"04fe2702a7","route":"express","text":"That's what i was thinking. Did she tell you she did?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"9bc41c53cb","route":"express","text":"Why are you so salty? Who hurt you?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"43561bf400","route":"express","text":"Wait, isn't everyone nervous or scared the first time they hold a newborn?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"680a5d97f2","route":"express","text":"Any chance we could treat the terrorists as terrorists then?","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"e605577720","route":"express","text":"It's a strange decision that they scheduled this to conflict with the NFL playoffs in the United States.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"f8274de4ae","route":"express","text":"There's no excuse for him not reciprocating it's pure laziness. What about a 69?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"566595e4e0","route":"express","text":"Super curious, commenting to check in.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"c694b1b7ef","route":"express","text":"I have no idea what arbitration even is but I'm going to react poorly","label":"curious","kind":"goemotions","split":"held"}
+{"id":"d67279759e","route":"express","text":"Does anyone know how much that would be in (£) pounds.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"82392a13c8","route":"express","text":"But what is with that shirt?","label":"curious","kind":"goemotions","split":"held"}
+{"id":"3a941bcfc7","route":"express","text":"There isn’t a perk tree for strategy. Either illusion or maybe pickpocket... or sneak.","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"3c2029bcd7","route":"express","text":"What? I didn’t understand a thing of what you said.","label":"curious","kind":"goemotions","split":"held"}
+{"id":"3e8a72e768","route":"express","text":"I’m not frustrated... i think I was trying to be nice.. but now I’m confused and awkward. My apologies","label":"curious","kind":"goemotions","split":"tune"}
+{"id":"224a3aae96","route":"express","text":"Idk why ur being downvoted, I thought that's funny","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"87c9680379","route":"express","text":"That sounds like an appropriate response. Thank you for saving me the time.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"87f34e4d93","route":"express","text":"Easy breezy beautiful cover girl","label":"happy","kind":"goemotions","split":"held"}
+{"id":"ddd9cb9676","route":"express","text":"I'm 39 and still love being given chocolate.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"7e6644254c","route":"express","text":"They might be giants. Anything, but albums John Henry and Apollo 18 are good value.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"8740f935c5","route":"express","text":"I like how people are downvoting when this is how so many military coups have happened. I challenge those who downvote to prove me wrong","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"71dcd2503b","route":"express","text":"Lol I can’t wait to end up on this sub one day.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"4d4a320b54","route":"express","text":"Please give us updates. Oh wow.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"430c908b3b","route":"express","text":"But I do I still love him and he still loves me but he says im too immature","label":"happy","kind":"goemotions","split":"held"}
+{"id":"d636ec4fe6","route":"express","text":"Damn, sometimes I love people here.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"33627727c7","route":"express","text":"That kill was beautiful","label":"happy","kind":"goemotions","split":"held"}
+{"id":"0af0ab0956","route":"express","text":"Oh my. Bless this dog. He is a big boy. I love him so much. Tell him I love him.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"5b9faaf0ef","route":"express","text":"This is amazing!!","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"a9159c27c8","route":"express","text":"> Inflatable M'lady Guys I found my new flair","label":"happy","kind":"goemotions","split":"held"}
+{"id":"8cd8a14aa1","route":"express","text":"tell him i love him","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"1375d487de","route":"express","text":"Yes! My Big Fat Fabulous Life","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"93ef735ffd","route":"express","text":"Thanks for the tip! I just watched it and now I want more insider info!","label":"happy","kind":"goemotions","split":"held"}
+{"id":"ea40f4540e","route":"express","text":"Lawson’s Sip of Sunshine! Excellent Vermont beer.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"596fd7ffeb","route":"express","text":"AMD this is why we rejoice in his banning.... :)","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"9f5cc486d8","route":"express","text":"Thank you! Very cool!! 😎","label":"happy","kind":"goemotions","split":"held"}
+{"id":"0db92abfea","route":"express","text":"I only like felicity when she’s with black siren.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"98a9f8a0aa","route":"express","text":"Twins.. my first time having having a child and I get twins. This is gonna be a ride lol","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"6d4565d067","route":"express","text":"Thank you. I think I may know that already, but I might need to hear it from others at times when I miss him a lot.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"aea3f06a9f","route":"express","text":"Yeah would be exciting!","label":"happy","kind":"goemotions","split":"held"}
+{"id":"1f0540293f","route":"express","text":"Tu eres very nice man","label":"happy","kind":"goemotions","split":"held"}
+{"id":"9b52f1b9d7","route":"express","text":"You've got this. Hang in there. Please keep us updated. I'm really sorry that you're dealing with this right now.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"290d906e17","route":"express","text":"Thank you and likewise to you friend!","label":"happy","kind":"goemotions","split":"held"}
+{"id":"ca42b7fc49","route":"express","text":"I'm 35 was married for 10 years and now I'm not and I am so happy to be alone","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"1c789d18bf","route":"express","text":"Thanks! I had a more standard name but then realized I didn't want to be findable on Reddit.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"808d19a34e","route":"express","text":"looks like we got a double win today!!","label":"happy","kind":"goemotions","split":"held"}
+{"id":"ababae73a3","route":"express","text":"That's when they brew their second cuppa before work haha","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"fc50970daa","route":"express","text":"I like the way you think!","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"4059f412d8","route":"express","text":"Thanks for the clarification, appreciate that.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"1456916ed5","route":"express","text":"Why pay so much character and it feels so good. In the humble of 1996, the website was a skinny stoner with long hair.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"0b6ae8d19a","route":"express","text":"Feels good man","label":"happy","kind":"goemotions","split":"held"}
+{"id":"50b2f25a74","route":"express","text":"Ah fair enough. Thanks for elaborating","label":"happy","kind":"goemotions","split":"held"}
+{"id":"200045b7e5","route":"express","text":"Wow, thanks! Now i am rich again!","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"83a5338af5","route":"express","text":"Yes! Adoption is an amazing generous gift you can give to people that really want to be parents.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"d58ef2c99b","route":"express","text":"No problem, glad to help.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"da78d3fc8d","route":"express","text":"Still can't see. Thanks.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"e3ea5c3157","route":"express","text":"Happy Cake Day Baby!!!❤️❤️❤️","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"c10943cbb3","route":"express","text":"Like a low budget version of this amazing game show","label":"happy","kind":"goemotions","split":"held"}
+{"id":"9f67ea3952","route":"express","text":"She’s sexy I’d hit.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"857d676352","route":"express","text":"I'll have some wasabi with tapeworms tonight thanks.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"d049ba9151","route":"express","text":"I think she has a good chance","label":"happy","kind":"goemotions","split":"held"}
+{"id":"3ddbd2f3c8","route":"express","text":"Great, glad to hear most socialists are hypocrites who ascribe supernatural outcomes to their ideology","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"86b2e20b17","route":"express","text":"Glad someone appreciates it! This was a lot of work.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"db7b66b10a","route":"express","text":"Too funny 😂😂😂😂","label":"happy","kind":"goemotions","split":"held"}
+{"id":"f35db4717d","route":"express","text":"I’ll do that. Thank you","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"d4c7aa128b","route":"express","text":"I love it when people assume things.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"f5c1421eff","route":"express","text":"Well I am a lady, so that would probably just freak them out. Oh, Reddit. Everyone is a man haha.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"355150b8c2","route":"express","text":"WE ARE .500!!!! I'VE WAITED SO LONG!!!!","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"dff890e406","route":"express","text":"I have a really nice tempurpedic one and about 6 king sized fluffy ones that I use to just fall asleep hugging","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"a17f106ef1","route":"express","text":"The miracle of life!","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"83c4b0eb35","route":"express","text":"Good times, good timessss lol","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"a31e52ab5d","route":"express","text":"Even then, the commentor could have gotten the joke and was just being dead pan.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"6ad86038d7","route":"express","text":"hahah if only he had reddit","label":"happy","kind":"goemotions","split":"held"}
+{"id":"a399719284","route":"express","text":"Thanks China.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"efa2176d8c","route":"express","text":"downvoted to hell but i understand your experience. salute, soldier.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"16f2cb6729","route":"express","text":"Make sure to tell her /r/Austin helped you pick a place! She'll appreciate the thought you put into choosing a place special to her.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"c156aa9549","route":"express","text":"Because they are triggered. I’m just stating my opinion. It’s a bit fun.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"f8aaea41bb","route":"express","text":"I live in Canterbury haha","label":"happy","kind":"goemotions","split":"held"}
+{"id":"774b73a3be","route":"express","text":"Still awesome. I skateboard, ride bikes, and hang out with my friends. Edit: I'm 40","label":"happy","kind":"goemotions","split":"held"}
+{"id":"9490fbf075","route":"express","text":"Video games are great, but sometimes it’s nice to unplug and play a game of Jenga with your cat","label":"happy","kind":"goemotions","split":"held"}
+{"id":"c25548a101","route":"express","text":"there's an entire street in my neighborhood that's lined with 80+ year old magnolias on both sides. It's amazing.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"5061ce0624","route":"express","text":"Please do. lol","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"21e21cd26a","route":"express","text":"Your username makes me think you would appreciate this joke of mine.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"3562870096","route":"express","text":"that tone of voice sounds a loooot like a liar would sound... lol","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"e4f91baadd","route":"express","text":"Perfect! Thanks","label":"happy","kind":"goemotions","split":"held"}
+{"id":"fe04c633b5","route":"express","text":"i love how the caption implies that the only unrealistic thing/ the only thing that gives away the photoshop is the sleeve lol","label":"happy","kind":"goemotions","split":"held"}
+{"id":"2aecc53225","route":"express","text":"Good to know everything is about average there. Leave it to H-Town to hold it down.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"1e74fbfd67","route":"express","text":"Hell yeah o/","label":"happy","kind":"goemotions","split":"held"}
+{"id":"e971a2d58d","route":"express","text":"with his luxurious salary, nice pension and zero accountability for anything it does, its a hard old life!!!","label":"happy","kind":"goemotions","split":"held"}
+{"id":"0757d5b331","route":"express","text":"Thanks. Appreciate that perspective. I'm just saying it as a counter to the \"rope is the only cope\" mentality on the incel subreddit.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"6fb4ad28bc","route":"express","text":"Omg, your screen name made me lol!!","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"2a6d093960","route":"express","text":"Maybe they'll change their mind one day! That sounds good, I'll give it a go some time!","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"4d26e568d0","route":"express","text":"Great headline though","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"887ef11521","route":"express","text":"Wow that’s like - sound porn.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"4d8d2515de","route":"express","text":"This dish is a testament to be beautify and ingenuity of Italian civilization and culture.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"cce57777cb","route":"express","text":"a romantic one :)","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"9b63bbd8a4","route":"express","text":"This would be very much appreciated.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"56e48bb6bb","route":"express","text":"Been to 54 countries at age 34. No debts, ever. Aiming for retirement in my early 40's. Life is good.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"b534c4fe8a","route":"express","text":"He didn't blow anything. She blew it with him. What a fun guy!","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"4a027bf8dc","route":"express","text":"Everyone's probs already said it, but lats and chest, legs are big quad energy. Keep up the good work","label":"happy","kind":"goemotions","split":"held"}
+{"id":"759025e566","route":"express","text":"LOL how he not amused?! They dont like the truth haha","label":"happy","kind":"goemotions","split":"held"}
+{"id":"96eaa9ee18","route":"express","text":"That's a new one.... Wouldn't have lasted long in my room though, lol.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"f8f006fcf6","route":"express","text":"Yeah! Despite being from the east coast I've never been in the car when it's hailing so it was a full on argument. Thank you!","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"00c9a2b221","route":"express","text":"This is great! Can anyone make a request with you to draw?","label":"happy","kind":"goemotions","split":"held"}
+{"id":"820fdf5d88","route":"express","text":"Haha thanks for the warning but we met with her irl before :D","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"8195fd46ac","route":"express","text":"happy new year buddy!","label":"happy","kind":"goemotions","split":"held"}
+{"id":"7931558d68","route":"express","text":"Here in Russia, we do not like when our culture is misrepresented, but we make fun of such misrepresentations.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"49e6aa2a86","route":"express","text":"Hruska is amazing. Their sausage kolaches or I guess klobasnik have the best sausage I’ve ever eaten. It’s in Elliger, TX.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"86db1e6d4f","route":"express","text":"Thank you!!!!!","label":"happy","kind":"goemotions","split":"held"}
+{"id":"3768ad4afc","route":"express","text":"What a brave man.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"6e6dc96d07","route":"express","text":"That beat is mad smooth","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"6868e6d070","route":"express","text":"But that sounds yummy.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"2db8827107","route":"express","text":"*OOH* *AH* *OW*","label":"happy","kind":"goemotions","split":"held"}
+{"id":"e78b030a37","route":"express","text":"It's good though because itll make you cherish the happy times while youre in them, instead of lookinf back on them.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"c622f5bcf9","route":"express","text":"Haha, maybe at the 55 title party in May","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"973041a3fc","route":"express","text":"The effect has Tyus has on ball movement for us is remarkable","label":"happy","kind":"goemotions","split":"held"}
+{"id":"c35142efd2","route":"express","text":"wow. thank you. you dont know how badly i needed that tbh","label":"happy","kind":"goemotions","split":"held"}
+{"id":"fa10b0b2b7","route":"express","text":"what a beast","label":"happy","kind":"goemotions","split":"held"}
+{"id":"efa1d1413c","route":"express","text":"Live about 2 mins from there. Love the view of Waramaug from Tanner Hill.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"64dba8665a","route":"express","text":"I love your username...","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"8d5d089a23","route":"express","text":"they called me after 2 days lol","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"089b4f4203","route":"express","text":"I just got the zc and season pass for bo3 and have only played solo. Loving the game though.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"0e1b47f367","route":"express","text":"Every single time a person has demanded to see an MD rather than me I have appreciated the dodged bullet. It's never fun for the physician.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"f248e6a089","route":"express","text":"Please list them and sources as well. Thanks.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"53337c2f72","route":"express","text":"Thanks Harvard!","label":"happy","kind":"goemotions","split":"held"}
+{"id":"f7385aee92","route":"express","text":"My hoosband loves dee cee and I love San Diego because of the Gorilla enclosure And the Pandas.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"f9cd48b7ff","route":"express","text":"Ding ding ding! We have a winner!","label":"happy","kind":"goemotions","split":"held"}
+{"id":"e74b2bca74","route":"express","text":"Also looks pretty ♭","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"c3d99e3038","route":"express","text":"I enjoy BOG and Italy at Epcot. But that’s just me. Also, probably better going to Golive Arden.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"a529834ea6","route":"express","text":"Haha I was thinking Utah but... Florida makes sense too. There’s a few crazy states 🤷🏼‍♀️","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"48c861549f","route":"express","text":"The positive side to this is i get to relive the same emotions that I felt losing my virginity....ever few months.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"4ad88a61fb","route":"express","text":"Oh wow this is good to know, it was always my go-to spicy ketchup when I make frozen fries at home.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"23ae318759","route":"express","text":"Oh, hey what's up dude? Haven't seen you around in a while bro. Glad to see your still here.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"0dcba7c4c2","route":"express","text":"i think the telekinesis could make a great card. sth like: move an enemy card to another position and stun its new neighbors for this round.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"a48cd94400","route":"express","text":"Pleasure to meet you brother","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"085a1f1b5b","route":"express","text":"Today's Recaptchas were fun. I'm very good at identifying store fronts, apparently...","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"389025cfef","route":"express","text":"Thanks a bunch <3","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"8804859cea","route":"express","text":"He absolutely loves it!!","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"0f9d108e9e","route":"express","text":"Lovely experience on the trains this morning lool getting me practiced for being in a coffin","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"243a45c161","route":"express","text":"One day please show this post to him it is so beautiful and kind.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"0f3856baa7","route":"express","text":"Kings fan here, good luck to you guys! Will be an interesting game to watch!","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"a435d691b8","route":"express","text":"Thanks for adding the link. I'm not that reddit savvy","label":"happy","kind":"goemotions","split":"held"}
+{"id":"b40978e8c5","route":"express","text":"will do, thanks for the heads up!","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"a10d6d5512","route":"express","text":"Lol all those people that disliked have probably never even done shrooms before","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"7e594d25f6","route":"express","text":"Seriously one of the best soundtracks. I always get chills from the organs, even just thinking about them.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"103b167f82","route":"express","text":"Triple P Positive Parenting Program is excellent.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"5852f0102e","route":"express","text":"Yeah. Like you.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"2f539bdf5f","route":"express","text":"I love how this is transgender men not just men 👌","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"89d2baaa99","route":"express","text":"The last hour is great, but I would definitely say to at least leave 15 minutes before close so you can avoid the crowds in the street.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"a60f28fec5","route":"express","text":"Seriously. I legit laughed at this.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"002ad320e0","route":"express","text":"Was she? Oh, never been good at picking up on stuff like that. Thanks for letting me know!","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"71aa86d979","route":"express","text":"r/NagafenCoD is ecstatic","label":"happy","kind":"goemotions","split":"held"}
+{"id":"27c4b0169f","route":"express","text":"Good lord yes. Banging soundtrack too.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"fb45e78a7a","route":"express","text":"Highly unlikely, but damn would love this to happen.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"d55d083cb8","route":"express","text":"You’re welcome, glad to help!","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"bb3cbed4ee","route":"express","text":"Fight milk 🥛 lol","label":"happy","kind":"goemotions","split":"held"}
+{"id":"5b7eff046c","route":"express","text":"It was a beautiful week","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"97dca90bd8","route":"express","text":"I love when he asks while looking directly at the item but still not seeing it 🤦🏻‍♀️","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"a6ae42fe6e","route":"express","text":"If you don't like it, you didn't have to comment. Just let people be happy.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"3a965f17cd","route":"express","text":"Would love to get my hands on a dia de los muertos.","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"31637eaa64","route":"express","text":"very pretty lady.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"7998683c4b","route":"express","text":"This particular clip had been posted dozens of times already. Still adorable but come on guys!","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"ccdff4ce54","route":"express","text":"Dam 😣 that was awesome!","label":"happy","kind":"goemotions","split":"held"}
+{"id":"3e38598684","route":"express","text":"Gee, thanks for waking up after being told for over a decade.","label":"happy","kind":"goemotions","split":"held"}
+{"id":"010a978333","route":"express","text":"Good point, thank you for the correction","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"f151092d25","route":"express","text":"Thank you very much for your time and advice! I’ll consider it greatly for the future!","label":"happy","kind":"goemotions","split":"tune"}
+{"id":"0391596157","route":"express","text":"Hell it was made clear when I was in High School 5 years ago that we aren't playing a game that's ' too violent '","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"1dde111b6c","route":"express","text":"Really sad how often people don't go into the closest lane first and then change lanes when safe to do so.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"43a6865467","route":"express","text":"tbh i would've guiltied but atleast they didnt lose an important TP","label":"sad","kind":"goemotions","split":"held"}
+{"id":"f7a0944a93","route":"express","text":"Yes! My SO does that, unfortunately the requirements are stricter and I can't :(","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"22f9d54cd8","route":"express","text":"I had smoothies in the past with these packets. Solid as fuck. Dragonfruit one too.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"9f220cf9a3","route":"express","text":"So much lonely","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"0765669b98","route":"express","text":"Sorry to hear that, I have it for ps4 and hardcore dlc servers are still up","label":"sad","kind":"goemotions","split":"held"}
+{"id":"cf025ff2ae","route":"express","text":"Sadly there's a good chance that you still need a car anyway because that affordable neighborhood will involve a one hour commute.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"7e5fb38c18","route":"express","text":"Can't relate because the sadness and loneliness is constant 😎","label":"sad","kind":"goemotions","split":"held"}
+{"id":"b755a8ba60","route":"express","text":"I'm sorry it happened like that for you. I really can't imagine.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"8c6d13fbac","route":"express","text":"Just reading this makes me sick","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"cc17a8e02d","route":"express","text":"Yeah I tried to apply but with being partially excepted I think it would be hard to be a sub","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"816be314d1","route":"express","text":"Sorry to be the bearer of bad tidings.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"e1ec3b5a96","route":"express","text":"I am trying they try to say I’m fake even though I’m trying it’s painful to talk to them sometimes","label":"sad","kind":"goemotions","split":"held"}
+{"id":"d5ebb3b6d3","route":"express","text":"Omg TDG has a new singer? That's so sad. I was rocking out to them in middle school too. Simpler times.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"07315dea47","route":"express","text":"I did twist my ankle trying to play that on DDR.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"d7f4f3a1a5","route":"express","text":"Oh boy do I have some bad news for you!","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"0e85bf1457","route":"express","text":"We're sleep walking into, in the words of the Bank of England, a disordely Brexit. It's a bit problematic.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"6b5a781c30","route":"express","text":"I’m really sorry about your situation :( Although I love the names Sapphira, Cirilla, and Scarlett!","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"8e7985dc28","route":"express","text":"I legit wish you never talked to me","label":"sad","kind":"goemotions","split":"held"}
+{"id":"9c6277d6e6","route":"express","text":"Unfortunately for you, no one of importance cares about your absurd views.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"37a45c673f","route":"express","text":"I’m battling depression and anxiety and having a healthy diet and loosing weight has helped me","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"c2f7dd2be6","route":"express","text":"Im so sad how that movie turned out. We could have achived something good","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"a1fe6ee4ce","route":"express","text":"Welp, my bad. Searched for \"new year\" and didn't see this so posted.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"ac351d0db2","route":"express","text":"Been off since November 29th. I would rather be working and making money. Home gets boring","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"50ced5cfc9","route":"express","text":"With Everyday passing day without a good signing I feel like we got robbed in this trade","label":"sad","kind":"goemotions","split":"held"}
+{"id":"1a09d89769","route":"express","text":"@lies_about_flossing, sorry if I used the wrong pronoun.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"91b62db06c","route":"express","text":"I'm really sorry you're experiencing this. You are not in the wrong. I hope you can get away from their control when possible....stay strong","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"a487b1275f","route":"express","text":"☠️ I felt his pain!!!☠️ R.I.P. furry giblets!!!!☹️","label":"sad","kind":"goemotions","split":"held"}
+{"id":"18f6fe007b","route":"express","text":"I play those characters all of the time and have never, ever experienced this.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"e7c2b90d08","route":"express","text":"I think he is dead but he died long before the supposed raid. He was old and sick, dying of kidney failure.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"bc4dded483","route":"express","text":"This.. im sorry but this is a dumb reply. Ofc it was fake kindness golly","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"30806d6b1b","route":"express","text":"You still didn’t answer the question. Sorry it’s bugging me :)","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"9c45838e3c","route":"express","text":"He died 4 days later of dehydration","label":"sad","kind":"goemotions","split":"held"}
+{"id":"c36fb727f3","route":"express","text":"I'm sorry for that.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"aeba51cdfb","route":"express","text":"I only watch bad animes sorry","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"1a847f6a59","route":"express","text":"like I said, it's painful.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"e694c7ca23","route":"express","text":"I have an issue metabolizing medications fast. I'll wake up during surgeries so they give me a lot of drugs.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"b718fdaced","route":"express","text":"i feel betrayed by the community","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"59d6999694","route":"express","text":"literally I feel like crying","label":"sad","kind":"goemotions","split":"held"}
+{"id":"d949cfebd4","route":"express","text":"I hate that we cant be trusted to self criticize and we have to have Russian news do it. It feels like watching fox.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"cc9b18de15","route":"express","text":"im so sorry you had to go trougth that. it's a shame people are so stupid to deny someone the attention they need becouse their gender.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"806e03bdcd","route":"express","text":"I’m sorry to inform you, it’s worse.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"c0645b00b9","route":"express","text":"I just thought I would be remise if I did not engage with the subject.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"d76df78c27","route":"express","text":"Here's a purple heart for you recapping that! OMG matching romantic scoots I'm cryin'","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"17a1589414","route":"express","text":"I was dispointed in 5. it was clearly thrown in to sell 3, as they wanted to make 3 not 5 D.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"e8d968b206","route":"express","text":"Op forgot to mention his son has a rare scrotum disorder where the balls and shaft are reversed. Poor guy :(","label":"sad","kind":"goemotions","split":"held"}
+{"id":"390ce06db9","route":"express","text":"Being born in north america is a curse my friend. Oregon (my home) is kind of like Ireland weather wise though I hear.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"65937d67e4","route":"express","text":"An eye for a *dead*eye? I'm sorry...","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"3fbedea843","route":"express","text":"I’m so sorry that you both have to deal with this ❤️","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"99d43bab29","route":"express","text":"Me me big sad.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"6b304c44ad","route":"express","text":"Crap. Absolutely missed that when typing my paragraph mountains. Fixed.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"f6f5bb76ff","route":"express","text":"Sorry you had to live there. Good news is they are demolishing it in 2020.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"74ed15ab41","route":"express","text":"I really pity those unfree Cuban babies. It’s just sad.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"a4f9182e34","route":"express","text":"Must be a tough life when all you can think about is sad stories to keep you from enjoying anything.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"8332fe427d","route":"express","text":"Oh sorry- to be clearer, I meant everyone not on the APP looking for a scooter will get sick of seeing random scooters.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"7469060340","route":"express","text":"Meanwhile my sister won’t even hug my goodbye when I drop her off at school.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"a3790e9d10","route":"express","text":"Bags are packed. Have to leave the country at a minimum as it's one of those gyms that's all over the place. Bad times.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"49c8e06fe0","route":"express","text":"Lip injections only cost $700 and I saved up for months. But I’m broke currently","label":"sad","kind":"goemotions","split":"held"}
+{"id":"1d2cea9401","route":"express","text":"\"what you want\" is a populated, limited set, and thus discrete.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"fab266a91f","route":"express","text":"It’s been posted dozens and dozens of times since last night. People fucking suck.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"0154e1f53d","route":"express","text":"Ouch. Hurts because it's true.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"1c8d837334","route":"express","text":"Rip the guy from psych","label":"sad","kind":"goemotions","split":"held"}
+{"id":"b35fb9555b","route":"express","text":"Yeah.. like 30ish BBs deep I don’t think about it twice, just re-jam and be a sad boy. But we are so fucking deep...","label":"sad","kind":"goemotions","split":"held"}
+{"id":"23b0c39538","route":"express","text":"as a kpop stan and a army, i am very disappointed","label":"sad","kind":"goemotions","split":"held"}
+{"id":"2d032d214d","route":"express","text":"They blew up my feelings :'(","label":"sad","kind":"goemotions","split":"held"}
+{"id":"5dd44ac4be","route":"express","text":"The sad part about this is that these memes are more Gen Z if anything...","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"90da42833e","route":"express","text":"May regret asking but foid ?","label":"sad","kind":"goemotions","split":"held"}
+{"id":"40368feac0","route":"express","text":"I didn’t know I’m sorry","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"0575fbbfae","route":"express","text":"What a loser, sad.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"d89d9c6094","route":"express","text":"I got bad news for ya'll. I picked Chargers, Colts, Saints, and Cowboys to win. So Eagles might be winning :/","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"6c9b5e2a27","route":"express","text":"3 weeks or so' away from her kid for some 'alone time'? I feel sorry for that kid.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"d3c5c1b15b","route":"express","text":"Of course they do, feminists are self-absorbed pigs that just want to control everything and never be held accountable for anything.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"efb9a37bb8","route":"express","text":"Tried it. Failed it. Got mental consequences, my memory wont recover after half a year. You will regret it.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"e8c109430a","route":"express","text":"It’s very unlikely that they charged the rider again.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"0e310efa3d","route":"express","text":"You just made my point, you obnoxious whining kid","label":"sad","kind":"goemotions","split":"held"}
+{"id":"9330fd5e80","route":"express","text":"Well I can say 100% it didn’t go well.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"536be9321a","route":"express","text":"exactly. you're a child. you make personal attacks when you lose an argument. I feel sorry for you.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"fffa9390dd","route":"express","text":"Apparently I'm ugly because I don't have 20 strangers a day coming up to me to tell me I'm attractive :(","label":"sad","kind":"goemotions","split":"held"}
+{"id":"e72ed50bf4","route":"express","text":"I’m gonna sit down and cry now","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"d87523b374","route":"express","text":"+1. I don’t make it to DuPont anymore unfortunately. If you’re in Rosslyn, I’d recommend American Threading Plus.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"53d5fb0899","route":"express","text":"I miss being little 😭😭😭","label":"sad","kind":"goemotions","split":"held"}
+{"id":"682c2dcfaf","route":"express","text":"Not at all. It's great of course for financial reasons, but it then makes me worried about how much time she'll have for a relationship.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"ba6315fc8b","route":"express","text":"Oh. Oh shit. It's you. Sorry you had to see this glorious trainwreck.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"0d25671482","route":"express","text":"WHO WON THIS FIGHT My thoughts: neither side did a good job at explaining their positions and this entire interview was mostly useless","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"03f26b7bcf","route":"express","text":"I feel like the last two seasons made me detach from the show.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"7d2fefdd23","route":"express","text":"my screen is 10 years old so the graphics are also horrible","label":"sad","kind":"goemotions","split":"held"}
+{"id":"23b8f5666f","route":"express","text":"trailer fabulous!!! i miss it","label":"sad","kind":"goemotions","split":"held"}
+{"id":"4ac869ddf8","route":"express","text":"I'm sorry you fell for the carnie, bro.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"2539b17283","route":"express","text":"I'm sorry that's what you read because it isn't what I said.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"ee94307b47","route":"express","text":"Still is glitched to this day.... sad","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"721e2ecd28","route":"express","text":"6 and he died of cancer iirc","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"ec0f802a9d","route":"express","text":"Yes of mine worry, no one liked mine either.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"8f2ea2f282","route":"express","text":"At least he's finally done one thing right. Utter fucking disappointment at every level, by every metric.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"8e2808c4f5","route":"express","text":"Not really cringe. Just sad.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"5081633f3d","route":"express","text":"No not funny just sad","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"1aaac29ffc","route":"express","text":"Cries in Shinboner Spirit","label":"sad","kind":"goemotions","split":"held"}
+{"id":"d80f6ffa45","route":"express","text":"ok so that was fucking sick","label":"sad","kind":"goemotions","split":"held"}
+{"id":"f121357686","route":"express","text":"“Game 7” Unfortunately we’ll never get there.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"285759f918","route":"express","text":"That's terrible. I'm sorry for your loss.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"662bde5c27","route":"express","text":"It's when you least expect it that people hit you in the face with life It brings you back to earth","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"cec28edb8b","route":"express","text":"I’ve had a hard time finding stuff in the area, occasionally Construction Junction will have a decent old handsaw or two...","label":"sad","kind":"goemotions","split":"held"}
+{"id":"7eff056f9b","route":"express","text":"I mean yeah we were the best counter attacking team. That counter was so disappointing","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"cdffba9ce5","route":"express","text":"Iirc she's alive but an alcoholic.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"94ada9a500","route":"express","text":"That whole episode has some heartbreaking moments. It is probably my top Parks And Rec episode.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"fd1fa26edc","route":"express","text":"Hip hop has fallen down so far music in general, since the 90's.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"7b9fa7c262","route":"express","text":"I apologize, that sincerely was meant for Askreddit. If you look at my history you'll see that's where I always post. My mistake.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"91977abc80","route":"express","text":"If he has to put up with people like you, I feel even more sorry for him now. Yikes.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"78bd187b83","route":"express","text":"This makes my tummy sick.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"0d74ce017a","route":"express","text":"I believe it was a severe dislocation as opposed to a fracture. Regardless....poor guy....","label":"sad","kind":"goemotions","split":"held"}
+{"id":"c237b514b0","route":"express","text":"I feel sorry for people that think Reddit (or even some random sub-reddit) is \"an international stage\".","label":"sad","kind":"goemotions","split":"held"}
+{"id":"d13ba34290","route":"express","text":"I literally got the same bug","label":"sad","kind":"goemotions","split":"held"}
+{"id":"7551564afa","route":"express","text":"I really miss AG","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"5b6691331d","route":"express","text":"You're saying it's depressing to see someone eating whilst other people are starving.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"2d04f72574","route":"express","text":"I could have gone to a party, but it's 10 outside. Sue me.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"3b413d5835","route":"express","text":"The fact you have to explain this at the third grade level is pathetic. People think somone preventing his own murder is a tragedy.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"a65a2ccb38","route":"express","text":"Wife left me and I am just broken. relapsed tonight from 7 years clean and just not seeing a point anymore","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"48ce5501a4","route":"express","text":"Sorry I dropped this /sノ( ゜-゜ノ)","label":"sad","kind":"goemotions","split":"held"}
+{"id":"08fd3a814f","route":"express","text":"Unhappy, I am.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"f76363d855","route":"express","text":"Sadly, yes. You'll only be able to craft weapons with fixed Attachements.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"934b9f3817","route":"express","text":"It was a painful cringe, too. Are we masochists?","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"01748e2a4a","route":"express","text":"If this is actually how it goes, I won’t feel so bad going from 5 to 8 in week 17.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"43784945ce","route":"express","text":"Right like interacting with each other having a normal evening? Ugh they’re both so trashy I’m sorry.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"226b283bbb","route":"express","text":"It’s very difficult for men to have platonic friendships with women. Unfortunately it’s just part of life.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"78ab1158d8","route":"express","text":"This is something kids do on their twitch streams to get subs, pretty sad.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"216e58f5b9","route":"express","text":"Sadly, it ran. :( I hope you're enjoying your trip overseas! :D","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"a2755f1b33","route":"express","text":"Kids can't have fun anymore...:(","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"c94ae6dbbd","route":"express","text":"Sorry your right","label":"sad","kind":"goemotions","split":"held"}
+{"id":"6287eb3df5","route":"express","text":"Get a card that says “Sorry about your loss” on the front, then on the inside write “It’s me. I quit”.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"04593e0902","route":"express","text":"Upon the third strike, the ump cried \"Why don't you make like a tree and get outta here!\"","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"0dba47f5f3","route":"express","text":"I wanna die!","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"e04ffac69f","route":"express","text":"This hits hard, sadly both of my relationships have been toxic so I've decided not to start any new ones until I start going to uni","label":"sad","kind":"goemotions","split":"held"}
+{"id":"3846d8a48d","route":"express","text":"If you have schools in your city, I got bad news for ya champ...","label":"sad","kind":"goemotions","split":"held"}
+{"id":"7487599b63","route":"express","text":"That must hurt","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"1f2d9634b9","route":"express","text":"I don't think you're allowed to administer a vaccine to someone who is sick/injured.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"36fd9fa0a9","route":"express","text":"Sorry, but anarcho-anything are bot welcome there","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"ecd607b521","route":"express","text":"Ain’t nothin good enough for her","label":"sad","kind":"goemotions","split":"held"}
+{"id":"6720fd4fdb","route":"express","text":"I'm a little disappointed that the tier markings werent' just different shades of green.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"f013fd63ce","route":"express","text":"That was my mistake. It should only show your First Name and The 1st letter of my last name.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"d36b41b395","route":"express","text":"Bless your heart. Mine hit me at Thanksgiving. I’m so sorry.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"e2990c6e18","route":"express","text":"THIS IS TRAUMATISING","label":"sad","kind":"goemotions","split":"held"}
+{"id":"c71cd62e4b","route":"express","text":"The only thing wrong with her is her face. Maybe she has a giving personality?","label":"sad","kind":"goemotions","split":"held"}
+{"id":"63672403c4","route":"express","text":"Was less worried about spelling and more worried about warning everyone in the match","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"9bd947c267","route":"express","text":"I’m always reminded by my relatives on my birthday asking me if I have a girlfriend yet. Sorry bro ima yeet out of the social norm.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"b7259b803f","route":"express","text":"Kinda sad but... Okay then","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"47e8a2ee6b","route":"express","text":"I literally didn’t but ok","label":"sad","kind":"goemotions","split":"held"}
+{"id":"903a492552","route":"express","text":">Sorry, but any city that had any kind of ~~epidemic in its~~ history will have bunches of dead people buried under it.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"8852c8e4a3","route":"express","text":"In many states the law prosecutes the server just as harsh as the lawbreakers when it comes to alcohol. Dram shop law","label":"sad","kind":"goemotions","split":"held"}
+{"id":"08f3e9af3b","route":"express","text":"I'm a little sad that there's not actually a video called Dance of the Hillary, virus or not.","label":"sad","kind":"goemotions","split":"tune"}
+{"id":"fb7e11588a","route":"express","text":"sadly it would take wayyyyyy more than this to ever change custody agreements. documenting it for her own sanity is a good idea, though.","label":"sad","kind":"goemotions","split":"held"}
+{"id":"482fe852af","route":"express","text":"This is clearly the world's most dangerous gang","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"2e0e2587c2","route":"express","text":"I'm always paranoid of people following me when I am driving home. I would have pooed my pants yikes.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"76f92f8ca1","route":"express","text":"And then you're stuck on that medication for life, sounds like a scary trade-off.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"f9ade29aa6","route":"express","text":"that scared me","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"4a9a01add2","route":"express","text":"As a democrat, even I am afraid of a super majority.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"91b5022936","route":"express","text":"Anthem is a good 45 min from Scottsdale and the rush hour traffic is a nightmare.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"4675cf95a1","route":"express","text":"We all are afraid of losing our jobs here or being blackballed all the same.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"ec2ae3542f","route":"express","text":"No response after a week? That's something to worry about.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"eb58120208","route":"express","text":"I was in awe the whole hour I spent in there.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"54ef200be2","route":"express","text":"Scary stuff.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"fcdf93a3f3","route":"express","text":"Aaaand I'm still here. I don't have a alt account but whoever you reported I\"m sure is alive and well. You're terrible.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"d88bea9113","route":"express","text":"I can't imagine who IS, the whole thing is so cringe.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"a1a620ac44","route":"express","text":"That’s terrifying","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"0fcecb348a","route":"express","text":"I find that relatable: I too am terrified of myself.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"6ff7430287","route":"express","text":"I thought that type of camouflage failed horribly because the high contrast and defined shapes made the ships really stand out.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"351ad2ff94","route":"express","text":"I’m kind of scared to talk to my manager about it","label":"scared","kind":"goemotions","split":"held"}
+{"id":"88319ff9f2","route":"express","text":"That’s a horrible take.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"c61efe0e5d","route":"express","text":"As a strip club connoisseur, this is one of my biggest fears.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"28e0bdbf8e","route":"express","text":"Oof that’s terrible","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"d7e41a8cba","route":"express","text":"Feeling insecure now","label":"scared","kind":"goemotions","split":"held"}
+{"id":"e3bffe4783","route":"express","text":"He's so intimidating...","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"85000c59b0","route":"express","text":"Scary. I bet youre fun at parties.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"bb149c4de4","route":"express","text":"After 8? I'm afraid after 5. It gets dark here early. :(","label":"scared","kind":"goemotions","split":"held"}
+{"id":"695c881395","route":"express","text":"Just thinking about all the stupid stuff I did as a kid makes me very afraid for my 5 year old.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"7fafe8eaf5","route":"express","text":"These refs are remarkably terrible tonight. So are the sabres but wow some terrible calls.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"43e89f7205","route":"express","text":"Bitch real man just panicking purchases a m82 barret..Now excuse me while i hide from my wife for the next month.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"5517f845fe","route":"express","text":"I want to go scuba diving so bad, but swimming in anything bigger than a pool terrifies me.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"96c7e95809","route":"express","text":"In Canada you should probably be more worried about moose than bears","label":"scared","kind":"goemotions","split":"held"}
+{"id":"46ebfc626b","route":"express","text":"That's your justification? You're a terrible person. Correction: You're a terrible child. Get some help.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"d9e55bc476","route":"express","text":"I've have a serious fear of getting winded, this video made my balls fall off","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"c96566e321","route":"express","text":"I'm more worried about it randomly saying daddy across the top ... Like that's normal","label":"scared","kind":"goemotions","split":"held"}
+{"id":"ae1dc91125","route":"express","text":"So. This is scary as fuck.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"7a7279610c","route":"express","text":"Trust me man. Don't see it. It's scarring.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"228e5d9f8d","route":"express","text":"Matinee games always scare me, but I have confidence in this team. LGI!","label":"scared","kind":"goemotions","split":"held"}
+{"id":"b8e02826af","route":"express","text":"This makes me want to get nipple piercings but I’m too scared to :/","label":"scared","kind":"goemotions","split":"held"}
+{"id":"d674868d79","route":"express","text":"Wow that’s scary, she’s so young and healthy. I hate that.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"0d756f5c61","route":"express","text":"I tend to invalidate my feelings because I’m always worried that they’re going to think that being silly, I’m always struggling with it","label":"scared","kind":"goemotions","split":"held"}
+{"id":"b076c9dbd0","route":"express","text":"I have but I sugar discreetly and I’m genuinely afraid to have that compromised due to the field I’m in","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"91730e375c","route":"express","text":"It's riskier to take on bad contracts right now","label":"scared","kind":"goemotions","split":"held"}
+{"id":"23c5d30148","route":"express","text":"Seriously Creepy.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"8d56831f18","route":"express","text":"It was a terrible, terrible thing to do. He did every day of his time for it, has expressed regret, and has not repeated it.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"0e7f2cd6a8","route":"express","text":"Help, I'm scared and want to go back.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"2a59f30ca5","route":"express","text":"I’m scared of shots, but I’m more scared of dying. What Anti-vaxxers are scared of is autism","label":"scared","kind":"goemotions","split":"held"}
+{"id":"96e8cfb9d9","route":"express","text":"I was scared for that white building.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"594fd120d5","route":"express","text":"What a horrible way to find out, though. My sympathies to the dead man.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"cc5f88056f","route":"express","text":"I’m going to die right now I’m so scared tears and snot everywhere","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"5a99121b41","route":"express","text":"Tl, dr - Take the abuse. Squirming only gets them off more.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"63010d2ba4","route":"express","text":"Omg, unbelievably scary. Insane","label":"scared","kind":"goemotions","split":"held"}
+{"id":"55911ae79a","route":"express","text":"Any one of us could be a journalist, and that level of journalism feeding the masses is mildly scary.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"51ac57e53e","route":"express","text":"I'm getting worried","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"f878d03c4d","route":"express","text":"Really worried about NISA translating it, but at this point I don't care any more, as long as we get an english version of it.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"fe68ac0e61","route":"express","text":"Oh, it's definitely working and that worries me a lot.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"3d049ecd71","route":"express","text":"You're creepy","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"220142e80e","route":"express","text":"I mean it would be borderline targeting in college football. It was a really egregious missed call.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"ac346cf865","route":"express","text":"Anti-vaxers aren't funny anymore, now they're just scary...","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"dd8259cb54","route":"express","text":"She’s horrible","label":"scared","kind":"goemotions","split":"held"}
+{"id":"655b0b8a6c","route":"express","text":"Just got a bit worried because it's always showed up instantly for me before","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"119855baed","route":"express","text":"I’m afraid too. It’s the not knowing what will happen that scares me.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"2ef68745ba","route":"express","text":"So many great shows they killed because they didn't advertise them and put them at terrible air times :(","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"a008abd409","route":"express","text":"If an AI projectile is your biggest problem you've got bigger issues, next.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"ca6dbc15d7","route":"express","text":"This is creepy.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"bd9b687e27","route":"express","text":"That's a bit tricky to pull off","label":"scared","kind":"goemotions","split":"held"}
+{"id":"0e20a60db4","route":"express","text":"It's like an Arts school but with dangerous, easily weaponizable spells being flung all over the place!","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"23e9d4d084","route":"express","text":"This is terrifying","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"28027a1927","route":"express","text":"I don't feel so financially secure","label":"scared","kind":"goemotions","split":"held"}
+{"id":"74bda42cc3","route":"express","text":"I don't drink at all specifically because the next day is sheer terror.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"400d21c39c","route":"express","text":"Stoop Kid’s afraid to leave his stoop!","label":"scared","kind":"goemotions","split":"held"}
+{"id":"e60d48e0e3","route":"express","text":"Don't you're making me paranoid man","label":"scared","kind":"goemotions","split":"held"}
+{"id":"d0ef1065df","route":"express","text":"I know, I know, but CAN YOU BLAME ME FOR BEING NERVOUS","label":"scared","kind":"goemotions","split":"held"}
+{"id":"d1bd22c3df","route":"express","text":"They are dangerous AF. I had a student faceplant and break her face, and my daughter's friend hit his head and is in a coma.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"7c9e0bdffa","route":"express","text":"Worried me there","label":"scared","kind":"goemotions","split":"held"}
+{"id":"e404e8beb0","route":"express","text":"That’s a terrible amount of bp for 11 kills","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"bc34815585","route":"express","text":"Deathly afraid, the undersides of boats too. I can't look if I see them in a picture or movie","label":"scared","kind":"goemotions","split":"held"}
+{"id":"13ec58663e","route":"express","text":"oh man clicking 2 buttons before you read an article, the absolute horror","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"adc76f180f","route":"express","text":"It’s gonna be a large group interview in a shady office. Ghost em.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"106f21963e","route":"express","text":"I don't know any but my own I'm afraid.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"f455639220","route":"express","text":"The constant pressure definitely isn't helping. I'm already on anti-depressants, but I am terrified of PPD.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"f34303feaa","route":"express","text":"Because of this bad situation some people are afraid of becoming youtubers because of this","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"e77d8192c6","route":"express","text":"That is the stuff of nightmares...seriously.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"822877f984","route":"express","text":"And that smilie she gave the fiancé when he sat down with the sandwich....I would be scared if I was him.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"114565fdb6","route":"express","text":"death of fear is certain.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"50ed4193a6","route":"express","text":"Is this a real thing? I'm a terrible stoner.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"fefb7df439","route":"express","text":"Tranlated: Wooooo be afraid of the spooky \"shadowban\" so don't do the thing that gets your message to a wider audience. Smh","label":"scared","kind":"goemotions","split":"held"}
+{"id":"8a20744b2d","route":"express","text":"That’s what I’m terrified of.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"c0e69294ef","route":"express","text":"This is scary!","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"0a8520034a","route":"express","text":"I’m just worried about his attitude and approach with younger players. Edit-re worded","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"e3d5891208","route":"express","text":"malicious intentions? what are you talking about?","label":"scared","kind":"goemotions","split":"held"}
+{"id":"2c2dcc39aa","route":"express","text":"“Guys watch out, the scary looking kid is coming down the hall”","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"6e7867da75","route":"express","text":"I was/am the same. I'm the one pushing forward with the divorce though. The feelings of loss and fear are overwhelming sometimes though.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"b6ab5516c9","route":"express","text":"Threats and promotion of violence","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"509371b4f5","route":"express","text":"I feel a sense of unease tbh","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"f2821758dd","route":"express","text":"Reporters shouldn’t be afraid of governments - governments should be afraid of reporters.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"30e1c853ea","route":"express","text":"It was done before and it was terrible","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"a0a34135ac","route":"express","text":"Help, help, I'm being repressed!","label":"scared","kind":"goemotions","split":"held"}
+{"id":"a267b9aa23","route":"express","text":"I've also heard that intriguing but also kinda scary","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"bca26ef99c","route":"express","text":"i have bought this but not played. i'm scared. hold me.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"d2e77bb2d9","route":"express","text":"I get scared just reading your flair","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"c153723870","route":"express","text":"I want to so bad it hurts. I guess I'm just scared.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"5cc392aab5","route":"express","text":"No particular sauce, I'm just kinda tired of having to search that tiny lil speck of pan for at least 2 minutes before I find it.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"9258f058cf","route":"express","text":"There was a horrible accident","label":"scared","kind":"goemotions","split":"held"}
+{"id":"60ba61a153","route":"express","text":"Please elaborate on that story! Ive always been afraid of exactly this happening to me.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"45deb14dbc","route":"express","text":"I honestly predict a riot on the scale of the 2011 ones if we undergo a no-deal brexit - possibly even worse. It's terrifying.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"c9e5bb672f","route":"express","text":"One of my worst nightmares. Ugh.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"4de47e12cc","route":"express","text":"I'm afraid of having a sit down with them amd not being heard. But I might have to for my safety.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"529f38f475","route":"express","text":"That's what I'm afraid of but I don't have a lot of free time so it would never work.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"ef10638cc4","route":"express","text":"It happens so much that it really scares me tbh.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"07a5b7654e","route":"express","text":"It would probably be horrifying if we tried, when a bug causes an integer overflow and resets our aggression levels.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"6444814618","route":"express","text":"I got a lot of withholding to throw me into anxiety.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"56e0d56e44","route":"express","text":"The thought of shooting anything at asylum seekers is appalling.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"ffee8c6444","route":"express","text":"EWWW yes. This makes me shudder. All wet and gross.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"0f524b69f3","route":"express","text":"Yikes that's cringe","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"9ecf2146d1","route":"express","text":"I don’t understand how her parents were able to take kid when she claims they are horrible alcoholics","label":"scared","kind":"goemotions","split":"held"}
+{"id":"48d7f51ce4","route":"express","text":"Because the hierarchy is afraid they’ll get burned.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"3ba110d88e","route":"express","text":"I'm also scared.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"ee227c5f8b","route":"express","text":"Top 10 nibbas satan's too afraid to torture.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"54a04abe38","route":"express","text":"That’s nightmare fuel right there","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"4703414941","route":"express","text":"As a risk analyst, that's a terrible idea, Risk is too high and the benefit to cost ratio is not worth it","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"9dcc04bd3d","route":"express","text":"I would be afraid he would come back and somehow blame me for his failure.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"a3732d1c72","route":"express","text":"I’ve massively improved but it never really gets cured. There are always situations that will give you anxiety.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"5116c825a3","route":"express","text":"I'm afraid I'll pick something else.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"83b1295190","route":"express","text":"Of course he will lie cheat and steal to make him self relevant to the public. Horrible person.","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"ca07b61040","route":"express","text":"Maybe so. Should I try to ask her about it? I'm worried that will only scare her more","label":"scared","kind":"goemotions","split":"held"}
+{"id":"029b719bb1","route":"express","text":"Venezuela has uniquely terrible oil.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"bfcf44282f","route":"express","text":"I genuinely think that would be an iconic shot if it was in a famous horror film. The way the legs just keep on coming is terrifying.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"28b374afb7","route":"express","text":"Yikes. This kind of freaks me out.","label":"scared","kind":"goemotions","split":"held"}
+{"id":"eb8ca28fdf","route":"express","text":"His smile is so damn creepy","label":"scared","kind":"goemotions","split":"tune"}
+{"id":"6d446f111e","route":"express","text":"I've been putting off scheduling a dental appointment for a week because of this, I'm just too anxious to pick up the phone and dial.","label":"scared","kind":"goemotions","split":"held"}

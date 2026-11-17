@@ -1,0 +1,32 @@
+{
+  "version": "v1",
+  "built_from": "authored.mjs + sources/",
+  "stt_rows": 0,
+  "stt_changed_by_whisper": 0,
+  "wake": {
+    "rows": 2170,
+    "sha256": "4f6595f5985a4229d75a572e035eb1508592987d64cd7c080351e2949faf668f",
+    "counts": {
+      "held/authored": 168,
+      "held/chat": 40,
+      "held/clinc-in": 465,
+      "held/clinc-oos": 348,
+      "held/trap": 83,
+      "tune/authored": 160,
+      "tune/chat": 40,
+      "tune/clinc-in": 435,
+      "tune/clinc-oos": 352,
+      "tune/trap": 79
+    }
+  },
+  "express": {
+    "rows": 1103,
+    "sha256": "6baaf19fb99c34a3c2893bea459ececf520e456bb0f7758a8e36e004f56cde1c",
+    "counts": {
+      "held/authored": 129,
+      "held/goemotions": 445,
+      "tune/authored": 111,
+      "tune/goemotions": 418
+    }
+  }
+}
