@@ -92,18 +92,23 @@ export function createRouter(opts) {
   const modeOf = (r) => flags.off ? 'off' : (flags.routes && has(flags.routes, r.id) ? flags.routes[r.id] : r.mode);
   const gateOf = (r, pid, model) => { if (!model) return null; const g = gates[r.id] || dict(); return g[pid + '@' + model] || null; };
 
+  const assertOpen = () => { if (sealed) throw new Error('sysrouter: sealed'); };
+
   function action(id, a) {
     if (!ID.test(id) || !a || typeof a.run !== 'function') throw new Error('sysrouter: bad action ' + id);
     if (has(actions, id)) throw new Error('sysrouter: action exists: ' + id);
     if (a.reserved && sealed) throw new Error('sysrouter: reserved actions are registered before seal()');
+    assertOpen();
     actions[id] = { run: a.run, resource: a.resource || '', holdMs: +a.holdMs || 0, reserved: !!a.reserved };
   }
   function provider(id, p) {
+    assertOpen();
     if (!ID.test(id) || !p || typeof p.ask !== 'function') throw new Error('sysrouter: bad provider ' + id);
     if (has(providers, id)) throw new Error('sysrouter: provider exists: ' + id);
     providers[id] = { ask: p.ask, sync: !!p.sync, exact: !!p.exact, model: String(p.model || ''), types: p.types || TYPES };
   }
   function calibrate(table) {   // { routeId: { 'providerId' or 'providerId@model': { p, pn, margin } } }
+    assertOpen();
     if (!table || typeof table !== 'object') return;
     for (const rid of Object.keys(table)) { if (!ID.test(rid) || !table[rid] || typeof table[rid] !== 'object') continue; gates[rid] = gates[rid] || dict();
       for (const k of Object.keys(table[rid])) { const g = table[rid][k]; if (GATE.test(k) && g && g.p > 0.5 && g.p <= 1) gates[rid][k] = { p: +g.p, pn: g.pn > 0.5 && g.pn <= 1 ? +g.pn : +g.p, margin: +g.margin || 0 }; } }
@@ -171,6 +176,7 @@ export function createRouter(opts) {
   // The loader hands an extension this facade and nothing else (R-TRUST-1..4): it can add and
   // remove ITS OWN routes, over the actions and providers it was granted, at its own rate cap.
   function extension(name, grants) {
+    assertOpen();
     if (!ID.test(name)) throw new Error('sysrouter: bad extension name');
     const acts = (grants && grants.actions || []).slice();
     if (acts.some((id) => actions[id] && actions[id].reserved)) throw new Error('sysrouter: extensions cannot be granted reserved actions');
@@ -286,9 +292,9 @@ export function createRouter(opts) {
 
   return {
     action, provider, calibrate, extension, hear, replied,
-    route: (spec) => addRoute(spec, { tier: 'system' }),
+    route: (spec) => { assertOpen(); return addRoute(spec, { tier: 'system' }); },
     core: (spec) => { if (sealed) throw new Error('sysrouter: core routes are registered before seal()'); return addRoute(spec, { tier: 'core' }); },
-    unroute: (id) => { const r = routes[id]; if (!r || r.tier === 'extension' || (r.tier === 'core' && sealed)) return false; delete routes[id]; return true; },
+    unroute: (id) => { assertOpen(); const r = routes[id]; if (!r || r.tier === 'extension') return false; delete routes[id]; return true; },
     seal: () => { sealed = true; },
     release: (resource) => { delete held[resource]; },
     spent: () => usd,                                                                    // what hosted engines have cost this session, for the page to show                                   // the page says a hold ended early (motion finished, person took over)

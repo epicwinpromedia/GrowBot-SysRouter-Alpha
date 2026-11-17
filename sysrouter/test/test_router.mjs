@@ -87,6 +87,12 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   a.sr.seal();
   throws("no reserved action after seal()", () => a.sr.action("limp", { run() {}, reserved: true }), /before seal/);
   throws("no core route after seal()", () => a.sr.core({ id: "c", question: Q, notFor: NOT, on: {}, providers: ["readers"] }), /before seal/);
+  throws("no system action after seal()", () => a.sr.action("late_act", { run() {} }), /sealed/);
+  throws("no provider after seal()", () => a.sr.provider("late_prov", fake(choice("spin", 1))), /sealed/);
+  throws("no calibrate after seal()", () => a.sr.calibrate({}), /sealed/);
+  throws("no system route after seal()", () => a.sr.route({ id: "late_r", question: Q, notFor: NOT, on: {}, providers: ["readers"] }), /sealed/);
+  throws("no unroute on system route after seal()", () => a.sr.unroute("r"), /sealed/);
+  throws("no extension() after seal()", () => a.sr.extension("late_ext", { actions: [], providers: [] }), /sealed/);
 
   // a stop ignores cooldown and every hold, and clears the holds
   const b = mk(); let say = "spin";
