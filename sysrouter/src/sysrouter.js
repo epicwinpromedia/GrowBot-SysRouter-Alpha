@@ -28,7 +28,7 @@
 //   // in sendTxtFrom, after the local readers:  try{ if(typeof SysRouter!=="undefined") SysRouter.hear(t); }catch(_sr){}
 
 const TIERS = { core: 0, system: 1, extension: 2 };          // lower number = higher priority
-const MODES = ['shadow', 'parallel', 'preempt'], POLICIES = ['single', 'cascade', 'race'], TYPES = ['noul', 'choice', 'score'];
+const MODES = ['shadow', 'live'], POLICIES = ['single', 'cascade', 'race'], TYPES = ['noul', 'choice', 'score'];
 const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 const ID = /^[a-z][a-z0-9_.-]{0,39}$/, KEY = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,39}$/, GATE = /^[a-z][A-Za-z0-9_.@\/:~-]{0,95}$/;
 const dict = () => Object.create(null);   // no prototype: a key named __proto__ or constructor is just a key (test_router "hostile keys")
@@ -36,7 +36,7 @@ const dict = () => Object.create(null);   // no prototype: a key named __proto__
 // Kill switch and per-route modes, the codebase's way: read from the URL, persisted to
 // localStorage, so a link turns it off and it stays off (?bodysnd=0, ?stream=0 do the same).
 //   ?sysrouter=0            everything off          ?sysrouter=1   back on
-//   ?sysroute=wake:parallel,express:off             per route: off | shadow | parallel | preempt
+//   ?sysroute=wake:live,express:off                 per route: off | shadow | live
 export function readFlags(search, storage) {
   const f = { off: false, routes: {} };
   try {
@@ -45,7 +45,7 @@ export function readFlags(search, storage) {
     if (b !== null) storage.gb_sysroute = b;
     f.off = storage.gb_sysrouter === '0';
     for (const part of String(storage.gb_sysroute || '').split(',')) {
-      const [id, m] = part.split(':');
+      const [id, rawM] = part.split(':'), m = rawM === 'parallel' ? 'live' : rawM;
       if (ID.test(id || '') && (m === 'off' || MODES.includes(m))) f.routes[id] = m;
     }
   } catch (e) {}
@@ -139,7 +139,7 @@ export function createRouter(opts) {
     if (q.type === 'noul' && Object.keys(q.criteria).sort().join() !== 'false,true') fail('a yes/no question has criteria true and false');
     const criteria = q.type === 'score' ? Object.freeze(q.criteria.slice()) : Object.freeze(Object.assign({}, q.criteria));
     if (typeof spec.notFor !== 'string' || spec.notFor.trim().length < 12) fail('notFor is required: say what this route must NOT fire on (R-REG-5)');
-    const mode = spec.mode || 'shadow', policy = spec.policy || 'single';
+    const rawMode = spec.mode || 'shadow', mode = rawMode === 'parallel' ? 'live' : rawMode, policy = spec.policy || 'single';
     if (!MODES.includes(mode) || !POLICIES.includes(policy)) fail('bad mode or policy');
     const ps = spec.providers || [], sh = spec.shadow || [];
     if (!Array.isArray(ps) || !Array.isArray(sh) || !ps.length || ps.length > 4 || sh.length > 4) fail('1-4 providers');
@@ -157,7 +157,6 @@ export function createRouter(opts) {
       if (who.grants && !who.grants.actions.includes(on[k])) fail('no grant for action ' + on[k]);
     }
     if (who.grants) for (const pid of ps.concat(sh)) if (!who.grants.providers.includes(pid)) fail('no grant for provider ' + pid);
-    if (who.grants && mode === 'preempt') fail('extensions cannot pre-empt the brain');
     for (const rid in routes) {   // collisions (R-REG-5): two acting routes may not both claim one answer of one identical question
       const o = routes[rid]; if (o.question.instructions === q.instructions && Object.keys(on).some((k) => has(o.on, k) && o.on[k] !== on[k])) fail('collides with ' + rid);
     }
@@ -195,7 +194,7 @@ export function createRouter(opts) {
     if (a.reserved) for (const k in held) delete held[k];                               // a stop clears every hold, whoever owns it
     else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };
     x.did = 1;
-    return row(r, mode === 'preempt' ? 'preempt' : 'acted', x);
+    return row(r, 'acted', x);
   }
 
   // Ask one provider. Sync providers answer in the same tick: a deterministic stop is never
@@ -236,7 +235,7 @@ export function createRouter(opts) {
 
   function hear(text, meta) {
     meta = meta || {};
-    const out = { acted: [], preempt: false, done: null }, waits = [], from = meta.from === 'creature' ? 'creature' : 'person';
+    const out = { acted: [], done: null }, waits = [], from = meta.from === 'creature' ? 'creature' : 'person';
     if (flags.off || typeof text !== 'string' || !text.trim() || depth > 1) { out.done = Promise.resolve(out); return out; }   // depth: an action that makes the creature speak may be heard once, never in a loop
     const state = text.length > 600 ? text.slice(0, 600) : text, my = ++seq;
     depth++;
@@ -246,7 +245,7 @@ export function createRouter(opts) {
       if (r.perMin) { const m = Math.floor(now() / 60000), s = spend[r.owner] = spend[r.owner] && spend[r.owner].m === m ? spend[r.owner] : { m, n: 0 }; if (++s.n > r.perMin) { row(r, 'rate'); continue; } }
       seqOf[rid] = my;
       const req = { state, questions: { q: r.question } }, fresh = () => seqOf[rid] === my;
-      const finish = (res) => { const o = act(r, res.d.pick, res.x); if (o.did) { out.acted.push(o.act); if (o.why === 'preempt') out.preempt = true; } };
+      const finish = (res) => { const o = act(r, res.d.pick, res.x); if (o.did) out.acted.push(o.act); };
       // 1. the leading sync providers, in order, in this tick
       let i = 0, decided = false;
       for (; i < r.providers.length && providers[r.providers[i]].sync; i++) {

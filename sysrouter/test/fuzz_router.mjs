@@ -55,7 +55,7 @@ while (hears < TOTAL) {
     const ps = Array.from(new Set(Array.from({ length: 1 + int(3) }, () => pick(Object.keys(provs))))), who = pick(["system", "system", "core", "ext0", "ext1"]);
     const spec = { id: "r" + i, question: { type: noul ? "noul" : "choice", instructions: "question " + round + "." + i, criteria: Object.fromEntries(opts.map((o) => [o, "option " + o])) },
       notFor: rand() < 0.95 ? "things that are not this route's business" : "", on, providers: ps, policy: ps.length === 1 ? "single" : pick(["cascade", "race"]),
-      mode: pick(["shadow", "shadow", "parallel", "preempt"]), budgetMs: 20 + int(30), cooldownMs: int(2) * int(1500), addsRecall: rand() < 0.5, shadow: rand() < 0.2 ? [pick(Object.keys(provs))] : [] };
+      mode: pick(["shadow", "shadow", "live"]), budgetMs: 20 + int(30), cooldownMs: int(2) * int(1500), addsRecall: rand() < 0.5, shadow: rand() < 0.2 ? [pick(Object.keys(provs))] : [] };
     try { (who === "system" ? sr.route : who === "core" ? sr.core : facades[+who.slice(3)].route)(spec); routes[spec.id] = { spec, who }; }
     catch (e) { if (!/^sysrouter: /.test(e.message)) viol("registration failed with a foreign error", e.message); }
   }
@@ -69,7 +69,7 @@ while (hears < TOTAL) {
       else if (actMeta[spec.on[k]].reserved && who !== "core" && !spec.providers.every((p) => provs[p].exact) && !(spec.addsRecall && who === "system")) viol("a probability reaches a reserved action", spec);
       if (who.startsWith("ext") && !exts[+who.slice(3)].actions.includes(spec.on[k])) viol("extension holds an action outside its grant", spec);
     }
-    if (who.startsWith("ext") && (spec.mode === "preempt" || spec.providers.concat(spec.shadow).some((p) => !exts[+who.slice(3)].providers.includes(p)))) viol("extension exceeded its grant", spec);
+    if (who.startsWith("ext") && spec.providers.concat(spec.shadow).some((p) => !exts[+who.slice(3)].providers.includes(p))) viol("extension exceeded its grant", spec);
     if (!spec.notFor) viol("accepted a route with no notFor", spec);
   }
 
@@ -94,7 +94,6 @@ while (hears < TOTAL) {
       const s = JSON.stringify(r);
       if (s.includes("SECRET") || (said.length > 12 && s.includes(said))) viol("a row leaked text or an error body", r);
     }
-    if (out.preempt && !newRows.some((r) => r.why === "preempt")) viol("pre-empt claimed without a pre-empt row");
     void inTick;
   }
   await sleep(0);

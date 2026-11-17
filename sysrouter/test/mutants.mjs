@@ -25,7 +25,6 @@ const MUTANTS = [
   ["an extension reaches a reserved action", "if (a.reserved && who.tier === 'extension') fail('extensions cannot reach reserved actions');", ""],
   ["an extension uses an action outside its grant", "if (who.grants && !who.grants.actions.includes(on[k])) fail('no grant for action ' + on[k]);", ""],
   ["an extension uses a provider outside its grant", "if (!who.grants.providers.includes(pid)) fail('no grant for provider ' + pid);", "void 0;"],
-  ["an extension pre-empts the brain", "if (who.grants && mode === 'preempt') fail('extensions cannot pre-empt the brain');", ""],
   ["an extension removes a system route", "if (!r || (who.name || '') !== r.owner || r.tier !== who.tier) return false;", "if (!r) return false;"],
   ["a lower tier pre-empts a higher tier's hold", "if (h && h.until > t && h.tier < tier) return row(r, 'held', x);", ""],
   ["a stop is subject to cooldown and holds", "if (!a.reserved) {\n      if (r.cooldownMs", "if (true) {\n      if (r.cooldownMs"],

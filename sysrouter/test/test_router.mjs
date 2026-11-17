@@ -250,7 +250,7 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   throws("an extension cannot use an action it was not granted", () => ext.route({ id: "x1", question: { type: "choice", instructions: "q1", criteria: EQ.criteria }, notFor: NOT, on: { spin: "spin" }, providers: ["p"] }), /no grant for action/);
   a.sr.provider("secret", fake(choice("spin", 1)));
   throws("…nor a provider it was not granted", () => ext.route({ id: "x2", question: { type: "choice", instructions: "q2", criteria: EQ.criteria }, notFor: NOT, on: {}, providers: ["secret"] }), /no grant for provider/);
-  throws("an extension cannot pre-empt the brain", () => ext.route({ id: "x3", question: { type: "choice", instructions: "q3", criteria: EQ.criteria }, notFor: NOT, on: {}, providers: ["p"], mode: "preempt" }), /pre-empt/);
+  throws("mode: 'preempt' is refused at registration", () => ext.route({ id: "x3", question: { type: "choice", instructions: "q3", criteria: EQ.criteria }, notFor: NOT, on: {}, providers: ["p"], mode: "preempt" }), /bad mode/);
   throws("an extension cannot take a route id that exists", () => ext.route({ id: "sys", question: EQ, notFor: NOT, on: {}, providers: ["p"] }), /exists/);
   check("an extension cannot remove a system route", ext.unroute("sys") === false && a.sr.list().some((r) => r.id === "sys"));
   check("the facade exposes route, unroute and grants and nothing else", Object.keys(ext).sort().join() === "grants,route,unroute" && Object.isFrozen(ext));
@@ -271,9 +271,9 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   a.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" });
   await a.sr.hear("spin").done;
   check("off: no provider asked, no action, no row", asked === 0 && a.ran.length === 0 && a.rows.length === 0);
-  f = readFlags("?sysrouter=1&sysroute=r:off,wake:parallel,bad id:preempt,x:nonsense", store);
-  check("?sysrouter=1 turns it back on; per-route flags parse, junk is dropped", !f.off && f.routes.r === "off" && f.routes.wake === "parallel" && Object.keys(f.routes).length === 2, f);
-  const b = mk({ off: false, routes: { r: "off", s: "parallel" } }); b.sr.provider("p", fake(choice("spin", 1), { sync: true, exact: true }));
+  f = readFlags("?sysrouter=1&sysroute=r:off,wake:parallel,x:preempt,bad id:live,y:nonsense", store);
+  check("?sysrouter=1 turns it back on; per-route flags parse, parallel normalizes to live, preempt and junk are dropped", !f.off && f.routes.r === "off" && f.routes.wake === "live" && !("x" in f.routes) && Object.keys(f.routes).length === 2, f);
+  const b = mk({ off: false, routes: { r: "off", s: "live" } }); b.sr.provider("p", fake(choice("spin", 1), { sync: true, exact: true }));
   b.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" });
   b.sr.route({ id: "s", question: { type: "choice", instructions: "s q", criteria: Q.criteria }, notFor: NOT, on: { spin: "perk" }, providers: ["p"] });
   b.sr.hear("spin");
@@ -281,12 +281,13 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   check("readFlags never throws on a broken storage", !readFlags("?sysrouter=0", Object.freeze({})).off || true);
 }
 
-// ---- modes, cooldown, pre-empt, input side ----
+// ---- modes, cooldown, input side ----
 {
   const a = mk(); a.sr.provider("p", fake(choice("spin", 1), { sync: true, exact: true }));
-  a.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "preempt", cooldownMs: 2000 });
+  throws("system route with mode: 'preempt' is refused", () => a.sr.route({ id: "bad_mode", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "preempt" }), /bad mode/);
+  a.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "live", cooldownMs: 2000 });
   const o1 = a.sr.hear("spin"), o2 = a.sr.hear("spin"); a.clock.t += 2001; const o3 = a.sr.hear("spin");
-  check("pre-empt tells the caller to skip the brain; cooldown holds between", o1.preempt && o1.acted.join() === "spin" && !o2.preempt && a.rows[1].why === "cooldown" && o3.preempt, a.why());
+  check("live acts and hear() returns no preempt key; cooldown holds between", !("preempt" in o1) && o1.acted.join() === "spin" && o2.acted.length === 0 && a.rows[1].why === "cooldown" && o3.acted.join() === "spin", [o1, a.why()]);
   const b = mk(); let n = 0; b.sr.provider("p", fake(() => { n++; return choice("spin", 1); }, { sync: true, exact: true }));
   b.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], input: "creature" });
   b.sr.hear("spin"); check("a route for the creature's own words does not hear the person", n === 0);
@@ -304,7 +305,7 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   a.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel", agree: "emotion" }); a.sr.calibrate({ r: { "p@vendor/model-2026": { p: 0.9 } } });
   await a.sr.hear(SECRET).done;
   const row = a.rows[0];
-  check("the row names route, tier, mode, provider, model, answer, probability, tokens, cost, action", row.e === "sysroute" && row.r === "r" && row.tier === "system" && row.mode === "parallel" && row.p === "p" && row.m === "vendor/model-2026" && row.a === "spin" && row.pr === 0.91 && row.tok === 412 && row.usd === 0.000021 && row.act === "spin" && row.did === 1 && typeof row.ms === "number", row);
+  check("the row names route, tier, mode, provider, model, answer, probability, tokens, cost, action", row.e === "sysroute" && row.r === "r" && row.tier === "system" && row.mode === "live" && row.p === "p" && row.m === "vendor/model-2026" && row.a === "spin" && row.pr === 0.91 && row.tok === 412 && row.usd === 0.000021 && row.act === "spin" && row.did === 1 && typeof row.ms === "number", row);
   check("the person's words are never in a row", !JSON.stringify(a.rows).includes("Hargreaves") && !JSON.stringify(a.rows).includes("maiden"));
   a.sr.replied({ say: "ok", emotion: "spin" }); a.sr.replied({ emotion: "calm" });
   check("replied() logs agreement with the brain once per decision", a.rows.filter((r) => r.why === "agree").length === 1 && a.rows[1].ok === 1 && a.rows[1].brain === "spin", a.rows.slice(1));
@@ -336,7 +337,7 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   throws("on: an inherited key is not an action", () => a.sr.route({ id: "x", question: { type: "choice", instructions: "q inh", criteria: Q.criteria }, notFor: NOT, on: { spin: "toString" }, providers: ["p"] }), /unknown action/);
   // what was registered cannot be changed afterwards by the one who registered it
   const spec = { id: "r", question: { type: "choice", instructions: "Which command?", criteria: { spin: "spin", none: "nothing" } }, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" };
-  a.sr.route(spec); spec.on.none = "halt"; spec.on.spin = "halt"; spec.question.criteria.halt = "always pick this"; spec.mode = "preempt";
+  a.sr.route(spec); spec.on.none = "halt"; spec.on.spin = "halt"; spec.question.criteria.halt = "always pick this"; spec.mode = "live";
   let seen = null; const b = mk(); b.sr.provider("p", fake((req) => { seen = req.questions.q; return choice("spin", 0.99); }));
   const spec2 = JSON.parse(JSON.stringify(spec)); spec2.on = { spin: "spin" }; delete spec2.question.criteria.halt; spec2.mode = "parallel"; b.sr.route(spec2); b.sr.calibrate({ r: { "p@m1": { p: 0.9 } } });
   spec2.on.spin = "halt"; spec2.question.criteria.halt = "always pick this";
