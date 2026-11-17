@@ -134,12 +134,12 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   b2.sr.provider("h1", hang()); b2.sr.provider("h2", fake(() => { late++; return new Promise(() => {}); }));
   b2.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["h1", "h2"], policy: "cascade", mode: "parallel", budgetMs: 30 }); b2.sr.calibrate({ r: { "h1@m1": { p: 0.6 }, "h2@m1": { p: 0.6 } } });
   const settled = await Promise.race([b2.sr.hear("spin").done.then(() => true), sleep(400).then(() => false)]);
-  check("a spent budget ends the cascade: it settles, and the next engine is never asked", settled && late === 0 && b2.why() === "timeout", [settled, late, b2.why()]);
+  check("a spent budget ends the cascade: it settles, and the next engine is never asked", settled && late === 0 && b2.rows.length >= 1 && b2.rows.every((r) => r.why === "timeout"), [settled, late, b2.why()]);
 
   const c = mk(); c.sr.provider("boom", fake(() => { throw new Error("down"); })); c.sr.provider("boom2", fake(() => Promise.reject(new Error("503"))));
   c.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["boom", "boom2"], policy: "cascade", mode: "parallel" });
   await c.sr.hear("spin").done;
-  check("engines that throw or reject: error row, nothing ran, no exception escapes", c.ran.length === 0 && c.why() === "error", c.why());
+  check("engines that throw or reject: error row, nothing ran, no exception escapes", c.ran.length === 0 && c.why() === "error,error", c.why());
 
   for (const junk of [null, 42, "halt", {}, { answers: null }, { answers: {} }, { answers: { q: null } }, { answers: { q: { type: "choice", choice: "spin" } } },
     { answers: { q: { type: "choice", choice: "spin", probabilities: { spin: NaN } } } }, { answers: { q: { type: "choice", choice: "spin", probabilities: { spin: 1.5 } } } },
@@ -216,7 +216,7 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   a.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["readers", "small", "big"], policy: "cascade", mode: "parallel" });
   a.sr.calibrate({ r: { "small@m1": { p: 0.9 }, "big@m1": { p: 0.9 } } });
   await a.sr.hear("twirl for me").done;
-  check("cascade: rules abstain, the small model is unsure, the big one decides", asked.join() === "readers,small,big" && a.ran.join() === "spin" && a.rows[0].p === "big", [asked, a.rows]);
+  check("cascade: rules abstain (no row), the small model is unsure (row), the big one decides", asked.join() === "readers,small,big" && a.ran.join() === "spin" && a.rows.map((r) => r.p + ":" + r.why).join() === "small:unsure,big:acted", [asked, a.rows]);
 
   const b = mk(); asked = [];
   b.sr.provider("small", fake(() => { asked.push("small"); return choice("none", 0.99); })); b.sr.provider("big", fake(() => { asked.push("big"); return choice("spin", 0.99); }));
@@ -379,7 +379,7 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["flaky", "backup"], policy: "cascade", mode: "parallel" }); sr.calibrate({ r: { "flaky@m1": { p: 0.9 }, "backup@m1": { p: 0.9 } } });
   for (let i = 0; i < 6; i++) await sr.hear("spin " + i).done;
   check("a provider that fails three times running is left alone: asked 3 times in 6 utterances", asked === 3, asked);
-  check("…and the cascade still answered every time, from the next engine", rows.filter((r) => r.did && r.p === "backup").length === 6, rows.map((r) => r.p + ":" + r.why));
+  check("…and the cascade still answered every time, from the next engine", rows.filter((r) => r.did && r.p === "backup").length === 6 && rows.filter((r) => r.p === "flaky" && r.why === "error").length === 3 && rows.filter((r) => r.p === "flaky" && r.why === "open").length === 3, rows.map((r) => r.p + ":" + r.why));
   clock.t += 30001; up = true; await sr.hear("spin again").done;
   check("after the rest period it is asked again and, healthy, decides", asked === 4 && rows[rows.length - 1].p === "flaky" && rows[rows.length - 1].did === 1, rows[rows.length - 1]);
 

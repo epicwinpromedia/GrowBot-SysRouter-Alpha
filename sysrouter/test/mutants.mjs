@@ -54,7 +54,8 @@ const MUTANTS = [
   ["a cost of $1 or more is not counted", "if (Number.isFinite(res.usd) && res.usd >= 0)", "if (typeof res.usd === 'number' && res.usd >= 0 && res.usd < 1)"],
   ["a throwing action keeps its hold", "try { a.run({ route: r.id, pick, tier: r.tier }); } catch (e) { return row(r, 'act_error', x); }\n    last[r.id + '>' + aid] = t;\n    if (a.reserved) for (const k in held) delete held[k];                               // a stop clears every hold, whoever owns it\n    else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };", "last[r.id + '>' + aid] = t;\n    if (a.reserved) for (const k in held) delete held[k];                               // a stop clears every hold, whoever owns it\n    else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };\n    try { a.run({ route: r.id, pick, tier: r.tier }); } catch (e) { return row(r, 'act_error', x); }"],
   ["the system lane registers after seal", "const assertOpen = () => { if (sealed) throw new Error('sysrouter: sealed'); };", "const assertOpen = () => {};"],
-  ["the port exposes `route`", "const port = Object.freeze({", "const port = Object.freeze({ route: (spec) => addRoute(spec, { tier: 'system' }),"]
+  ["the port exposes `route`", "const port = Object.freeze({", "const port = Object.freeze({ route: (spec) => addRoute(spec, { tier: 'system' }),"],
+  ["a failed cascade step writes no row", "if (k === rest.length - 1 || res.why !== 'abstain') row(r, res.why, res.x);", "if (k === rest.length - 1) row(r, res.why, res.x);"]
 ];
 
 const dir = mkdtempSync(tmpdir() + "/sysrouter-mutants-");

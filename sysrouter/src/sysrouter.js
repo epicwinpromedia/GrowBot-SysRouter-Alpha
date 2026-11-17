@@ -258,7 +258,7 @@ export function createRouter(opts) {
         const t0 = now(); let res;
         try { res = settle(r, r.providers[i], providers[r.providers[i]].ask(req, { route: rid }), t0); } catch (e) { res = { d: null, x: { p: r.providers[i] }, why: 'error' }; }
         if (res.d) { finish(res); decided = true; break; }
-        if (r.policy === 'single' || i === r.providers.length - 1) row(r, res.why, res.x);
+        if (r.policy === 'single' || i === r.providers.length - 1 || res.why !== 'abstain') row(r, res.why, res.x);
       }
       const rest = decided ? [] : r.providers.slice(i);
       // 2. the async providers, outside the brain's single flight (R-RT-5), under the route's budget
@@ -268,11 +268,11 @@ export function createRouter(opts) {
         const sh = r.shadow.map((pid) => askAsync(r, pid, req, sctl.signal).then((res) => { row(r, 'shadow_arm', Object.assign(res.x, { arm: res.why || 'ok' })); }));
         let main;
         if (r.policy === 'race') main = new Promise((done) => { let left = rest.length, won = false; if (!left) done();
-          rest.forEach((pid) => askAsync(r, pid, req, ctl.signal).then((res) => { if (res.d && !won) { won = true; if (fresh()) finish(res); else row(r, 'stale', res.x); ctl.abort('won'); } else if (!res.d && !won && left === 1) row(r, res.why, res.x); if (!--left || won) done(); })); });   // first CONFIDENT answer wins, not first to arrive
+          rest.forEach((pid) => askAsync(r, pid, req, ctl.signal).then((res) => { if (res.d && !won) { won = true; if (fresh()) finish(res); else row(r, 'stale', res.x); ctl.abort('won'); } else if (!res.d && !won && res.why !== 'lost' && (left === 1 || res.why !== 'abstain')) row(r, res.why, res.x); if (!--left || won) done(); })); });   // first CONFIDENT answer wins, not first to arrive
         else main = rest.reduce((chain, pid, k) => chain.then((got) => got ? got : askAsync(r, pid, req, ctl.signal).then((res) => {
           if (!fresh()) { row(r, 'stale', res.x); return true; }
           if (res.d) { finish(res); return true; }
-          if (k === rest.length - 1) row(r, res.why, res.x);                              // the last word of a cascade is logged with why it did not act
+          if (k === rest.length - 1 || res.why !== 'abstain') row(r, res.why, res.x);     // every engine consulted writes a row except a non-final abstain
           return false; })), Promise.resolve(false));
         const end = () => { clearTimeout(timer); if (flight[rid] === ctl) delete flight[rid]; };
         waits.push(Promise.all([main].concat(sh)).then(end, end));
