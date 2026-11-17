@@ -10,13 +10,13 @@
 // phone, and it is only a stand-in. R-PERF-1's on-phone numbers remain to be measured (GATHER A5).
 
 import { createRequire } from "node:module";
-import { writeFileSync } from "node:fs";
+import { writeFileSync, existsSync } from "node:fs";
 import { serve } from "../tools/serve.mjs";
 import { ROOT, dataset } from "./lib.mjs";
 
 const { chromium } = createRequire(import.meta.url)("playwright");
 const server = await serve(0), base = "http://127.0.0.1:" + server.address().port;
-const browser = await chromium.launch(), page = await browser.newPage();
+const browser = await chromium.launch(existsSync("/usr/bin/chromium") ? { executablePath: "/usr/bin/chromium" } : {}), page = await browser.newPage();
 const errors = []; page.on("pageerror", (e) => errors.push(String(e.message))); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
 const lines = dataset("wake").filter((r) => r.split === "held").slice(0, 300).map((r) => r.text);
 
