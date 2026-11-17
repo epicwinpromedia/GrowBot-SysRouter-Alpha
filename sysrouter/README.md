@@ -47,10 +47,11 @@ The demo page lets you type what a person might say. It shows what each capabili
 
 | File | What it is |
 |---|---|
+| [RESULTS.md](RESULTS.md) | **Evidence.** Measured accuracy, latency, calibration, host comparison, and in-browser numbers |
 | [MISSION.md](MISSION.md) | **Start here.** The intent, the boundary between the router and Brit's layer, the vocabulary, the two lanes, the three use cases |
 | [SPEC.md](SPEC.md) | The contract: laws, primitives, engines, streams, triggers, commands, capabilities, lanes, the interface to Brit's layer, and what is built |
 | [INTEGRATION.md](INTEGRATION.md) | For Brit: the small steps, what is required of him and what is optional, how to undo it |
-| [results/TABLES.md](results/TABLES.md) | What was measured: every engine and cascade, for accuracy, latency, cost and calibration |
+| [results/TABLES.md](results/TABLES.md) | Raw benchmark tables: every engine and cascade, for accuracy, latency, cost and calibration |
 | [THREAT-MODEL.md](THREAT-MODEL.md) | What can go wrong, what stops it, what remains |
 | [REQUIREMENTS.md](REQUIREMENTS.md) | Every requirement, with its status and evidence |
 | [data/DATASHEET.md](data/DATASHEET.md) | The dataset: sources, licences, splits, limits |
@@ -60,25 +61,25 @@ The demo page lets you type what a person might say. It shows what each capabili
 ## What is where
 
 ```
-src/           the shipped path: eleven browser ES modules, zero dependencies, 814 lines
-  sysrouter.js     the router (273 lines)
+src/           the shipped path: 13 browser ES modules, zero dependencies, 1419 lines
+  sysrouter.js     the router (683 lines)               registry.js   stateless validation & helpers
   s1-readers.js    Brit's readers as an engine          s1-ngram.js   on-device linear model
   s1-embed.js      on-device MiniLM (ONNX Runtime Web)  s1-http.js    Jev / Clef / OpenRouter
   s1-chat.js       a small chat model as a decision engine   keys.js  one key resolver, Node and browser
-  wakeword.js      fuzzy commands (the v1 name, still in the code)
-  expressive.js    emote                                soft-reflex.js  the creature's meaning-triggers
+  fuzzy.js         fuzzy commands                       emote.js      emote (reads both speakers)
+  soft-reflex.js   the creature's meaning-triggers      worker-engine.js  Web Worker / thread adapter
   boot.js          wires it into the page, off until ?sysrouter=1
 models/        the trained on-device models and the fitted gates (small JSON files)
 integration/   apply.mjs: the page change (three insertions), anchored and checked, applied only to a copy
 test/          plain Node scripts that print PASS or FAIL (run-all.mjs runs them)
 bench/         the benchmark: slice Brit's readers, train, ask every engine, report
 data/          the dataset builder, the authored lines, the public samples, v1/
-tools/         serve (demo), proxy (keys stay on your machine), keyscan, get-models, stt_roundtrip.py
+tools/         serve (demo), proxy (keys stay on your machine), keyscan, doccheck, get-models, stt_roundtrip.py
 demo/          the bench page
 results/       results.json, TABLES.md, browser.json, and raw/: every engine's raw answer to every line
 ```
 
-The code still uses v1 names for some v2 terms: `provider` for engine, `route` for a capability fused with its trigger and command table, `action` for command, `grants` for permissions, `wake` for fuzzy commands, `express` for emote. `SPEC.md` §2.3 maps them.
+`SPEC.md` §2.3 maps the v2 vocabulary to any remaining v1 aliases (`provider` for engine, `action` for command, `grants` for permissions).
 
 ## Re-run the benchmark
 
