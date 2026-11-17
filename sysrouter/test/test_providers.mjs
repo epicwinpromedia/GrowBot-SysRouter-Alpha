@@ -238,5 +238,17 @@ for (const name of ["jev", "clef", "clef-flash"]) {
   eSr.calibrate({ emote: { "em@m": { p: 0.9 } } });
   await eSr.hear("hooray", { from: "creature" }).done;
   check("2B.1: creature event produces an emote decision row with from: creature", eRows.some((r) => r.r === "emote" && r.from === "creature" && r.a === "happy"), eRows);
+
+  // 2B.2: composed 2-step emote capability (embed -> choice) keyed by head model id
+  const c2Rows = [], c2Sr = createRouter({ log: (e, d) => c2Rows.push(d) });
+  let c2Reacted = "", c2Vec = null;
+  c2Sr.provider("minilm", { primitives: { embed: {} }, model: "all-minilm-l6-v2", ask: async () => ({ model: "all-minilm-l6-v2", output: [0.9, 0.1] }) });
+  c2Sr.provider("head", { primitives: { choice: {} }, model: "express.minilm-head-v1", ask: async (r) => { c2Vec = r.input; return { model: "express.minilm-head-v1", answers: { q: { type: "choice", choice: "happy", probabilities: { happy: 0.96, calm: 0.04 } } } }; } });
+  registerEmote(c2Sr, (rx, id) => { c2Reacted = id; }, [], { id: "emote_comp", embedEngine: "minilm", headEngine: "head", mode: "live" });
+  const noGateRes = await c2Sr.invoke("emote_comp", "yay!");
+  c2Sr.calibrate({ emote_comp: { "head@express.minilm-head-v1": { p: 0.8 } } });
+  const okGateRes = await c2Sr.invoke("emote_comp", "yay!");
+  check("2B.2: composed emote capability gates on head model id, publishes to emote, and reacts", !noGateRes.ok && noGateRes.why === "no_gate" && okGateRes.ok && Array.isArray(c2Vec) && c2Vec[0] === 0.9 && c2Sr.read("emote").data === "happy" && c2Reacted === "feel_happy", [noGateRes, okGateRes, c2Vec, c2Reacted]);
+  check("2B.2: both paths share the exact 6-label set", Object.keys(EMOTE.question.criteria).sort().join() === "alert,calm,curious,happy,sad,scared");
 }
 done("providers and registrations");
