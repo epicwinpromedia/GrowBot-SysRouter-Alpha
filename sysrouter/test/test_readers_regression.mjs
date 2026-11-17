@@ -40,25 +40,26 @@ if (gold.next_html_sha256 !== R.sha256) console.log("  note: app/v3/next.html ch
 //    adversarial: it answers every line with a random confident option, as fast as it can.
 const rand = rng(20261117), opts = Object.keys(WAKE_ROUTE.question.criteria);
 function routed(policy) {
-  const ran = [], sr = createRouter({});
+  const ran = [], rows = [], sr = createRouter({ log: (e, d) => rows.push(d) });
   for (const k of ["halt", "still"]) sr.action(k, { run: () => ran.push(k), reserved: true });
   for (const k of opts) if (k !== "none" && k !== "halt" && k !== "still") sr.action(k, { run: () => ran.push(k) });
   sr.provider("readers", readersProvider((t) => ftPick(R._ftWords(t))));
   sr.provider("chaos", { ask: async () => { const k = opts[Math.floor(rand() * opts.length)]; return { model: "chaos", answers: { q: { type: "choice", choice: k, probabilities: { [k]: 1 } } } }; } });
   sr.route(Object.assign({}, WAKE_ROUTE, { providers: ["readers", "chaos"], policy, mode: "parallel", cooldownMs: 0 }));
   sr.calibrate({ wake: { "chaos@chaos": { p: 0.9 } } });
-  return { sr, ran };
+  return { sr, ran, rows };
 }
 for (const policy of ["cascade"]) {
-  const { sr, ran } = routed(policy); let same = 0, added = 0, wrong = 0, late = 0;
+  const { sr, ran, rows } = routed(policy); let same = 0, added = 0, wrong = 0, late = 0;
   for (const t of lines) {
-    ran.length = 0;
+    ran.length = 0; const r0 = rows.length;
     const want = ftPick(R._ftWords(t)), out = sr.hear(t), inTick = ran.slice();
     await out.done;
-    if (want) { if (inTick.length === 1 && inTick[0] === want && ran.length === 1) same++; else if (inTick[0] !== want) { late++; } else wrong++; }
+    const lastRow = rows[rows.length - 1];
+    if (want) { if (inTick.length === 0 && ran.length === 0 && rows.length === r0 + 1 && lastRow.why === "readers_acted" && lastRow.act === want && lastRow.did === 0) same++; else if (ran.length > 0) late++; else wrong++; }
     else if (ran.length) added++;
   }
-  check(policy + ": every reader decision ran unchanged, in the same tick, exactly once", wrong === 0 && late === 0 && same > 0, { same, wrong, late });
+  check(policy + ": every reader decision stopped the cascade in the tick without double-requesting", wrong === 0 && late === 0 && same > 0, { same, wrong, late });
   check(policy + ": the engine only ever acted where the readers abstained", added > 0, { added });
   console.log("  " + policy + ": " + same + " reader decisions preserved, " + added + " lines where only the engine acted, over " + lines.length + " lines");
 }

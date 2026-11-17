@@ -105,7 +105,7 @@ export function createRouter(opts) {
     assertOpen();
     if (!ID.test(id) || !p || typeof p.ask !== 'function') throw new Error('sysrouter: bad provider ' + id);
     if (has(providers, id)) throw new Error('sysrouter: provider exists: ' + id);
-    providers[id] = { ask: p.ask, sync: !!p.sync, exact: !!p.exact, model: String(p.model || ''), types: p.types || TYPES };
+    providers[id] = { ask: p.ask, sync: !!p.sync, exact: !!p.exact, inFunnel: !!p.inFunnel, model: String(p.model || ''), types: p.types || TYPES };
   }
   function calibrate(table) {   // { routeId: { 'providerId' or 'providerId@model': { p, pn, margin } } }
     assertOpen();
@@ -190,6 +190,12 @@ export function createRouter(opts) {
     const a = actions[aid], t = now(), tier = TIERS[r.tier];
     x.act = aid;
     if (mode === 'shadow') return row(r, 'shadow', x);
+    const clearHolds = () => { for (const k in held) delete held[k]; };
+    if (x.p && providers[x.p] && providers[x.p].inFunnel) {
+      if (a.reserved) clearHolds();
+      x.did = 0;
+      return row(r, 'readers_acted', x);
+    }
     if (!a.reserved) {
       if (r.cooldownMs && t - (last[r.id + '>' + aid] || -1e15) < r.cooldownMs) return row(r, 'cooldown', x);   // per action: a debounce against the same thing twice, never a block on a different command
       const h = a.resource && held[a.resource];
@@ -197,7 +203,7 @@ export function createRouter(opts) {
     }
     try { a.run({ route: r.id, pick, tier: r.tier }); } catch (e) { return row(r, 'act_error', x); }
     last[r.id + '>' + aid] = t;
-    if (a.reserved) for (const k in held) delete held[k];                               // a stop clears every hold, whoever owns it
+    if (a.reserved) clearHolds();                                                        // a stop clears every hold, whoever owns it
     else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };
     x.did = 1;
     return row(r, 'acted', x);

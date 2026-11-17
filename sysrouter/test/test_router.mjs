@@ -306,6 +306,20 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   c.sr.route({ id: "r", question: Q, notFor: NOT, on: {}, providers: ["p"] });
   c.sr.hear("x".repeat(5000)); check("an engine is sent at most 600 characters of state", seen.length === 600);
   check("empty and non-string input is ignored", c.sr.hear("").acted.length === 0 && c.sr.hear(null).acted.length === 0 && c.sr.hear("   ").acted.length === 0 && c.rows.length === 1);
+
+  const f = mk(); let rPick = "halt";
+  f.sr.provider("readers", { sync: true, exact: true, inFunnel: true, model: "readers", ask: () => rPick ? choice(rPick, 1) : { answers: { q: { abstain: true } } } });
+  f.sr.provider("ng", fake(choice("halt", 0.99)));
+  f.sr.route({ id: "r", question: Q, notFor: NOT, on: { halt: "halt", spin: "spin" }, providers: ["readers", "ng"], policy: "cascade", mode: "live", cooldownMs: 2000, addsRecall: true });
+  f.sr.calibrate({ r: { "ng@m1": { p: 0.9 } } });
+  const extF = f.sr.extension("toy", { actions: ["perk"], providers: ["ng"] });
+  extF.route({ id: "toy.perk", question: { type: "choice", instructions: "ext f", criteria: { perk: "perk", none: "none" } }, notFor: NOT, on: { perk: "perk" }, providers: ["ng"], mode: "live" });
+  await f.sr.hear("stop").done;
+  check("inFunnel match logs readers_acted with did: 0 and calls nothing", f.ran.length === 0 && f.rows.some((r) => r.r === "r" && r.why === "readers_acted" && r.did === 0), [f.ran, f.rows]);
+  rPick = "spin"; await f.sr.hear("spin").done;
+  check("inFunnel non-stop match takes no hold and sets no cooldown (P5)", f.ran.length === 0 && f.rows.some((r) => r.r === "r" && r.why === "readers_acted" && r.act === "spin"), [f.ran, f.rows]);
+  rPick = ""; await f.sr.hear("okay, that's enough now").done;
+  check("when readers abstain, next engine acts once", f.ran.join() === "halt" && f.rows.some((r) => r.r === "r" && r.why === "acted"), [f.ran, f.rows]);
 }
 
 // ---- observability (R-OBS-1..3): the row, and what must never be in it ----

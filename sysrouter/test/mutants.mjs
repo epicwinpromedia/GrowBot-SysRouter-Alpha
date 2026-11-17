@@ -28,7 +28,7 @@ const MUTANTS = [
   ["an extension removes a system route", "if (!r || (who.name || '') !== r.owner || r.tier !== who.tier) return false;", "if (!r) return false;"],
   ["a lower tier pre-empts a higher tier's hold", "if (h && h.until > t && h.tier < tier) return row(r, 'held', x);", ""],
   ["a stop is subject to cooldown and holds", "if (!a.reserved) {\n      if (r.cooldownMs", "if (true) {\n      if (r.cooldownMs"],
-  ["a stop does not clear holds", "if (a.reserved) for (const k in held) delete held[k];", "if (false) {}"],
+  ["a stop does not clear holds", "const clearHolds = () => { for (const k in held) delete held[k]; };", "const clearHolds = () => {};"],
   ["a deterministic stop waits for a promise", "for (; i < r.providers.length && providers[r.providers[i]].sync; i++) {", "for (; false; i++) {"],
   ["a spent budget still asks the next engine", "if (signal.aborted) return skip(whyAbort());", ""],
   ["the rate cap is ignored", "if (++s.n > r.perMin) { row(r, 'rate'); continue; }", ""],
@@ -52,10 +52,11 @@ const MUTANTS = [
   ["a getter changes `on` after validation", "on: ro === undefined ? dict() : copyDict(ro),", "on: ro,"],
   ["an extension reaches a stop", "if (acts.some((id) => actions[id] && actions[id].reserved)) throw new Error('sysrouter: extensions cannot be granted reserved actions');", ""],
   ["a cost of $1 or more is not counted", "if (Number.isFinite(res.usd) && res.usd >= 0)", "if (typeof res.usd === 'number' && res.usd >= 0 && res.usd < 1)"],
-  ["a throwing action keeps its hold", "try { a.run({ route: r.id, pick, tier: r.tier }); } catch (e) { return row(r, 'act_error', x); }\n    last[r.id + '>' + aid] = t;\n    if (a.reserved) for (const k in held) delete held[k];                               // a stop clears every hold, whoever owns it\n    else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };", "last[r.id + '>' + aid] = t;\n    if (a.reserved) for (const k in held) delete held[k];                               // a stop clears every hold, whoever owns it\n    else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };\n    try { a.run({ route: r.id, pick, tier: r.tier }); } catch (e) { return row(r, 'act_error', x); }"],
+  ["a throwing action keeps its hold", "try { a.run({ route: r.id, pick, tier: r.tier }); } catch (e) { return row(r, 'act_error', x); }\n    last[r.id + '>' + aid] = t;\n    if (a.reserved) clearHolds();                                                        // a stop clears every hold, whoever owns it\n    else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };", "last[r.id + '>' + aid] = t;\n    if (a.reserved) clearHolds();                                                        // a stop clears every hold, whoever owns it\n    else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };\n    try { a.run({ route: r.id, pick, tier: r.tier }); } catch (e) { return row(r, 'act_error', x); }"],
   ["the system lane registers after seal", "const assertOpen = () => { if (sealed) throw new Error('sysrouter: sealed'); };", "const assertOpen = () => {};"],
   ["the port exposes `route`", "const port = Object.freeze({", "const port = Object.freeze({ route: (spec) => addRoute(spec, { tier: 'system' }),"],
-  ["a failed cascade step writes no row", "if (k === rest.length - 1 || res.why !== 'abstain') row(r, res.why, res.x);", "if (k === rest.length - 1) row(r, res.why, res.x);"]
+  ["a failed cascade step writes no row", "if (k === rest.length - 1 || res.why !== 'abstain') row(r, res.why, res.x);", "if (k === rest.length - 1) row(r, res.why, res.x);"],
+  ["a readers match is requested again", "if (x.p && providers[x.p] && providers[x.p].inFunnel) {", "if (false) {"]
 ];
 
 const dir = mkdtempSync(tmpdir() + "/sysrouter-mutants-");

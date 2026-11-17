@@ -95,7 +95,7 @@ for (const name of ["jev", "clef", "clef-flash"]) {
 
 // ---- the two co-processors and soft reflexes register cleanly on a real router ----
 {
-  const ran = [], sr = createRouter({});
+  const ran = [], rows = [], sr = createRouter({ log: (e, d) => rows.push(d) });
   sr.provider("readers", readersProvider((t) => /^stop\b/.test(t) ? "halt" : ""));
   sr.provider("model", { ask: async (r) => { const q = r.questions.q; if (q.type === "noul") return { model: "m", answers: { q: { type: "noul", noul: /won|hooray/.test(r.state) ? 0.98 : 0.02 } } }; const k = /won/.test(r.state) && q.criteria.happy ? "happy" : /spin/.test(r.state) && q.criteria.spin ? "spin" : q.criteria.none ? "none" : "calm"; return { model: "m", answers: { q: { type: "choice", choice: k, probabilities: { [k]: 0.97 } } } }; } });
   const run = Object.fromEntries(Object.keys(WAKE_ROUTE.on).map((k) => [k, () => ran.push(k)]));
@@ -104,7 +104,7 @@ for (const name of ["jev", "clef", "clef-flash"]) {
   const soft = softReflexes(sr, Object.fromEntries(SOFT_ACTS.map((a) => [a, () => ran.push("reflex_" + a)])), "model");
   sr.calibrate({ wake: { "model@m": { p: 0.9 } }, express: { "model@m": { p: 0.9 } } });
   sr.seal();
-  check("wake: the readers' stop runs in the tick", sr.hear("stop").acted.join() === "halt");
+  check("wake: the readers' match logs readers_acted and does not double-request", sr.hear("stop").acted.length === 0 && ran.length === 0 && rows.some((r) => r.why === "readers_acted" && r.act === "halt"));
   ran.length = 0; await sr.hear("spin around for me").done; check("wake: a phrasing the readers do not cover reaches a registered action", ran.includes("spin"), ran);
   ran.length = 0; await sr.hear("we won the game").done; check("express: a celebratory line selects the happy reaction with its schema fields", ran.includes("feel_happy:happy:perk"), ran);
   check("every reaction's fields are from the reply schema's own vocabulary", Object.values(REACTIONS).every((r) => (!r.emotion || ["calm", "curious", "happy", "alert", "scared"].includes(r.emotion)) && (!r.burst || ["sparkle", "joy", "pulse", "ripple", "shiver", "rain"].includes(r.burst)) && (!r.expression || ["purr", "breathe", "sigh", "perk", "shiver", "droop"].includes(r.expression))));
