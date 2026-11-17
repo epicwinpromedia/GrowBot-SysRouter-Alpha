@@ -290,14 +290,31 @@ export function createRouter(opts) {
       row(r, 'agree', { a: lp, brain: typeof reply[r.agree] === 'string' ? reply[r.agree].slice(0, 24) : '', ok: reply[r.agree] === lp ? 1 : 0 }); }
   }
 
+  const release = (resource) => { delete held[resource]; };
+  const spent = () => usd;
+  const list = () => Object.keys(routes).map((id) => ({ id, tier: routes[id].tier, owner: routes[id].owner, mode: modeOf(routes[id]), providers: routes[id].providers.slice(), on: Object.assign({}, routes[id].on) }));
+  const port = Object.freeze({
+    hear, replied,
+    read: () => null,
+    watch: () => () => {},
+    request: () => ({ did: 0, why: 'refused' }),
+    list,
+    extensions: () => [],
+    install: async () => { throw new Error('sysrouter: install not available'); },
+    uninstall: () => false,
+    spent, release,
+    flags: () => ({ off: !!flags.off, routes: Object.assign({}, flags.routes) })
+  });
+
   return {
     action, provider, calibrate, extension, hear, replied,
     route: (spec) => { assertOpen(); return addRoute(spec, { tier: 'system' }); },
     core: (spec) => { if (sealed) throw new Error('sysrouter: core routes are registered before seal()'); return addRoute(spec, { tier: 'core' }); },
     unroute: (id) => { assertOpen(); const r = routes[id]; if (!r || r.tier === 'extension') return false; delete routes[id]; return true; },
     seal: () => { sealed = true; },
-    release: (resource) => { delete held[resource]; },
-    spent: () => usd,                                                                    // what hosted engines have cost this session, for the page to show                                   // the page says a hold ended early (motion finished, person took over)
-    list: () => Object.keys(routes).map((id) => ({ id, tier: routes[id].tier, owner: routes[id].owner, mode: modeOf(routes[id]), providers: routes[id].providers.slice(), on: Object.assign({}, routes[id].on) }))
+    release,
+    spent,                                                                               // what hosted engines have cost this session, for the page to show
+    list,
+    port: () => port
   };
 }

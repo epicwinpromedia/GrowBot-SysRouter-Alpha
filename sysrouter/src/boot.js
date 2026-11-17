@@ -47,9 +47,9 @@ export async function boot(w, opts) {
   if (express.length) registerExpress(sr, typeof host.react === 'function' ? host.react : (fields, id) => unwired(id)(), express);
   if (gates) sr.calibrate(gates);
   sr.seal();
-  w.SysRouter = sr;
+  w.SysRouter = sr.port();
   log('sysroute', { why: 'boot', routes: sr.list().map((x) => x.id + ':' + x.mode + ':' + x.providers.join('>')).join(' ') });
-  return sr;
+  return w.SysRouter;
 }
 
 if (typeof window !== 'undefined' && !window.__sysrouterNoAutoBoot) boot(window).catch(() => { window.SysRouter = null; });

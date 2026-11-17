@@ -53,7 +53,8 @@ const MUTANTS = [
   ["an extension reaches a stop", "if (acts.some((id) => actions[id] && actions[id].reserved)) throw new Error('sysrouter: extensions cannot be granted reserved actions');", ""],
   ["a cost of $1 or more is not counted", "if (Number.isFinite(res.usd) && res.usd >= 0)", "if (typeof res.usd === 'number' && res.usd >= 0 && res.usd < 1)"],
   ["a throwing action keeps its hold", "try { a.run({ route: r.id, pick, tier: r.tier }); } catch (e) { return row(r, 'act_error', x); }\n    last[r.id + '>' + aid] = t;\n    if (a.reserved) for (const k in held) delete held[k];                               // a stop clears every hold, whoever owns it\n    else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };", "last[r.id + '>' + aid] = t;\n    if (a.reserved) for (const k in held) delete held[k];                               // a stop clears every hold, whoever owns it\n    else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };\n    try { a.run({ route: r.id, pick, tier: r.tier }); } catch (e) { return row(r, 'act_error', x); }"],
-  ["the system lane registers after seal", "const assertOpen = () => { if (sealed) throw new Error('sysrouter: sealed'); };", "const assertOpen = () => {};"]
+  ["the system lane registers after seal", "const assertOpen = () => { if (sealed) throw new Error('sysrouter: sealed'); };", "const assertOpen = () => {};"],
+  ["the port exposes `route`", "const port = Object.freeze({", "const port = Object.freeze({ route: (spec) => addRoute(spec, { tier: 'system' }),"]
 ];
 
 const dir = mkdtempSync(tmpdir() + "/sysrouter-mutants-");

@@ -93,6 +93,10 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   throws("no system route after seal()", () => a.sr.route({ id: "late_r", question: Q, notFor: NOT, on: {}, providers: ["readers"] }), /sealed/);
   throws("no unroute on system route after seal()", () => a.sr.unroute("r"), /sealed/);
   throws("no extension() after seal()", () => a.sr.extension("late_ext", { actions: [], providers: [] }), /sealed/);
+  const port = a.sr.port();
+  check("port() exposes only the public surface and is frozen", Object.keys(port).sort().join() === "extensions,flags,hear,install,list,read,release,replied,request,spent,uninstall,watch" && Object.isFrozen(port) && ["route", "action", "provider", "calibrate", "core", "seal", "extension"].every((k) => !(k in port)), Object.keys(port));
+  const pf = port.flags(); pf.off = true; pf.routes.hack = "live";
+  check("port.flags() returns a read-only copy", !port.flags().off && !("hack" in port.flags().routes), port.flags());
 
   // a stop ignores cooldown and every hold, and clears the holds
   const b = mk(); let say = "spin";
