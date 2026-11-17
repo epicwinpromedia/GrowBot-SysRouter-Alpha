@@ -90,7 +90,7 @@ export function createRouter(opts) {
     return o;
   }
   const modeOf = (r) => flags.off ? 'off' : (flags.routes && has(flags.routes, r.id) ? flags.routes[r.id] : r.mode);
-  const gateOf = (r, pid, model) => { const g = gates[r.id] || dict(); return g[pid + '@' + model] || g[pid] || null; };
+  const gateOf = (r, pid, model) => { if (!model) return null; const g = gates[r.id] || dict(); return g[pid + '@' + model] || null; };
 
   function action(id, a) {
     if (!ID.test(id) || !a || typeof a.run !== 'function') throw new Error('sysrouter: bad action ' + id);

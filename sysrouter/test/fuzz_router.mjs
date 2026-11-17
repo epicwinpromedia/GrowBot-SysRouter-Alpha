@@ -59,7 +59,7 @@ while (hears < TOTAL) {
     try { (who === "system" ? sr.route : who === "core" ? sr.core : facades[+who.slice(3)].route)(spec); routes[spec.id] = { spec, who }; }
     catch (e) { if (!/^sysrouter: /.test(e.message)) viol("registration failed with a foreign error", e.message); }
   }
-  for (const rid in routes) if (rand() < 0.6) sr.calibrate({ [rid]: Object.fromEntries(routes[rid].spec.providers.map((p) => [p, { p: 0.55 + rand() * 0.44 }])) });
+  for (const rid in routes) if (rand() < 0.6) sr.calibrate({ [rid]: Object.fromEntries(routes[rid].spec.providers.flatMap((p) => [[p + "@m0", { p: 0.55 + rand() * 0.44 }], [p + "@m1", { p: 0.55 + rand() * 0.44 }]])) });
   sr.seal();
 
   // what registration must have guaranteed, checked on the accepted routes

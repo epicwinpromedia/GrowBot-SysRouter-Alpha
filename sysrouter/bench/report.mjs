@@ -102,7 +102,7 @@ for (const route in ROUTES) {
     for (const a of chain) sr.provider(a.replace(/[^a-z0-9.-]/g, "-"), { sync: true, exact: A.arms[a].kind === "readers", model: a, ask: () => { asked[a] = (asked[a] || 0) + 1; cur.path.push(a); const x = loaded[a].by.get(cur.id);
       if (!x || x.err) throw new Error("no answer"); if (x.abstain) return { answers: { q: { abstain: true } } }; return { model: a, answers: { q: { type: "choice", choice: x.pick, probabilities: x.pr } } }; } });
     sr.route({ id: "h", question: q, notFor: ROUTES[route].notFor, on: ROUTES[route].on, providers: chain.map((a) => a.replace(/[^a-z0-9.-]/g, "-")), policy: "cascade", mode: "parallel" });
-    sr.calibrate({ h: Object.fromEntries(chain.filter((a) => gates[route][a]).map((a) => [a.replace(/[^a-z0-9.-]/g, "-"), gates[route][a]])) });
+    sr.calibrate({ h: Object.fromEntries(chain.filter((a) => gates[route][a]).map((a) => [a.replace(/[^a-z0-9.-]/g, "-") + "@" + a, gates[route][a]])) });
     const picks = new Map(), paths = new Map();
     for (const r of held.filter(inDomain)) { cur = { id: r.id, path: [] }; ran.length = 0; sr.hear(r.text); picks.set(r.id, ran[0] || ""); paths.set(r.id, cur.path); }
     const heldIn = held.filter(inDomain), ans = (r) => picks.get(r.id) ? { pick: picks.get(r.id), pr: { [picks.get(r.id)]: 1 } } : { pick: none, pr: { [none]: 1 } };

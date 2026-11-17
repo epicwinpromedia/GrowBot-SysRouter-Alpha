@@ -63,7 +63,7 @@ function realRouter(R) {
   sr.provider("readers", readersProvider((t) => ftPick(R(t)))); sr.provider("ngram-wake", ngramProvider(model("wake.ngram"))); sr.provider("ngram-express", ngramProvider(model("express.ngram")));
   registerWake(sr, Object.fromEntries(Object.keys(WAKE_ROUTE.on).map((k) => [k, () => acted.push(k)])), ["readers", "ngram-wake"]);
   registerExpress(sr, (f, id) => acted.push(id), ["ngram-express"]);
-  sr.calibrate({ wake: { "ngram-wake": { p: 0.6 } }, express: { "ngram-express": { p: 0.6 } } }); sr.seal();
+  sr.calibrate({ wake: { "ngram-wake@wake.ngram-v1": { p: 0.6 } }, express: { "ngram-express@express.ngram-v1": { p: 0.6 } } }); sr.seal();
   return { sr, rows, acted };
 }
 

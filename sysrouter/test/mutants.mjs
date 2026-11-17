@@ -48,7 +48,8 @@ const MUTANTS = [
   ["an engine's reported name goes into the journal unchecked", ".replace(/[^\\w.\\/:@~-]/g, '')", ""],
   ["a confident \"nothing\" does not end a cascade", "          if (res.d) { finish(res); return true; }", "          if (res.d && has(r.on, res.d.pick)) { finish(res); return true; }"],
   ["a late answer past the budget acts", "return Promise.race([p, aborted]).finally(() => signal.removeEventListener('abort', onAbort)).then(\n      (res) => signal.aborted ? { d: null, x: { p: pid, ms: Math.round(now() - t0) }, why: whyAbort() } : settle(r, pid, res, t0),", "return p.then(\n      (res) => settle(r, pid, res, t0),"],
-  ["a race loser trips the breaker", "signal.reason === 'won' ? 'lost'", "signal.reason === 'won' ? 'timeout'"]
+  ["a race loser trips the breaker", "signal.reason === 'won' ? 'lost'", "signal.reason === 'won' ? 'timeout'"],
+  ["an unversioned gate acts", "return g[pid + '@' + model] || null;", "return g[pid + '@' + model] || g[pid] || null;"]
 ];
 
 const dir = mkdtempSync(tmpdir() + "/sysrouter-mutants-");

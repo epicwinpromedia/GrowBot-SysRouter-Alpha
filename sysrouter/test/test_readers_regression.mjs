@@ -46,7 +46,7 @@ function routed(policy) {
   sr.provider("readers", readersProvider((t) => ftPick(R._ftWords(t))));
   sr.provider("chaos", { ask: async () => { const k = opts[Math.floor(rand() * opts.length)]; return { model: "chaos", answers: { q: { type: "choice", choice: k, probabilities: { [k]: 1 } } } }; } });
   sr.route(Object.assign({}, WAKE_ROUTE, { providers: ["readers", "chaos"], policy, mode: "parallel", cooldownMs: 0 }));
-  sr.calibrate({ wake: { chaos: { p: 0.9 } } });
+  sr.calibrate({ wake: { "chaos@chaos": { p: 0.9 } } });
   return { sr, ran };
 }
 for (const policy of ["cascade"]) {

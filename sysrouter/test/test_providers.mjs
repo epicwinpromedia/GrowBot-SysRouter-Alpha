@@ -102,7 +102,7 @@ for (const name of ["jev", "clef", "clef-flash"]) {
   registerWake(sr, run, ["readers", "model"], { mode: "parallel" });
   registerExpress(sr, (rx, id) => ran.push(id + ":" + (rx.emotion || "") + ":" + (rx.expression || "")), ["model"], { mode: "parallel" });
   const soft = softReflexes(sr, Object.fromEntries(SOFT_ACTS.map((a) => [a, () => ran.push("reflex_" + a)])), "model");
-  sr.calibrate({ wake: { model: { p: 0.9 } }, express: { model: { p: 0.9 } } });
+  sr.calibrate({ wake: { "model@m": { p: 0.9 } }, express: { "model@m": { p: 0.9 } } });
   sr.seal();
   check("wake: the readers' stop runs in the tick", sr.hear("stop").acted.join() === "halt");
   ran.length = 0; await sr.hear("spin around for me").done; check("wake: a phrasing the readers do not cover reaches a registered action", ran.includes("spin"), ran);
