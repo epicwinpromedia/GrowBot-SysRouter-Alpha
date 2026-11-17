@@ -44,25 +44,18 @@ Sizes are lines of code under review. Tests are counted separately because they 
 
 | Step | Pull request | Code | Tests | Page change | Users see |
 |---|---|---|---|---|---|
-| 1 | **The router.** `sysrouter.js` | 273 | `test_router.mjs` 330, `mutants.mjs` 74, `fuzz_router.mjs` 105 | none | nothing |
-| 2 | **Your readers as the first engine.** `s1-readers.js` | 30 | `test_readers_regression.mjs` 65 + golden file | none | nothing |
-| 3 | **The on-device engine and fuzzy commands.** `s1-ngram.js`, `wakeword.js`, `models/wake.ngram.json` | 112 | `test_providers.mjs`, `fuzz_readers.mjs` | none | nothing |
-| 4 | **Shadow on the live page.** `boot.js` + your three insertions | 55 + 5 | `test_funnel.mjs` 89 | the insertions | nothing: rows in the journal for anyone who opens `?sysrouter=1` |
-| 5 | **Emote.** `expressive.js`, `models/express.ngram.json` | 53 | `test_providers.mjs` | none | nothing (shadow) |
+| 1 | **The router.** `sysrouter.js`, `registry.js` | 683 + 75 | `test_router.mjs` 572, `mutants.mjs` 89, `fuzz_router.mjs` 104 | none | nothing |
+| 2 | **Your readers as the first engine.** `s1-readers.js` | 31 | `test_readers_regression.mjs` 66 + golden file | none | nothing |
+| 3 | **The on-device engine and fuzzy commands.** `s1-ngram.js`, `fuzzy.js`, `models/wake.ngram.json` | 133 | `test_providers.mjs`, `fuzz_readers.mjs` | none | nothing |
+| 4 | **Shadow on the live page.** `boot.js` + your three insertions | 77 + 5 | `test_funnel.mjs` 161 | the insertions | nothing: rows in the journal for anyone who opens `?sysrouter=1` |
+| 5 | **Emote.** `emote.js`, `models/express.ngram.json` | 64 | `test_providers.mjs` | none | nothing (shadow) |
 | 6 | **Keys and hosted engines.** `keys.js`, `s1-http.js`, `env.example`, `tools/keyscan.mjs`, `tools/proxy.mjs` | 101 + 98 tools | `test_keys.mjs` 70 | none | nothing, unless they name an engine with `?s1=` and have supplied their own key or server |
-| 7 | **Let one capability act.** You expose commands (below), and flip `?sysroute=wake:parallel` on the bench | your code | your harness | `SysRouterHost` | on the bench link only: a command your readers missed is requested through your own command path |
+| 7 | **Let one capability act.** You expose commands (below), and flip `?sysroute=fuzzy:live` on the bench | your code | your harness | `SysRouterHost` | on the bench link only: a command your readers missed is requested through your own command path |
 | 8 | **Soft reflexes.** `soft-reflex.js` | 55 | `test_providers.mjs` | a branch where `scratchpad.reflex` is applied | on the bench: the creature can write "when someone says something celebratory, trill" |
 
-Optional, any time after step 6: `s1-embed.js` (MiniLM on the ONNX runtime you already ship, 86 lines) and `s1-chat.js` (a small chat model used as a decision engine, 49 lines).
+Optional, any time after step 6: `s1-embed.js` (MiniLM on the ONNX runtime you already ship, 89 lines) and `s1-chat.js` (a small chat model used as a decision engine, 49 lines).
 
 **Each step's evidence is one command**, on a fresh clone, with no key and no network: `node sysrouter/test/run-all.mjs`.
-
-Three things in this plan are not built yet. Each lands before the step that needs it, as its own small pull request:
-- the double-request guard and the public port, before step 4;
-- the removal of the old `preempt` mode, before step 4;
-- the creature's words reaching emote, before step 5.
-
-`SPEC.md` §16 lists them.
 
 ### Why this order
 
@@ -70,7 +63,7 @@ Steps 1–3 put code in the repo that nothing calls. Step 4 is the first time th
 
 ### What I recommend you take first, and why
 
-Steps 1–4 with the cascade **readers → on-device model**: no key, no vendor, no cost, no network, and nothing leaves the phone. On the held-out data, your readers alone recognise 20.2% of the command lines; readers → n-gram recognise 58.3%, at a false-trigger rate of 0.3% (`results/TABLES.md`). The hosted engines recognise more (readers → Jev: 95.2%). Step 6 lets a person who wants that add it with their own key. Nothing in steps 1–5 depends on any vendor.
+Steps 1–4 with the cascade **readers → on-device model**: no key, no vendor, no cost, no network, and nothing leaves the phone. On the held-out data, your readers alone recognise 20.1% of the command lines; `readers → ngram` recognises 57.2%, at a false-trigger rate of 0.6% on non-commands and a wrong-action rate of 1.7% on command lines (0.4% across all lines), compared with 0.6% on command lines (0.1% all lines) for `readers` alone, 0.9% (0.2% all lines) for `readers → jev`, and 0.6% (0.1% all lines) for `readers → clef-flash` (`results/TABLES.md`). The hosted engines recognise more (`readers → jev`: 83.3%). Step 6 lets a person who wants that add it with their own key. Nothing in steps 1–5 depends on any vendor.
 
 ## What you would need to decide
 
