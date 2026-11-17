@@ -12,7 +12,7 @@ import { ngramProvider, features, words } from "../src/s1-ngram.js";
 import { tokenizer, embedProvider } from "../src/s1-embed.js";
 import { softReflexRoute, softReflexes, SOFT_ACTS, MAX_SOFT } from "../src/soft-reflex.js";
 import { registerFuzzy, FUZZY } from "../src/fuzzy.js";
-import { registerExpress, EXPRESS_ROUTE, REACTIONS } from "../src/expressive.js";
+import { registerEmote, EMOTE, REACTIONS } from "../src/emote.js";
 import { createRouter, readAnswer } from "../src/sysrouter.js";
 import { workerEngine } from "../src/worker-engine.js";
 import { boot } from "../src/boot.js";
@@ -69,7 +69,7 @@ for (const name of ["jev", "clef", "clef-flash"]) {
   const m = model("wake.ngram"), p = ngramProvider(m), z = p.probs("please stop following me");
   check("probabilities sum to 1 and are finite", Math.abs(z.reduce((a, b) => a + b, 0) - 1) < 1e-9 && z.every((v) => v >= 0 && v <= 1));
   check("it is sync and NOT exact (it needs a gate like any model)", p.sync === true && !p.exact);
-  check("asked about another route's question it abstains", p.ask({ state: "x", questions: { q: EXPRESS_ROUTE.question } }).answers.q.abstain === true);
+  check("asked about another route's question it abstains", p.ask({ state: "x", questions: { q: EMOTE.question } }).answers.q.abstain === true);
   const rand = rng(7); let ok = true;
   for (let i = 0; i < 3000 && ok; i++) { const s = Array.from({ length: Math.floor(rand() * 40) }, () => String.fromCharCode(Math.floor(rand() * 0x3000))).join(""); const a = p.ask({ state: s, questions: { q: Q } }).answers.q; ok = !!readAnswer(Q, a); }
   check("3,000 random unicode strings: always a valid answer, never a throw", ok);
@@ -103,7 +103,7 @@ for (const name of ["jev", "clef", "clef-flash"]) {
   sr.provider("model", { ask: async (r) => { const q = r.questions.q; if (q.type === "noul") return { model: "m", answers: { q: { type: "noul", noul: /won|hooray/.test(r.state) ? 0.98 : 0.02 } } }; const k = /won/.test(r.state) && q.criteria.happy ? "happy" : /spin/.test(r.state) && q.criteria.spin ? "spin" : q.criteria.none ? "none" : "calm"; return { model: "m", answers: { q: { type: "choice", choice: k, probabilities: { [k]: 0.97 } } } }; } });
   const run = Object.fromEntries(Object.keys(FUZZY.on).map((k) => [k, () => ran.push(k)]));
   registerFuzzy(sr, run, ["readers", "model"], { mode: "parallel" });
-  registerExpress(sr, (rx, id) => ran.push(id + ":" + (rx.emotion || "") + ":" + (rx.expression || "")), ["model"], { mode: "parallel" });
+  registerEmote(sr, (rx, id) => ran.push(id + ":" + (rx.emotion || "") + ":" + (rx.expression || "")), ["model"], { mode: "parallel" });
   const soft = softReflexes(sr, Object.fromEntries(SOFT_ACTS.map((a) => [a, () => ran.push("reflex_" + a)])), "model");
   sr.calibrate({ wake: { "model@m": { p: 0.9 } }, express: { "model@m": { p: 0.9 } } });
   sr.seal();
@@ -230,5 +230,13 @@ for (const name of ["jev", "clef", "clef-flash"]) {
   await f3.hear("sound the alarm").done;
   const refSiren = f3.port().request("siren.secret", {}, { from: "person" });
   check("2A.3: 'sound the alarm' runs siren.on when exposed to person, refuses unexposed command", sirenRan === 1 && secretRan === 0 && refSiren.why === "refused", [sirenRan, secretRan, refSiren]);
+
+  // 2B.1: emote listens to speech with both person and creature
+  const eRows = [], eSr = createRouter({ log: (e, d) => eRows.push(d) });
+  eSr.provider("em", { ask: async () => ({ model: "m", answers: { q: { type: "choice", choice: "happy", probabilities: { happy: 0.99 } } } }) });
+  registerEmote(eSr, () => {}, ["em"], { mode: "live" });
+  eSr.calibrate({ emote: { "em@m": { p: 0.9 } } });
+  await eSr.hear("hooray", { from: "creature" }).done;
+  check("2B.1: creature event produces an emote decision row with from: creature", eRows.some((r) => r.r === "emote" && r.from === "creature" && r.a === "happy"), eRows);
 }
 done("providers and registrations");

@@ -38,7 +38,7 @@ import { embedProvider } from '../src/s1-embed.js';
 import { httpProvider } from '../src/s1-http.js';
 import { keyring, browserEnv } from '../src/keys.js';
 import { registerFuzzy, FUZZY } from '../src/fuzzy.js';
-import { registerExpress } from '../src/expressive.js';
+import { registerEmote } from '../src/emote.js';
 
 const $ = (id) => document.getElementById(id), q = new URLSearchParams(location.search), mode = q.get('mode') === 'parallel' ? 'parallel' : 'shadow';
 const journal = [], acted = []; let current = '';
@@ -76,7 +76,7 @@ if (send) { sr.provider('hosted', httpProvider({ model: q.get('s1'), send })); w
 
 const say = (k) => () => acted.push(k);
 registerFuzzy(sr, Object.fromEntries(Object.keys(FUZZY.on).map((k) => [k, say(k)])), wake, { mode });
-registerExpress(sr, (fields, id) => acted.push(id), express, { mode });
+registerEmote(sr, (fields, id) => acted.push(id), express, { mode });
 const g = { wake: {}, express: {} };                                                          // the fitted gates, re-keyed to this page's provider names
 for (const r of ['wake', 'express']) { g[r]['ngram-' + r] = gates[r]['ngram-' + r]; for (const k in gates[r]) if (k.startsWith('hosted@')) g[r][k] = gates[r][k]; }
 sr.calibrate(g); sr.seal();

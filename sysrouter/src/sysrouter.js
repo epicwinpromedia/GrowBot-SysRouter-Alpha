@@ -420,7 +420,7 @@ export function createRouter(opts) {
       if (r.perMin) { const m = Math.floor(now() / 60000), s = spend[r.owner] = spend[r.owner] && spend[r.owner].m === m ? spend[r.owner] : { m, n: 0 }; if (++s.n > r.perMin) { row(r, 'rate'); continue; } }
       seqOf[rid] = my;
       const req = { state, questions: { q: r.question } }, fresh = () => seqOf[rid] === my;
-      const finish = (res) => { const o = act(r, res.d.pick, res.x); if (o.did) out.acted.push(o.act); };
+      const finish = (res) => { if (r.input === 'both') res.x.from = from; const o = act(r, res.d.pick, res.x); if (o.did) out.acted.push(o.act); };
       const p = resolve(r, req, fresh, finish);
       if (p) waits.push(p);
     } } finally { activeHop = prevHop; }

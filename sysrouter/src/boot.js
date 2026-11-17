@@ -21,7 +21,7 @@ import { ngramProvider } from './s1-ngram.js';
 import { httpProvider } from './s1-http.js';
 import { keyring, browserEnv } from './keys.js';
 import { registerFuzzy, FUZZY } from './fuzzy.js';
-import { registerExpress } from './expressive.js';
+import { registerEmote } from './emote.js';
 
 export async function boot(w, opts) {
   opts = opts || {};
@@ -48,7 +48,7 @@ export async function boot(w, opts) {
     for (const k in FUZZY.on) r[k] = typeof host.command === 'function' ? () => host.command(k, 'sysrouter') : (typeof run[k] === 'function' ? run[k] : unwired(k));
     registerFuzzy(sr, r, wake);
   }
-  if (express.length) registerExpress(sr, typeof host.react === 'function' ? host.react : (fields, id) => unwired(id)(), express);
+  if (express.length) registerEmote(sr, typeof host.react === 'function' ? host.react : (fields, id) => unwired(id)(), express);
   if (gates) sr.calibrate(gates);
   sr.seal();
   w.SysRouter = sr.port();
