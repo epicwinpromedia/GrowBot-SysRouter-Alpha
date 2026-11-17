@@ -5,7 +5,7 @@
 import { keyring, nodeEnv, browserEnv } from "../src/keys.js";
 import { check, done } from "./t.mjs";
 
-const OR = "sk-or-v1-0123456789abcdef0123456789abcdef", TS = "ts_live_abcdefghijklmnop", OWN = "own-proxy-shared-secret";
+const OR = "sk-or-v1-0123456789abcdef0123456789abcdef", TS = "ts_live_abcdefghijklmnop", OWN = "own-proxy-shared-secret";   // made-up values. keyscan: ok
 function net(reply) { const calls = []; const f = async (url, o) => { calls.push({ url, headers: o.headers, body: o.body, redirect: o.redirect }); return reply ? reply(url, o) : { ok: true, status: 200, json: async () => ({ answers: {} }) }; }; return { calls, f }; }
 
 // resolution order and host binding

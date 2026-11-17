@@ -1,0 +1,23 @@
+# Runs the SysRouter test suite and the key scanner on every push and pull request that
+# touches sysrouter/. No keys, no network beyond the checkout: the suite is self-contained.
+name: sysrouter
+on:
+  push:
+    paths: ["sysrouter/**", ".github/workflows/sysrouter.yml"]
+  pull_request:
+    paths: ["sysrouter/**"]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: 22
+      - name: No keys in the tree
+        run: node sysrouter/tools/keyscan.mjs
+      - name: Tests
+        run: node sysrouter/test/run-all.mjs

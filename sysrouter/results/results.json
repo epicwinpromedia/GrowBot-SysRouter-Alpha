@@ -793,7 +793,180 @@
      "order_n": 0
     },
     "llama8b-groq": {
-     "incomplete": "240/1104"
+     "kind": "chat",
+     "model": "meta-llama/llama-3.1-8b-instruct",
+     "gate": "never",
+     "gate_nothing": "never",
+     "held": {
+      "n_should_act": 168,
+      "n_should_not": 936,
+      "recall": 0,
+      "wrong": 0,
+      "false_trigger": 0,
+      "precision": null,
+      "acted": 0
+     },
+     "ungated_accuracy": 0.9792,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 168,
+       "n_should_not": 0,
+       "recall": 0,
+       "wrong": 0,
+       "false_trigger": null,
+       "precision": null,
+       "acted": 0
+      },
+      "chat": {
+       "n_should_act": 0,
+       "n_should_not": 40,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-in": {
+       "n_should_act": 0,
+       "n_should_not": 465,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-oos": {
+       "n_should_act": 0,
+       "n_should_not": 348,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "trap": {
+       "n_should_act": 0,
+       "n_should_not": 83,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      }
+     },
+     "by_label": {
+      "follow": 0,
+      "halt": 0,
+      "sing": 0,
+      "spin": 0,
+      "still": 0,
+      "unfollow": 0,
+      "walk_back": 0,
+      "walk_forward": 0
+     },
+     "ece": 0.0208,
+     "latency_ms": {
+      "p50": 209.83,
+      "p95": 422.08,
+      "p99": 647.9,
+      "n": 2170,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0.01681,
+     "tokens_per_call": 333,
+     "failed": 0,
+     "asked": 2170,
+     "order_stable": null,
+     "order_n": 0,
+     "probabilities": "not returned by this host (p = 1)"
+    },
+    "llama8b-logprobs": {
+     "kind": "chat",
+     "model": "meta-llama/llama-3.1-8b-instruct",
+     "gate": "never",
+     "gate_nothing": "never",
+     "held": {
+      "n_should_act": 168,
+      "n_should_not": 936,
+      "recall": 0,
+      "wrong": 0,
+      "false_trigger": 0,
+      "precision": null,
+      "acted": 0
+     },
+     "ungated_accuracy": 0.9801,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 168,
+       "n_should_not": 0,
+       "recall": 0,
+       "wrong": 0,
+       "false_trigger": null,
+       "precision": null,
+       "acted": 0
+      },
+      "chat": {
+       "n_should_act": 0,
+       "n_should_not": 40,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-in": {
+       "n_should_act": 0,
+       "n_should_not": 465,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "clinc-oos": {
+       "n_should_act": 0,
+       "n_should_not": 348,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "trap": {
+       "n_should_act": 0,
+       "n_should_not": 83,
+       "recall": null,
+       "wrong": null,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      }
+     },
+     "by_label": {
+      "follow": 0,
+      "halt": 0,
+      "sing": 0,
+      "spin": 0,
+      "still": 0,
+      "unfollow": 0,
+      "walk_back": 0,
+      "walk_forward": 0
+     },
+     "ece": 0.0199,
+     "latency_ms": {
+      "p50": 223.52,
+      "p95": 345.99,
+      "p99": 694.79,
+      "n": 2170,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0.07368,
+     "tokens_per_call": 333,
+     "failed": 0,
+     "asked": 2170,
+     "order_stable": null,
+     "order_n": 0,
+     "probabilities": "not returned by this host (p = 1)"
     }
    },
    "hybrids": {
@@ -1715,6 +1888,122 @@
      "asked": 1103,
      "order_stable": null,
      "order_n": 0
+    },
+    "llama8b-groq": {
+     "kind": "chat",
+     "model": "meta-llama/llama-3.1-8b-instruct",
+     "gate": "never",
+     "gate_nothing": 0.5001,
+     "held": {
+      "n_should_act": 107,
+      "n_should_not": 22,
+      "recall": 0,
+      "wrong": 0,
+      "false_trigger": 0,
+      "precision": null,
+      "acted": 0
+     },
+     "ungated_accuracy": 0.9225,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 107,
+       "n_should_not": 22,
+       "recall": 0,
+       "wrong": 0,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "goemotions": {
+       "n_should_act": 374,
+       "n_should_not": 71,
+       "recall": 0,
+       "wrong": 0,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      }
+     },
+     "by_label": {
+      "alert": 0,
+      "curious": 0,
+      "happy": 0,
+      "sad": 0,
+      "scared": 0
+     },
+     "ece": 0.0775,
+     "latency_ms": {
+      "p50": 214.04,
+      "p95": 447.39,
+      "p99": 669.41,
+      "n": 1101,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0.01216,
+     "tokens_per_call": 240,
+     "failed": 2,
+     "asked": 1103,
+     "order_stable": null,
+     "order_n": 0,
+     "probabilities": "not returned by this host (p = 1)"
+    },
+    "llama8b-logprobs": {
+     "kind": "chat",
+     "model": "meta-llama/llama-3.1-8b-instruct",
+     "gate": "never",
+     "gate_nothing": 0.5001,
+     "held": {
+      "n_should_act": 107,
+      "n_should_not": 22,
+      "recall": 0,
+      "wrong": 0,
+      "false_trigger": 0,
+      "precision": null,
+      "acted": 0
+     },
+     "ungated_accuracy": 0.9302,
+     "by_kind": {
+      "authored": {
+       "n_should_act": 107,
+       "n_should_not": 22,
+       "recall": 0,
+       "wrong": 0,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      },
+      "goemotions": {
+       "n_should_act": 374,
+       "n_should_not": 71,
+       "recall": 0,
+       "wrong": 0,
+       "false_trigger": 0,
+       "precision": null,
+       "acted": 0
+      }
+     },
+     "by_label": {
+      "alert": 0,
+      "curious": 0,
+      "happy": 0,
+      "sad": 0,
+      "scared": 0
+     },
+     "ece": 0.0698,
+     "latency_ms": {
+      "p50": 232.86,
+      "p95": 397.08,
+      "p99": 1205.04,
+      "n": 1101,
+      "measured": "6 calls in flight"
+     },
+     "usd_per_1000": 0.05324,
+     "tokens_per_call": 240,
+     "failed": 2,
+     "asked": 1103,
+     "order_stable": null,
+     "order_n": 0,
+     "probabilities": "not returned by this host (p = 1)"
     }
    },
    "hybrids": {

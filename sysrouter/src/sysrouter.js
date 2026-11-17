@@ -30,7 +30,8 @@
 const TIERS = { core: 0, system: 1, extension: 2 };          // lower number = higher priority
 const MODES = ['shadow', 'parallel', 'preempt'], POLICIES = ['single', 'cascade', 'race'], TYPES = ['noul', 'choice', 'score'];
 const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
-const ID = /^[a-z][a-z0-9_.-]{0,39}$/;
+const ID = /^[a-z][a-z0-9_.-]{0,39}$/, KEY = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,39}$/, GATE = /^[a-z][A-Za-z0-9_.@\/:~-]{0,95}$/;
+const dict = () => Object.create(null);   // no prototype: a key named __proto__ or constructor is just a key (test_router "hostile keys")
 
 // Kill switch and per-route modes, the codebase's way: read from the URL, persisted to
 // localStorage, so a link turns it off and it stays off (?bodysnd=0, ?stream=0 do the same).
@@ -75,8 +76,10 @@ export function createRouter(opts) {
   const log = typeof opts.log === 'function' ? opts.log : () => {};
   const now = opts.now || (() => Date.now());
   const flags = opts.flags || { off: false, routes: {} };
-  const actions = {}, providers = {}, routes = {}, gates = {}, held = {}, last = {}, seqOf = {}, spend = {}, lastPick = {};
-  let sealed = false, seq = 0;
+  const actions = dict(), providers = dict(), routes = dict(), gates = dict(), held = dict(), last = dict(), seqOf = dict(), spend = dict(), lastPick = dict(), flight = dict(), health = dict(), paid = dict();
+  // reliability limits, all overridable: a provider that fails BREAK.fails times in a row is left alone for BREAK.ms; hosted engines stop being asked once the session has spent maxUsd
+  const BREAK = { fails: Math.max(1, +(opts.breaker && opts.breaker.fails) || 3), ms: Math.max(0, +(opts.breaker && opts.breaker.ms) || 30000) }, maxUsd = opts.maxUsd >= 0 ? +opts.maxUsd : 0.25;
+  let sealed = false, seq = 0, depth = 0, usd = 0;
 
   function row(r, why, x) {   // one journal row per decision (R-OBS-1). Never the words: the funnel's own "user" row holds their hash.
     const o = { r: r.id, tier: r.tier, mode: modeOf(r), why };
@@ -86,8 +89,8 @@ export function createRouter(opts) {
     try { log('sysroute', o); } catch (e) {}
     return o;
   }
-  const modeOf = (r) => flags.off ? 'off' : (flags.routes[r.id] || r.mode);
-  const gateOf = (r, pid, model) => { const g = gates[r.id] || {}; return g[pid + '@' + model] || g[pid] || null; };
+  const modeOf = (r) => flags.off ? 'off' : (flags.routes && has(flags.routes, r.id) ? flags.routes[r.id] : r.mode);
+  const gateOf = (r, pid, model) => { const g = gates[r.id] || dict(); return g[pid + '@' + model] || g[pid] || null; };
 
   function action(id, a) {
     if (!ID.test(id) || !a || typeof a.run !== 'function') throw new Error('sysrouter: bad action ' + id);
@@ -101,7 +104,9 @@ export function createRouter(opts) {
     providers[id] = { ask: p.ask, sync: !!p.sync, exact: !!p.exact, model: String(p.model || ''), types: p.types || TYPES };
   }
   function calibrate(table) {   // { routeId: { 'providerId' or 'providerId@model': { p, pn, margin } } }
-    for (const rid in table) { gates[rid] = gates[rid] || {}; for (const k in table[rid]) { const g = table[rid][k]; if (g && g.p > 0.5 && g.p <= 1) gates[rid][k] = { p: +g.p, pn: g.pn > 0.5 ? +g.pn : +g.p, margin: +g.margin || 0 }; } }
+    if (!table || typeof table !== 'object') return;
+    for (const rid of Object.keys(table)) { if (!ID.test(rid) || !table[rid] || typeof table[rid] !== 'object') continue; gates[rid] = gates[rid] || dict();
+      for (const k of Object.keys(table[rid])) { const g = table[rid][k]; if (GATE.test(k) && g && g.p > 0.5 && g.p <= 1) gates[rid][k] = { p: +g.p, pn: g.pn > 0.5 && g.pn <= 1 ? +g.pn : +g.p, margin: +g.margin || 0 }; } }
   }
 
   // Registration is DATA: no function crosses this line, so the same call works from a Worker
@@ -114,6 +119,11 @@ export function createRouter(opts) {
     if (!q || !TYPES.includes(q.type) || typeof q.instructions !== 'string' || !q.instructions.trim()) fail('question needs type and instructions');
     if (q.type === 'score' ? !(Array.isArray(q.criteria) && q.criteria.length >= 2 && q.criteria.length <= 10) : !(q.criteria && typeof q.criteria === 'object' && !Array.isArray(q.criteria))) fail('bad criteria');
     if (q.type === 'choice' && (Object.keys(q.criteria).length < 2 || Object.keys(q.criteria).length > 64)) fail('choice needs 2-64 options');
+    if (q.instructions.length > 600) fail('instructions over 600 characters');
+    if (q.type !== 'score' && !Object.keys(q.criteria).every((k) => KEY.test(k) && !(k in Object.prototype) && typeof q.criteria[k] === 'string' && q.criteria[k].length <= 300)) fail('option names are plain words, descriptions are strings up to 300 characters');
+    if (q.type === 'score' && !q.criteria.every((c) => typeof c === 'string' && c.length <= 300)) fail('score levels are strings up to 300 characters');
+    if (q.type === 'noul' && Object.keys(q.criteria).sort().join() !== 'false,true') fail('a yes/no question has criteria true and false');
+    const criteria = q.type === 'score' ? Object.freeze(q.criteria.slice()) : Object.freeze(Object.assign({}, q.criteria));
     if (typeof spec.notFor !== 'string' || spec.notFor.trim().length < 12) fail('notFor is required: say what this route must NOT fire on (R-REG-5)');
     const mode = spec.mode || 'shadow', policy = spec.policy || 'single';
     if (!MODES.includes(mode) || !POLICIES.includes(policy)) fail('bad mode or policy');
@@ -122,9 +132,10 @@ export function createRouter(opts) {
     for (const pid of ps.concat(sh)) { if (!has(providers, pid)) fail('unknown provider ' + pid); if (!providers[pid].types.includes(q.type)) fail(pid + ' cannot answer ' + q.type); }
     if (policy === 'single' && ps.length !== 1) fail('single takes one provider');
     const on = spec.on || {}, keys = q.type === 'noul' ? ['true', 'false'] : q.type === 'choice' ? Object.keys(q.criteria) : q.criteria.map((_, i) => String(i));
-    for (const k in on) {
+    for (const k of Object.keys(on)) {
       if (!keys.includes(k)) fail('on.' + k + ' is not an answer');
-      const a = actions[on[k]]; if (!a || !has(actions, on[k])) fail('unknown action ' + on[k]);
+      if (typeof on[k] !== 'string' || !has(actions, on[k])) fail('unknown action ' + on[k]);
+      const a = actions[on[k]];
       // a reserved action (stop, halt) is reachable only through an exact provider chain: a probability may never be the only thing between words and a stop, in either direction (R-SAFE-1)
       if (a.reserved && !(who.tier === 'core' || ps.every((pid) => providers[pid].exact) || spec.addsRecall === true)) fail('reserved action needs exact providers, or addsRecall:true');
       if (a.reserved && spec.addsRecall && who.tier === 'extension') fail('extensions cannot reach reserved actions');
@@ -133,10 +144,10 @@ export function createRouter(opts) {
     if (who.grants) for (const pid of ps.concat(sh)) if (!who.grants.providers.includes(pid)) fail('no grant for provider ' + pid);
     if (who.grants && mode === 'preempt') fail('extensions cannot pre-empt the brain');
     for (const rid in routes) {   // collisions (R-REG-5): two acting routes may not both claim one answer of one identical question
-      const o = routes[rid]; if (o.question.instructions === q.instructions && Object.keys(on).some((k) => o.on[k] && o.on[k] !== on[k])) fail('collides with ' + rid);
+      const o = routes[rid]; if (o.question.instructions === q.instructions && Object.keys(on).some((k) => has(o.on, k) && o.on[k] !== on[k])) fail('collides with ' + rid);
     }
-    routes[spec.id] = { id: spec.id, tier: who.tier, owner: who.name || '', question: { type: q.type, instructions: q.instructions, criteria: q.criteria },
-      on: Object.assign({}, on), providers: ps.slice(), shadow: sh.slice(), policy, mode, notFor: spec.notFor,
+    routes[spec.id] = { id: spec.id, tier: who.tier, owner: who.name || '', question: Object.freeze({ type: q.type, instructions: q.instructions, criteria }),
+      on: Object.freeze(Object.assign(dict(), on)), providers: ps.slice(), shadow: sh.slice(), policy, mode, notFor: spec.notFor,
       budgetMs: Math.max(20, Math.min(10000, +spec.budgetMs || 1500)), cooldownMs: Math.max(0, +spec.cooldownMs || 0),
       input: spec.input === 'creature' || spec.input === 'both' ? spec.input : 'person', agree: typeof spec.agree === 'string' ? spec.agree : '', perMin: who.grants ? who.grants.perMin : 0 };
     return spec.id;
@@ -152,7 +163,7 @@ export function createRouter(opts) {
   }
 
   function act(r, pick, x) {
-    const aid = r.on[pick], mode = modeOf(r);
+    const aid = has(r.on, pick) ? r.on[pick] : '', mode = modeOf(r);
     if (!aid) return row(r, 'none', x);
     const a = actions[aid], t = now(), tier = TIERS[r.tier];
     x.act = aid;
@@ -175,8 +186,8 @@ export function createRouter(opts) {
   function settle(r, pid, res, t0) {
     const P = providers[pid], x = { p: pid, ms: Math.round(now() - t0) };
     if (!res || typeof res !== 'object' || !res.answers) return { d: null, x, why: 'bad_answer' };
-    if (res.model) x.m = String(res.model).slice(0, 48);
-    if (typeof res.usd === 'number' && res.usd >= 0) x.usd = res.usd;
+    if (res.model) x.m = String(res.model).replace(/[^\w.\/:@~-]/g, '').slice(0, 48);
+    if (typeof res.usd === 'number' && res.usd >= 0 && res.usd < 1) { x.usd = res.usd; usd += res.usd; if (res.usd > 0) paid[pid] = true; }
     if (res.usage && res.usage.input_tokens >= 0) x.tok = res.usage.input_tokens;
     const raw = res.answers.q;
     if (raw && raw.abstain) return { d: null, x, why: 'abstain' };                      // "my rules do not cover this": escalate, never a confident none
@@ -190,17 +201,21 @@ export function createRouter(opts) {
     return { d, x, why: '' };
   }
   function askAsync(r, pid, req, signal) {
-    const t0 = now();
-    if (signal.aborted) return Promise.resolve({ d: null, x: { p: pid, ms: 0 }, why: 'timeout' });   // the budget is spent: nobody else is asked (found by test/fuzz_router.mjs: a second engine asked after the deadline never settled)
-    return Promise.resolve().then(() => providers[pid].ask(req, { signal, route: r.id })).then((res) => settle(r, pid, res, t0), (e) => ({ d: null, x: { p: pid, ms: Math.round(now() - t0) }, why: signal.aborted ? 'timeout' : 'error' }));
+    const t0 = now(), skip = (why) => Promise.resolve({ d: null, x: { p: pid, ms: 0 }, why }), h = health[pid] || (health[pid] = { fails: 0, until: 0 });
+    if (signal.aborted) return skip(signal.reason === 'stale' ? 'stale' : 'timeout');             // the budget is spent or newer words arrived: nobody else is asked (found by test/fuzz_router.mjs: a second engine asked after the deadline never settled)
+    if (h.until > t0) return skip('open');                                                       // circuit breaker: this engine just failed several times running, so it is not asked and the cascade moves on
+    if (paid[pid] && usd >= maxUsd) return skip('budget');                                       // spend cap: an engine that charges is not asked once the session has spent its limit
+    const mark = (res) => { if (res.why === 'error' || res.why === 'timeout' || res.why === 'bad_answer') { if (++h.fails >= BREAK.fails) { h.fails = 0; h.until = now() + BREAK.ms; } } else if (res.why !== 'stale') h.fails = 0; return res; };
+    return Promise.resolve().then(() => providers[pid].ask(req, { signal, route: r.id })).then((res) => settle(r, pid, res, t0), (e) => ({ d: null, x: { p: pid, ms: Math.round(now() - t0) }, why: signal.aborted ? (signal.reason === 'stale' ? 'stale' : 'timeout') : 'error' })).then(mark);
   }
 
   function hear(text, meta) {
     meta = meta || {};
     const out = { acted: [], preempt: false, done: null }, waits = [], from = meta.from === 'creature' ? 'creature' : 'person';
-    if (flags.off || typeof text !== 'string' || !text.trim()) { out.done = Promise.resolve(out); return out; }
+    if (flags.off || typeof text !== 'string' || !text.trim() || depth > 1) { out.done = Promise.resolve(out); return out; }   // depth: an action that makes the creature speak may be heard once, never in a loop
     const state = text.length > 600 ? text.slice(0, 600) : text, my = ++seq;
-    for (const rid in routes) {
+    depth++;
+    try { for (const rid in routes) {
       const r = routes[rid];
       if (modeOf(r) === 'off' || (r.input !== 'both' && r.input !== from)) continue;
       if (r.perMin) { const m = Math.floor(now() / 60000), s = spend[r.owner] = spend[r.owner] && spend[r.owner].m === m ? spend[r.owner] : { m, n: 0 }; if (++s.n > r.perMin) { row(r, 'rate'); continue; } }
@@ -218,19 +233,21 @@ export function createRouter(opts) {
       const rest = decided ? [] : r.providers.slice(i);
       // 2. the async providers, outside the brain's single flight (R-RT-5), under the route's budget
       if (rest.length || r.shadow.length) {
-        const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), r.budgetMs);
-        const sh = r.shadow.map((pid) => askAsync(r, pid, req, ctl.signal).then((res) => { row(r, 'shadow_arm', Object.assign(res.x, { arm: res.why || 'ok' })); }));
+        if (flight[rid]) flight[rid].abort('stale');                                         // one flight per route: the engines still working on older words are told to stop
+        const ctl = flight[rid] = new AbortController(), sctl = new AbortController(), timer = setTimeout(() => { ctl.abort('timeout'); sctl.abort('timeout'); }, r.budgetMs);
+        const sh = r.shadow.map((pid) => askAsync(r, pid, req, sctl.signal).then((res) => { row(r, 'shadow_arm', Object.assign(res.x, { arm: res.why || 'ok' })); }));
         let main;
         if (r.policy === 'race') main = new Promise((done) => { let left = rest.length, won = false; if (!left) done();
-          rest.forEach((pid) => askAsync(r, pid, req, ctl.signal).then((res) => { if (res.d && !won) { won = true; if (fresh()) finish(res); else row(r, 'stale', res.x); } else if (!res.d && !won && left === 1) row(r, res.why, res.x); if (!--left || won) done(); })); });   // first CONFIDENT answer wins, not first to arrive
+          rest.forEach((pid) => askAsync(r, pid, req, ctl.signal).then((res) => { if (res.d && !won) { won = true; if (fresh()) finish(res); else row(r, 'stale', res.x); ctl.abort('won'); } else if (!res.d && !won && left === 1) row(r, res.why, res.x); if (!--left || won) done(); })); });   // first CONFIDENT answer wins, not first to arrive
         else main = rest.reduce((chain, pid, k) => chain.then((got) => got ? got : askAsync(r, pid, req, ctl.signal).then((res) => {
           if (!fresh()) { row(r, 'stale', res.x); return true; }
           if (res.d) { finish(res); return true; }
           if (k === rest.length - 1) row(r, res.why, res.x);                              // the last word of a cascade is logged with why it did not act
           return false; })), Promise.resolve(false));
-        waits.push(Promise.all([main].concat(sh)).then(() => clearTimeout(timer), () => clearTimeout(timer)));
+        const end = () => { clearTimeout(timer); if (flight[rid] === ctl) delete flight[rid]; };
+        waits.push(Promise.all([main].concat(sh)).then(end, end));
       }
-    }
+    } } finally { depth--; }
     out.done = Promise.all(waits).then(() => out);
     return out;
   }
@@ -249,7 +266,8 @@ export function createRouter(opts) {
     core: (spec) => { if (sealed) throw new Error('sysrouter: core routes are registered before seal()'); return addRoute(spec, { tier: 'core' }); },
     unroute: (id) => { const r = routes[id]; if (!r || r.tier === 'extension' || (r.tier === 'core' && sealed)) return false; delete routes[id]; return true; },
     seal: () => { sealed = true; },
-    release: (resource) => { delete held[resource]; },                                   // the page says a hold ended early (motion finished, person took over)
+    release: (resource) => { delete held[resource]; },
+    spent: () => usd,                                                                    // what hosted engines have cost this session, for the page to show                                   // the page says a hold ended early (motion finished, person took over)
     list: () => Object.keys(routes).map((id) => ({ id, tier: routes[id].tier, owner: routes[id].owner, mode: modeOf(routes[id]), providers: routes[id].providers.slice(), on: Object.assign({}, routes[id].on) }))
   };
 }

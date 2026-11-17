@@ -41,8 +41,8 @@ export function chatProvider(cfg) {
       }
       const real = sum > 0 && pr[keys[at]] > 0;
       if (real) for (const k in pr) pr[k] = Math.min(1, pr[k] / sum); else { for (const k in pr) delete pr[k]; pr[keys[at]] = 1; }
-      const u = r.usage || {};
-      return { model: r.model || model, usage: { input_tokens: +u.prompt_tokens || 0 }, usd: typeof u.cost === 'number' ? u.cost : undefined, logprobs: real,
+      const u = r.usage || {}, up = u.cost_details && u.cost_details.upstream_inference_cost;   // the engine's own charge when the call ran on the user's vendor key (usage.cost is then 0)
+      return { model: r.model || model, usage: { input_tokens: +u.prompt_tokens || 0 }, usd: typeof up === 'number' && up > 0 ? up : typeof u.cost === 'number' ? u.cost : undefined, logprobs: real,
         answers: { q: q.type === 'noul' ? { type: 'noul', noul: pr.true || 0 } : { type: 'choice', choice: keys[at], probabilities: pr, confidence: pr[keys[at]] } } };
     }
   };

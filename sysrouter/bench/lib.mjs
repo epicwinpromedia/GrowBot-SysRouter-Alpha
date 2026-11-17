@@ -50,7 +50,7 @@ export async function makeProvider(name, route) {
   if (a.kind === "embed") { const head = a.head ? model(route + ".minilm-head") : null; if (a.head && !head) return null; return embedProvider({ embed: await getEmbed(), head }); }
   const keys = keyring(nodeEnv(loadEnv())), send = keys.sender(a.kind === "http" ? "systemone" : "chat");
   if (!send) return null;
-  const cfg = { model: a.model, send, usdPerMTok: a.usdPerMTok, extra: a.provider ? { provider: Object.assign({ allow_fallbacks: false }, a.provider) } : undefined };
+  const cfg = { model: a.model, send, usdPerMTok: a.usdPerMTok, extra: Object.assign({}, a.extra, a.provider ? { provider: Object.assign({ allow_fallbacks: false }, a.provider) } : null) };
   return a.kind === "http" ? httpProvider(cfg) : chatProvider(cfg);
 }
 

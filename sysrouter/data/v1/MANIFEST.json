@@ -1,21 +1,25 @@
 {
   "version": "v1",
   "built_from": "authored.mjs + sources/",
-  "stt_rows": 0,
-  "stt_changed_by_whisper": 0,
+  "stt_rows": 608,
+  "stt_changed_by_whisper": 58,
   "wake": {
-    "rows": 2170,
-    "sha256": "4f6595f5985a4229d75a572e035eb1508592987d64cd7c080351e2949faf668f",
+    "rows": 2778,
+    "sha256": "3817df257b9eed02541d9b3e381ab16e9f162b874e889ff1c6300a335754d42d",
     "counts": {
       "held/authored": 168,
       "held/chat": 40,
       "held/clinc-in": 465,
       "held/clinc-oos": 348,
+      "held/stt-clean": 290,
+      "held/stt-noisy": 16,
       "held/trap": 83,
       "tune/authored": 160,
       "tune/chat": 40,
       "tune/clinc-in": 435,
       "tune/clinc-oos": 352,
+      "tune/stt-clean": 278,
+      "tune/stt-noisy": 24,
       "tune/trap": 79
     }
   },

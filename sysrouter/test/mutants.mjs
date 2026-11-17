@@ -20,7 +20,7 @@ const MUTANTS = [
   ["probabilities are not range-checked", "const ok = (x) => typeof x === 'number' && x >= 0 && x <= 1;", "const ok = (x) => true;"],
   ["an answer about older words still acts", "fresh = () => seqOf[rid] === my;", "fresh = () => true;"],
   // the kill switch is enforced twice (hear() returns at once, and every route's mode reads "off"), so breaking it takes both edits
-  ["the kill switch is ignored", ["if (flags.off || typeof text !== 'string' || !text.trim())", "const modeOf = (r) => flags.off ? 'off' : (flags.routes[r.id] || r.mode);"], ["if (typeof text !== 'string' || !text.trim())", "const modeOf = (r) => (flags.routes[r.id] || r.mode);"]],
+  ["the kill switch is ignored", ["if (flags.off || typeof text !== 'string'", "const modeOf = (r) => flags.off ? 'off' : "], ["if (typeof text !== 'string'", "const modeOf = (r) => "]],
   ["a probability alone reaches a reserved action", "fail('reserved action needs exact providers, or addsRecall:true');", "void 0;"],
   ["an extension reaches a reserved action", "if (a.reserved && spec.addsRecall && who.tier === 'extension') fail('extensions cannot reach reserved actions');", ""],
   ["an extension uses an action outside its grant", "if (who.grants && !who.grants.actions.includes(on[k])) fail('no grant for action ' + on[k]);", ""],
@@ -31,13 +31,21 @@ const MUTANTS = [
   ["a stop is subject to cooldown and holds", "if (!a.reserved) {\n      if (r.cooldownMs", "if (true) {\n      if (r.cooldownMs"],
   ["a stop does not clear holds", "if (a.reserved) for (const k in held) delete held[k];", "if (false) {}"],
   ["a deterministic stop waits for a promise", "for (; i < r.providers.length && providers[r.providers[i]].sync; i++) {", "for (; false; i++) {"],
-  ["a spent budget still asks the next engine", "if (signal.aborted) return Promise.resolve({ d: null, x: { p: pid, ms: 0 }, why: 'timeout' });", ""],
+  ["a spent budget still asks the next engine", "if (signal.aborted) return skip(signal.reason === 'stale' ? 'stale' : 'timeout');", ""],
   ["the rate cap is ignored", "if (++s.n > r.perMin) { row(r, 'rate'); continue; }", ""],
   ["notFor is not required", "if (typeof spec.notFor !== 'string' || spec.notFor.trim().length < 12) fail(", "if (false) fail("],
   ["route collisions are allowed", "fail('collides with ' + rid);", "void 0;"],
   ["an unlimited amount of text is sent to an engine", "text.length > 600 ? text.slice(0, 600) : text", "text"],
   ["a reserved action can be added after seal()", "if (a.reserved && sealed) throw new Error('sysrouter: reserved actions are registered before seal()');", ""],
   ["an executor that throws escapes", "try { a.run({ route: r.id, pick, tier: r.tier }); } catch (e) { return row(r, 'act_error', x); }", "a.run({ route: r.id, pick, tier: r.tier });"],
+  ["a failing engine is asked forever (no circuit breaker)", "if (h.until > t0) return skip('open');", ""],
+  ["the spend cap is ignored", "if (paid[pid] && usd >= maxUsd) return skip('budget');", ""],
+  ["an action can loop words back into the router without limit", "|| !text.trim() || depth > 1)", "|| !text.trim())"],
+  ["an option may be named like a built-in object member", "KEY.test(k) && !(k in Object.prototype) && ", "KEY.test(k) && "],
+  ["a registered question can be edited afterwards by its author", "Object.freeze(Object.assign({}, q.criteria));", "q.criteria;"],
+  ["a registered answer table can be edited afterwards by its author", "on: Object.freeze(Object.assign(dict(), on)),", "on,"],
+  ["engines still working on older words are not told to stop", "if (flight[rid]) flight[rid].abort('stale');", ""],
+  ["an engine's reported name goes into the journal unchecked", ".replace(/[^\\w.\\/:@~-]/g, '')", ""],
   ["a confident \"nothing\" does not end a cascade", "          if (res.d) { finish(res); return true; }", "          if (res.d && has(r.on, res.d.pick)) { finish(res); return true; }"]
 ];
 

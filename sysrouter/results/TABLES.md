@@ -15,7 +15,8 @@ Gate fitted on the tuning split so that bad acts (a false trigger or a wrong act
 | clef-flash | 98.9% | 0.8147 | 72.6% | 0.6% | 0.3% | 96.8% | 0.186 | 233 | 431 | 628 | $0.0167 | 0/2170 | – |
 | clef@primeintellect | 87.9% | 0.7002 | 84.5% | 1.8% | 0.3% | 96.0% | 0.087 | 364 | 1219 | 1972 | $0.1053 | 229/2170 | – |
 | clef-flash@primeintellect | 99.0% | 0.8703 | 67.3% | 0.0% | 0.3% | 97.4% | 0.159 | 282 | 384 | 583 | $0.0167 | 1/2170 | – |
-| llama8b-groq | incomplete 240/1104 |
+| llama8b-groq | 97.9% | never | 0.0% | 0.0% | 0.0% | – | 0.021 | 210 | 422 | 648 | $0.0168 | 0/2170 | – |
+| llama8b-logprobs | 98.0% | never | 0.0% | 0.0% | 0.0% | – | 0.020 | 224 | 346 | 695 | $0.0737 | 0/2170 | – |
 
 **Cascades, replayed through the real router**
 
@@ -41,6 +42,8 @@ Gate fitted on the tuning split so that bad acts (a false trigger or a wrong act
 | clef-flash | R 72.6% | FT 0.0% | FT 0.2% | FT 0.0% | FT 2.4% |
 | clef@primeintellect | R 84.5% | FT 0.0% | FT 0.2% | FT 0.0% | FT 2.4% |
 | clef-flash@primeintellect | R 67.3% | FT 0.0% | FT 0.2% | FT 0.0% | FT 2.4% |
+| llama8b-groq | R 0.0% | FT 0.0% | FT 0.0% | FT 0.0% | FT 0.0% |
+| llama8b-logprobs | R 0.0% | FT 0.0% | FT 0.0% | FT 0.0% | FT 0.0% |
 | readers → ngram | R 58.3% | FT 0.0% | FT 0.0% | FT 0.0% | FT 3.6% |
 | readers → minilm-head | R 63.7% | FT 0.0% | FT 0.0% | FT 0.0% | FT 3.6% |
 | readers → jev | R 95.2% | FT 0.0% | FT 0.0% | FT 0.0% | FT 4.8% |
@@ -61,6 +64,8 @@ Gate fitted on the tuning split so that bad acts (a false trigger or a wrong act
 | clef-flash | 21.7% | 59.1% | 84.2% | 95.5% | 76.2% | 77.3% | 84.2% | 90.0% |
 | clef@primeintellect | 91.3% | 31.8% | 94.7% | 100.0% | 76.2% | 95.5% | 94.7% | 95.0% |
 | clef-flash@primeintellect | 8.7% | 59.1% | 84.2% | 95.5% | 71.4% | 68.2% | 84.2% | 75.0% |
+| llama8b-groq | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% |
+| llama8b-logprobs | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% |
 
 ## Route `express` — held-out, in-domain lines
 
@@ -77,6 +82,8 @@ Gate fitted on the tuning split so that bad acts (a false trigger or a wrong act
 | clef-flash | 90.7% | 0.5241 | 83.2% | 2.8% | 0.0% | 96.7% | 0.096 | 224 | 418 | 558 | $0.0121 | 0/1103 | – |
 | clef@primeintellect | 48.1% | 0.5001 | 46.7% | 0.9% | 0.0% | 98.0% | 0.107 | 373 | 1515 | 1925 | $0.0769 | 172/1103 | – |
 | clef-flash@primeintellect | 89.9% | 0.6162 | 80.4% | 1.9% | 0.0% | 97.7% | 0.077 | 292 | 385 | 742 | $0.0121 | 0/1103 | – |
+| llama8b-groq | 92.3% | never | 0.0% | 0.0% | 0.0% | – | 0.077 | 214 | 447 | 669 | $0.0122 | 2/1103 | – |
+| llama8b-logprobs | 93.0% | never | 0.0% | 0.0% | 0.0% | – | 0.070 | 233 | 397 | 1205 | $0.0532 | 2/1103 | – |
 
 **Cascades, replayed through the real router**
 
@@ -102,6 +109,8 @@ Gate fitted on the tuning split so that bad acts (a false trigger or a wrong act
 | clef-flash | R 83.2% · FT 0.0% | R 23.8% · FT 21.1% |
 | clef@primeintellect | R 46.7% · FT 0.0% | R 37.2% · FT 12.7% |
 | clef-flash@primeintellect | R 80.4% · FT 0.0% | R 21.1% · FT 19.7% |
+| llama8b-groq | R 0.0% · FT 0.0% | R 0.0% · FT 0.0% |
+| llama8b-logprobs | R 0.0% · FT 0.0% | R 0.0% · FT 0.0% |
 | readers → ngram | R 14.9% · FT 4.5% | – |
 | readers → minilm-head | R 51.4% · FT 9.1% | – |
 | readers → jev | R 87.8% · FT 0.0% | – |
@@ -122,3 +131,5 @@ Gate fitted on the tuning split so that bad acts (a false trigger or a wrong act
 | clef-flash | 75.0% | 72.2% | 91.7% | 90.9% | 84.2% |
 | clef@primeintellect | 54.2% | 61.1% | 29.2% | 45.5% | 47.4% |
 | clef-flash@primeintellect | 70.8% | 66.7% | 91.7% | 90.9% | 79.0% |
+| llama8b-groq | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% |
+| llama8b-logprobs | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% |

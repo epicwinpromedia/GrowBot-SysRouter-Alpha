@@ -102,6 +102,20 @@
    "usdPerMTok": 0.22,
    "price_source": "https://openrouter.ai/api/v1/models/meta-llama/llama-3.1-8b-instruct/endpoints",
    "note": "The same model on a host that returns logprobs, so its confidence can be calibrated."
+  },
+  "gemini-flash": {
+   "kind": "chat",
+   "model": "google/gemini-3.8-flash",
+   "extra": {
+    "max_tokens": 200,
+    "reasoning": {
+     "effort": "low"
+    },
+    "logprobs": false
+   },
+   "usdPerMTok": 0.75,
+   "price_source": "https://openrouter.ai/api/v1/models",
+   "note": "The model family the app's brain runs on (next.html), asked ONLY this route's question. Not today's full brain turn: no 13k-token prompt, no reply to write. A reference for what a large model makes of the same question. No logprobs: the pick carries p = 1."
   }
  },
  "hybrids": {

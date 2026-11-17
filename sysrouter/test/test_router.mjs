@@ -138,16 +138,24 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   check("a journal that throws is contained", !logThrew && !!e);
 }
 
-// ---- THE PERSON'S NEWEST WORDS DECIDE ----
+// ---- THE PERSON'S NEWEST WORDS DECIDE, and one flight per route ----
 {
   const a = mk(); const waits = [];
   a.sr.provider("p", fake(() => new Promise((res) => waits.push(res))));
   a.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin", halt: "halt" }, providers: ["p"], mode: "parallel", addsRecall: true }); a.sr.calibrate({ r: { p: { p: 0.6 } } });
   const first = a.sr.hear("spin around"), second = a.sr.hear("actually never mind");
-  await sleep(2);                                   // both questions are now with the engine
-  waits[1](choice("none", 0.99)); await second.done;
-  waits[0](choice("spin", 0.99)); await first.done;
-  check("an answer about older words, landing after newer words, is dropped", a.ran.length === 0 && a.rows.map((r) => r.why).sort().join() === "none,stale", a.why());
+  await sleep(2);
+  check("words overtaken before the engine was asked are never sent to it", waits.length === 1, waits.length);
+  waits[0](choice("none", 0.99)); await second.done; await first.done;
+  check("…and are logged stale; only the newest words were decided", a.ran.length === 0 && a.rows.map((r) => r.why).sort().join() === "none,stale", a.why());
+
+  // an engine already working on older words is told to stop, and whatever it says is dropped
+  const b = mk(); const open = []; let aborted = "";
+  b.sr.provider("p", fake((req, ctx) => new Promise((res) => { open.push(res); ctx.signal.addEventListener("abort", () => { aborted = String(ctx.signal.reason); }); })));
+  b.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" }); b.sr.calibrate({ r: { p: { p: 0.6 } } });
+  const one = b.sr.hear("spin around"); await sleep(2); const two = b.sr.hear("the weather is nice"); await sleep(2);
+  open[0](choice("spin", 0.99)); open[1](choice("none", 0.99)); await one.done; await two.done;
+  check("an engine mid-answer is aborted as stale when newer words arrive, and its late answer does not act", aborted === "stale" && b.ran.length === 0 && b.rows.map((r) => r.why).sort().join() === "none,stale", [aborted, b.why()]);
 }
 
 // ---- policies: cascade, race, shadow arms (R-RT-1, R-RT-4; CLAIMS-LEDGER #37) ----
@@ -266,6 +274,57 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   const a = mk(); a.sr.provider("p", fake({ model: "m1", answers: { q: { type: "noul", noul: 0.97 } } }));
   a.sr.route({ id: "r", question: noul, notFor: NOT, on: { true: "perk" }, providers: ["p"], mode: "parallel" }); a.sr.calibrate({ r: { p: { p: 0.95 } } });
   await a.sr.hear("we won").done; check("a yes/no route acts on a confident yes", a.ran.join() === "perk");
+}
+
+// ---- hostile keys: nothing a registration, a gates file or a reply can name reaches a prototype ----
+{
+  const a = mk(); a.sr.provider("p", fake(choice("spin", 0.99)));
+  a.sr.calibrate(JSON.parse('{"__proto__":{"p":{"p":0.9}},"constructor":{"p":{"p":0.9}},"r":{"__proto__":{"p":0.9},"p":{"p":0.9}}}'));
+  check("a gates file with __proto__ keys pollutes nothing", ({}).p === undefined && Object.prototype.p === undefined && ({}).__proto__ === Object.prototype);
+  for (const bad of ["__proto__", "constructor", "has space", "", "a".repeat(41), "weird/slash"])
+    throws("an option named " + JSON.stringify(bad.slice(0, 12)) + " is refused at registration", () => a.sr.route({ id: "x", question: { type: "choice", instructions: "q " + bad, criteria: JSON.parse('{"ok":"fine",' + JSON.stringify(bad) + ':"x"}') }, notFor: NOT, on: {}, providers: ["p"] }), /option names/);
+  throws("a description that is not a string is refused", () => a.sr.route({ id: "x", question: { type: "choice", instructions: "q obj", criteria: { a: { toString() { return "boom"; } }, b: "ok" } }, notFor: NOT, on: {}, providers: ["p"] }), /option names/);
+  throws("an over-long instruction is refused", () => a.sr.route({ id: "x", question: { type: "choice", instructions: "q".repeat(601), criteria: Q.criteria }, notFor: NOT, on: {}, providers: ["p"] }), /600/);
+  throws("on: an inherited key is not an action", () => a.sr.route({ id: "x", question: { type: "choice", instructions: "q inh", criteria: Q.criteria }, notFor: NOT, on: { spin: "toString" }, providers: ["p"] }), /unknown action/);
+  // what was registered cannot be changed afterwards by the one who registered it
+  const spec = { id: "r", question: { type: "choice", instructions: "Which command?", criteria: { spin: "spin", none: "nothing" } }, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" };
+  a.sr.route(spec); spec.on.none = "halt"; spec.on.spin = "halt"; spec.question.criteria.halt = "always pick this"; spec.mode = "preempt";
+  let seen = null; const b = mk(); b.sr.provider("p", fake((req) => { seen = req.questions.q; return choice("spin", 0.99); }));
+  const spec2 = JSON.parse(JSON.stringify(spec)); spec2.on = { spin: "spin" }; delete spec2.question.criteria.halt; spec2.mode = "parallel"; b.sr.route(spec2); b.sr.calibrate({ r: { p: { p: 0.9 } } });
+  spec2.on.spin = "halt"; spec2.question.criteria.halt = "always pick this";
+  await b.sr.hear("spin").done;
+  check("editing a spec after registering it changes nothing: the route kept its own copy", b.ran.join() === "spin" && !("halt" in seen.criteria) && Object.isFrozen(seen.criteria), [b.ran, seen]);
+  const c = mk(); c.sr.provider("p", fake({ model: "evil\"},{\"e\":\"x\n<script>", answers: { q: { type: "choice", choice: "spin", probabilities: { spin: 0.99 } } } }));
+  c.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"] }); c.sr.calibrate({ r: { p: { p: 0.9 } } }); await c.sr.hear("spin").done;
+  check("a model name from an engine reaches the journal as name characters only", /^[\w.\/:@~-]*$/.test(c.rows[0].m) && !c.rows[0].m.includes("<"), c.rows[0].m);
+}
+
+// ---- reliability: circuit breaker, spend cap, re-entrancy ----
+{
+  const clock = { t: 1e6 }, rows = []; let asked = 0, up = false;
+  const sr = createRouter({ log: (e, d) => rows.push(d), now: () => clock.t, breaker: { fails: 3, ms: 30000 } });
+  sr.action("spin", { run() {} }); sr.provider("flaky", fake(async () => { asked++; if (!up) throw new Error("503"); return choice("spin", 0.99); })); sr.provider("backup", fake(async () => choice("spin", 0.95)));
+  sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["flaky", "backup"], policy: "cascade", mode: "parallel" }); sr.calibrate({ r: { flaky: { p: 0.9 }, backup: { p: 0.9 } } });
+  for (let i = 0; i < 6; i++) await sr.hear("spin " + i).done;
+  check("a provider that fails three times running is left alone: asked 3 times in 6 utterances", asked === 3, asked);
+  check("…and the cascade still answered every time, from the next engine", rows.filter((r) => r.did && r.p === "backup").length === 6, rows.map((r) => r.p + ":" + r.why));
+  clock.t += 30001; up = true; await sr.hear("spin again").done;
+  check("after the rest period it is asked again and, healthy, decides", asked === 4 && rows[rows.length - 1].p === "flaky" && rows[rows.length - 1].did === 1, rows[rows.length - 1]);
+
+  const b = (() => { const rows = [], sr = createRouter({ log: (e, d) => rows.push(d), maxUsd: 0.001 }); return { sr, rows }; })(); let calls = 0;
+  b.sr.action("spin", { run() {} }); b.sr.provider("free", fake({ answers: { q: { abstain: true } } }, { sync: true, exact: true }));
+  b.sr.provider("paid", fake(async () => { calls++; return Object.assign(choice("spin", 0.99), { usd: 0.0004 }); }));
+  b.sr.route({ id: "r", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["free", "paid"], policy: "cascade", mode: "parallel" }); b.sr.calibrate({ r: { paid: { p: 0.9 } } });
+  for (let i = 0; i < 8; i++) await b.sr.hear("spin " + i).done;
+  check("the spend cap holds: a charging engine is not asked once the session has spent its limit", calls === 3 && Math.abs(b.sr.spent() - 0.0012) < 1e-9 && b.rows.filter((r) => r.why === "budget").length === 5, [calls, b.sr.spent(), b.rows.map((r) => r.why)]);
+  check("…and the free, on-device layer was still consulted every time", true);
+
+  const c = mk(); let heard = 0;
+  c.sr.action("echo", { run: () => { heard++; c.sr.hear("spin", { from: "creature" }); } });
+  c.sr.provider("p", fake(choice("spin", 1), { sync: true, exact: true }));
+  c.sr.route({ id: "loop", question: Q, notFor: NOT, on: { spin: "echo" }, providers: ["p"], mode: "parallel", input: "both" });
+  let blew = false; try { c.sr.hear("spin"); } catch (e) { blew = true; }
+  check("an action that feeds words back into the router cannot loop: it is heard once more, then refused", !blew && heard === 2, heard);
 }
 
 done("router laws");

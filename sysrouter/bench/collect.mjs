@@ -5,7 +5,7 @@
 //   node sysrouter/bench/collect.mjs express             every arm that can run here
 //   node sysrouter/bench/collect.mjs wake jev --shuffle  option-order stability pass (R-EVAL-3)
 //   node sysrouter/bench/collect.mjs wake jev --latency  120 calls, one at a time, for clean latency
-// Resumable: rows already in the output file are skipped. Hosted arms need a key (.env.example).
+// Resumable: rows already in the output file are skipped. Hosted arms need a key (env.example at the repo root).
 
 import { appendFileSync, mkdirSync } from "node:fs";
 import { ROOT, ROUTES, arms, dataset, jsonl, makeProvider, pool } from "./lib.mjs";
