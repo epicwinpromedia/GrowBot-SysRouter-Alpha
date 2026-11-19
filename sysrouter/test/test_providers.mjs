@@ -157,7 +157,7 @@ for (const name of ["jev", "clef", "clef-flash"]) {
   check("workerEngine works as a router choice provider", ran.join() === "spin" && sr.spent() === 0.0001, [ran, sr.spent()]);
   await w.terminate();
 
-  // mock siren attachment worker (1D.8): IR sense -> trigger -> siren.on -> actuate with checked args
+  // mock siren attachment worker (1D.8): IR sense -> trigger -> siren.on -> actuate with checked args   // AUDIT-PHASE2 A9 (#32): registers the Worker engine through the SYSTEM lane on an unsealed router; the acceptance test must install it via port.install on a SEALED router.
   const sirenCode = `
     const { parentPort } = require('node:worker_threads');
     parentPort.on('message', (m) => {

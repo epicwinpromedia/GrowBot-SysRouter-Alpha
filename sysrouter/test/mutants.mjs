@@ -1,4 +1,4 @@
-// mutants.mjs — do the tests have teeth? Each mutant is the router with ONE law deliberately
+// mutants.mjs — do the tests have teeth? Each mutant is the router with ONE law deliberately   // AUDIT-PHASE2 B5 (#40): every mutant targets src/sysrouter.js; add the named mutants listed per item in sysrouter/AUDIT-PHASE2.md §4, plus worker-engine.js and boot.js mutants.
 // broken. The test suite must FAIL on every one of them. A mutant that survives means a law
 // could be broken without anyone noticing, which makes the passing tests worth less.
 //   node sysrouter/test/mutants.mjs

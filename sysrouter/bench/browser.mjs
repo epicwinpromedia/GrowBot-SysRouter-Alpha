@@ -16,7 +16,7 @@ import { ROOT, dataset } from "./lib.mjs";
 
 const { chromium } = createRequire(import.meta.url)("playwright");
 const server = await serve(0), base = "http://127.0.0.1:" + server.address().port;
-const browser = await chromium.launch(existsSync("/usr/bin/chromium") ? { executablePath: "/usr/bin/chromium" } : {}), page = await browser.newPage();
+const browser = await chromium.launch(existsSync("/usr/bin/chromium") ? { executablePath: "/usr/bin/chromium" } : {}), page = await browser.newPage();   // AUDIT-PHASE2 B3 (#38): the cause of the Phase 1 MiniLM 0 ms throttled readings was never found; add a check that throttled p50 is never below the 1x p50.
 const errors = []; page.on("pageerror", (e) => errors.push(String(e.message))); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
 const lines = dataset("wake").filter((r) => r.split === "held").slice(0, 300).map((r) => r.text);
 

@@ -6,7 +6,14 @@ Every figure in this document is read from `results/TABLES.md`, `results/results
 
 ## 1. What was measured and what it cannot show
 
-- **Held-out splits only.** Every accuracy, recall, wrong-action, false-trigger, precision, and ECE figure comes from held-out lines that neither the on-device models nor the calibration gates saw during training or gate fitting (`wake`: 2,778 held-out rows; `express`: 1,103 held-out rows).
+- **Held-out splits only.** Every accuracy, recall, wrong-action, false-trigger, precision, and ECE figure comes from held-out lines that neither the on-device models nor the calibration gates saw during training or gate fitting.
+
+| Route | Held-out lines | Tuning lines | Whole dataset (`data/v1/*.jsonl`) |
+|---|---|---|---|
+| `wake` | 1,410 | 1,368 | 2,778 |
+| `express` | 574 | 529 | 1,103 |
+
+The "Failed n / 2,778" column in `results/TABLES.md` counts **calls**, one per line of the whole dataset (both splits). It is not the held-out size. This was corrected by the Phase 2 audit: the earlier text said "2,778 / 1,103 held-out rows" (A17, #34).
 - **In-domain vs out-of-domain.** Gates are fitted on the tuning split so that bad acts (a false trigger on a non-target line or a wrong action on a target line) stay within the route target over all tuning lines (`0.5%` for `wake`/`fuzzy`, `2.0%` for `express`/`emote`).
 - **What it cannot show.**
   - Live phone hardware latency (`results/browser.json` uses desktop Chromium with `Emulation.setCPUThrottlingRate` at 1×, 4×, and 6× as a stand-in; actual mid-range phone measurements remain to be gathered).
@@ -55,6 +62,8 @@ On the held-out `express` split (target: 2.0% bad acts across all tuning lines; 
 | `readers → jev` | 87.8% | 0.9% | 0.8% | 0.0% | 99.0% | 178 | 247 | $0.0204 |
 
 - `minilm-head` provides strong on-device recall (51.4%) at 1.800 ms p50, while hosted `jev` reaches 87.8% recall with 0.0% false triggers.
+- **What the shipped page runs (Phase 2 audit):** at `2ad6542`, `src/boot.js` registers only the n-gram emote route (14.9% recall). The `minilm-head` numbers above describe the composed emote path (plan 2B.2), which the page does not yet build (A14, #29).
+- **Agreement evidence:** emote's live `agree` rows are not reliable until A12 (#23) is fixed, because creature replies can overwrite the person's pending pick.
 
 ---
 
@@ -84,6 +93,11 @@ Measured in headless Chromium (`156.0.8078.79`, ONNX Runtime Web `1.19.2`, `numT
 | `hear_until_all_engines_done_ms` | 5.6 / 13.5 ms | 31.5 / 75.4 ms | 50.0 / 114.3 ms |
 
 - `hear()` returns synchronously in `<= 2.0 ms` p50 even at 6× CPU slowdown; MiniLM runs asynchronously after `hear()` returns.
+- **About the MiniLM numbers under throttling (plan 3B.3).**
+  - The Phase 1 `results/browser.json` (Chromium 153.0.8010.12) reported `minilm_ms` p50 = 0 ms at 4× and 6×, which is impossible.
+  - The numbers above (Chromium 156.0.8078.79) scale as expected.
+  - The only change to `bench/browser.mjs` between the two runs was the Chromium launch path. **The cause of the old reading was not identified.** The anomaly disappeared with the browser upgrade.
+  - Until the cause is found and `bench/browser.mjs` checks that a throttled p50 is never below the 1× p50, treat the throttled MiniLM figures as measured once, on one browser build (B3, #38).
 - Funnel integration overhead in `test_funnel.mjs` (`sendTxtFrom` with 2 shadow routes vs original): added `0.042 ms` p50, `0.113 ms` p99.
 
 ---

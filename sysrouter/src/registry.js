@@ -61,7 +61,7 @@ export function readPrimitive(prim, spec, raw, readAnswer) {
   return null;
 }
 
-export function canonJson(v) {
+export function canonJson(v) {   // AUDIT-PHASE2 A8 (#22): lets functions/undefined through (JSON.stringify(fn) is undefined), so manifests whose run() differs hash identically. Throw on any non-JSON value.
   if (v === null || typeof v !== 'object') return JSON.stringify(v);
   if (Array.isArray(v)) return '[' + v.map((x) => x === undefined ? 'null' : canonJson(x)).join(',') + ']';
   const keys = Object.keys(v).filter((k) => v[k] !== undefined).sort();

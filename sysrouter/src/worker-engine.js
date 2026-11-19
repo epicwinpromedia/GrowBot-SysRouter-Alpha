@@ -11,7 +11,7 @@ export function workerEngine(worker, decl) {
 
   function onMessage(msg) {
     if (!msg || typeof msg !== 'object') return;
-    if (msg.sense !== undefined) {
+    if (msg.sense !== undefined) {   // AUDIT-PHASE2 A7 (#21): the stream named by the Worker is not checked against ownership here or in provider() (sysrouter.js:218).
       if (typeof decl.onSense === 'function') {
         const ev = readPrimitive('sense', null, { stream: msg.sense, type: msg.type, data: msg.data });
         if (ev) decl.onSense(ev);
@@ -56,7 +56,7 @@ export function workerEngine(worker, decl) {
     });
   }
 
-  const out = { ask, sync: false, exact: !!decl.exact, inFunnel: !!decl.inFunnel, model, subscribeSense: (fn) => { decl.onSense = fn; } };
+  const out = { ask, sync: false, exact: !!decl.exact, inFunnel: !!decl.inFunnel, model, subscribeSense: (fn) => { decl.onSense = fn; } };   // AUDIT-PHASE2 A9 (#32): a third-party engine must never carry exact or inFunnel (L3, L8, L9); install() must refuse them.
   if (prims) out.primitives = prims; else out.types = types;
   return out;
 }

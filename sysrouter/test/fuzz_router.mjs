@@ -1,4 +1,4 @@
-// fuzz_router.mjs — random routes, random engines, random faults, and the laws must still hold.
+// fuzz_router.mjs — random routes, random engines, random faults, and the laws must still hold.   // AUDIT-PHASE2 B5 (#40): generates v1 routes only; the v2 registry (streams, commands, capabilities, triggers, install, request) is never fuzzed. Invariants to add are listed in #40.
 //   node sysrouter/test/fuzz_router.mjs              20,000 utterances, fixed seed (repeatable)
 //   node sysrouter/test/fuzz_router.mjs 200000 7     more, another seed
 // Every round builds a router with random registrations, then feeds it random text while its

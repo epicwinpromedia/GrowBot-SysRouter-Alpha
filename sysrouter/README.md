@@ -32,7 +32,17 @@ The documents describe the whole design and label each part (`SPEC.md` §0):
 - **[proposal to Brit]**;
 - **[open]**.
 
-What is built: the router with decision capabilities, five kinds of engine (readers, n-gram, MiniLM, Jev/Clef over HTTP, a small chat model), both shipping capabilities in shadow, keys, the benchmark and its results. `SPEC.md` §16 lists every place the code still differs from the v2 design.
+What is built:
+- the router with decision capabilities;
+- five kinds of engine (readers, n-gram, MiniLM, Jev/Clef over HTTP, a small chat model);
+- both shipping capabilities in shadow;
+- keys;
+- the benchmark and its results;
+- the v2 registry (streams, commands, capabilities, triggers, `port.install`) in part.
+
+`SPEC.md` §16 (D9–D26) lists every place the code still differs from the v2 design. `AUDIT-PHASE2.md` is the work order for each.
+
+In the demo, use `?mode=parallel` to see acting rows. `?mode=live` is not yet accepted there (B1, #36).
 
 ## Try it (no key, no install)
 
@@ -47,6 +57,7 @@ The demo page lets you type what a person might say. It shows what each capabili
 
 | File | What it is |
 |---|---|
+| [AUDIT-PHASE2.md](AUDIT-PHASE2.md) | **Read before changing code.** The Phase 2 audit: what is sound, what is broken (each with file, line, required behavior, acceptance test and mutant), and the order of work |
 | [RESULTS.md](RESULTS.md) | **Evidence.** Measured accuracy, latency, calibration, host comparison, and in-browser numbers |
 | [MISSION.md](MISSION.md) | **Start here.** The intent, the boundary between the router and Brit's layer, the vocabulary, the two lanes, the three use cases |
 | [SPEC.md](SPEC.md) | The contract: laws, primitives, engines, streams, triggers, commands, capabilities, lanes, the interface to Brit's layer, and what is built |

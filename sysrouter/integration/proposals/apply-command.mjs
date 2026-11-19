@@ -1,6 +1,6 @@
 // apply-command.mjs — proposal (a) for Brit (PLAN 2C.4, SPEC D4, §9.2):
 // Factors sendTxtFrom's inline command branch into _applyCommand(kind, by) and exposes
-// SysRouterHost.command(kind, by) so fuzzy commands go through the exact same path.
+// SysRouterHost.command(kind, by) so fuzzy commands go through the exact same path.   // AUDIT-PHASE2 A13 (#28): _applyCommand handles halt, still, follow, unfollow only; boot.js must not offer or log acted for the other four kinds (SPEC §9.2 R2).
 
 export function applyCommandProposal(text) {
   const lines = text.split("\n");

@@ -2,7 +2,13 @@
 
 This is the contract for the co-processing router and registry described in `MISSION.md`. Each rule cites the requirement it answers (`REQUIREMENTS.md`) and, where it is built, the test that proves it.
 
-v2 replaces v1 (also 2026-11-17). v1 described what was built. v2 describes the whole design and marks, section by section, how much of it is built. Nothing measured has changed.
+v2 replaces v1 (also 2026-11-17). v1 described what was built. v2 describes the whole design and marks, section by section, how much of it is built.
+
+**Revised by the Phase 2 audit (2026-11-19, `AUDIT-PHASE2.md`).**
+- Status labels that Phase 2 flipped to `[built]` but that the audit found broken by reproduction are back to `[differs]`. Each names its work item (`A1`–`A18`, `B1`–`B6`) and its issue.
+- Counts and measured figures are corrected to `2ad6542`.
+- Three rules the fix phase needs, R1–R3, are written into §7.1, §9.2 and §5.2 / §8.2. They are derived from rules already in this document, not new decisions.
+- No code was changed by the audit.
 
 ## 0. How to read this document
 
@@ -10,13 +16,13 @@ Every section and rule carries one status:
 
 | Status | Meaning |
 |---|---|
-| **[built]** | In `src/`, exercised by `test/`, and passing (`node sysrouter/test/run-all.mjs`: 9 suites, all PASS on 2026-11-17) |
+| **[built]** | In `src/`, exercised by `test/` **on the path that ships** (through `boot.js` or the public port where that is how it is reached), and passing (`node sysrouter/test/run-all.mjs`: 10 suites, all PASS at `2ad6542`) |
 | **[specified]** | Decided and specified here; not yet in code |
 | **[differs]** | Decided here, but the code still does something else. Listed in §16 as work to do |
 | **[proposal to Brit]** | Needs a change in Brit's layer, which only he can decide |
 | **[open]** | Not decided; the options are written down in §15 |
 
-The shipped path today is eleven browser ES modules with no dependencies (`src/`, 814 lines); the router itself is `src/sysrouter.js` (273 lines).
+The shipped path at `2ad6542` is 13 browser ES modules with no dependencies (`src/`, 1,419 lines); the router itself is `src/sysrouter.js` (683 lines) and `src/registry.js` (75 lines). These counts change with the code. `tools/doccheck.mjs` is to check them (A16, #33).
 
 ---
 
@@ -51,7 +57,7 @@ The chain composes. A behavior can be a request for another command, or an event
 | Term | Definition | Owned by |
 |---|---|---|
 | **Stream** | A registered, named source of events. Its declaration says what its events carry. | The lane that registered it. Brit's streams are his and are read-only to everyone else. |
-| **Event** | One item in a stream: `{ stream, type, data, t, seq }`. Events come from many sources and have many types. Brit's own events (his reflex triggers, his journal events, his brain-turn kinds) are a separate family the router does not redefine. | Its stream's owner |
+| **Event** | One item in a stream: `{ stream, type, data, t, seq, hop }`. Events come from many sources and have many types. Brit's own events (his reflex triggers, his journal events, his brain-turn kinds) are a separate family the router does not redefine. | Its stream's owner |
 | **Trigger** | A rule that calls one command. Its source is an event in a stream, a person's request (a button or setting), or the creature's request (§9.4). Brit's reflex triggers (`TRIGS`, `next.html:11590`) are a protected family of the same kind. | The lane that registered it |
 | **Command** | A named, callable entry point to exactly one capability, with an argument declaration. A lane can call its own commands. It can only **request** a command another lane owns and exposed. | The lane that registered it |
 | **Capability** | The thing that does the work: one primitive, or several composed in order. Fuzzy commands is `choice` answered by a cascade of engines. Emote is a sentiment primitive composed with `choice`. | The lane that registered it |
@@ -73,28 +79,28 @@ Sharing names across lanes is deliberate. "Capability" names an open class; lett
 | Decision primitive | `question.type` | `noul`, `choice`, `score` |
 | Stream | `hear(text, {from})` | `sr.stream`, `sr.emit`, `port.read`, `port.watch` (built-in `speech` and `body.sense`) |
 | Command | `action` (`sr.action`) | `sr.command` with `args` schema and `exposeTo` (`person`, `creature`, `third-party`) |
-| Capability + trigger | `route` (`sr.route`) | `sr.capability` (composed `steps`, `behavior: { publish, request }`) and `sr.trigger` (`stream`, `person`, `creature`), plus `sr.route` |
+| Capability + trigger | `route` (`sr.route`) | `sr.capability` (composed `steps`, `behavior: { publish, request }`) and `sr.trigger` (`stream`, `person`, `creature`), plus `sr.route`. **[differs]:** `route` is still its own registration and resolver beside `capability`, not a one-step capability plus a command table plus a trigger (plan 1D.4; A1, #26) |
 | Brit's stop commands | `reserved` actions | Registered before `seal()` |
 | System lane | tiers `core` and `system` | Sealed at `seal()`; `boot.js` publishes only `sr.port()` |
 | Third-party lane | tier `extension` | `port.install()`, `port.extensions()`, `port.uninstall()`, `sr.extension()` |
-| Permission | `grants` | `permissions` (`streams`, `actions`, `providers`, `engines`, `reqPerMin`, `hosts`, `usdPerDay`) |
+| Permission | `grants` | `permissions`, read by `normPerms()`: `streams`, `commands` (alias `actions`), `engines` (alias `providers`), `perMin` (1–120, default 20), `maxUsd` (default 0). There are no `hosts`, `usdPerDay` or `reqPerMin` permissions. `reqPerMin` is a `createRouter` option: the per-source cap on `port.request`, default 30. **[differs]:** `perMin` is enforced for routes only and `maxUsd` nowhere (A11, #31); no exposure ceiling is applied (A5, #19) |
 | Fuzzy commands | `wake` flag alias | `fuzzy`, `src/fuzzy.js` |
 | Emote | `express` flag alias | `emote`, `src/emote.js` |
 
 ## 3. The laws
 
-Every built law has a passing test and a deliberately broken router ("mutant") that the tests catch (`test/mutants.mjs`, 34 checks, all caught).
+Every built law has a passing test and a deliberately broken router ("mutant") that the tests catch (`test/mutants.mjs`, 48 mutants at `2ad6542`, all caught). All 48 mutate `src/sysrouter.js`, and the fuzzer generates only v1 routes. The v2 registry is not reached by either (B5, #40), which is how the `[differs]` rows below passed a green suite.
 
 | # | Law | Status | Requirement | Proved by |
 |---|---|---|---|---|
 | L1 | **Select, never author.** An engine's answer can only pick one of the answers a capability declared, and that answer can only name a registered command. No field of an engine's reply is executed or forwarded as a command. | [built] | R-REG-2, R-SAFE-2 | `test_router` "select, never author"; fuzz invariant |
-| L2 | **Shadow first.** A trigger's default mode is `shadow`: it decides and logs and requests nothing. | [built] | R-RT-4 | `test_router`; `test_funnel` |
+| L2 | **Shadow first.** A trigger's default mode is `shadow`: it decides and logs and requests nothing. In shadow, every behavior is held back: request, actuation and publish (R1, §7.1). | [built] for routes. **[differs]** for capabilities: a shadow trigger never runs its capability, so no engine is asked (A4, #25) | R-RT-4 | `test_router`; `test_funnel` |
 | L3 | **No gate, no action.** A probabilistic engine with no fitted gate for this capability and this exact model version never acts, even at p = 1. Gates are data. | [built] | R-RT-6 | `test_router` "no fitted gate" |
 | L4 | **Fail to today.** Timeout, error, malformed reply, missing key, low confidence: nothing is requested, the row says why, and GrowBot behaves as it does without the router. Nothing the router does can throw into Brit's code. | [built] | R-SAFE-3 | `test_router` "fail to today"; `test_funnel` "hear() throws" |
-| L5 | **The person's newest words decide.** A decision about older words that lands after newer words is dropped (`stale`). | [built] | funnel convention | `test_router` "newest words" |
-| L6 | **Requests, never control.** The router reaches Brit's layer only by requesting a command he exposed, through the same path his own reader uses for that command (§9.2). What happens next is his. | [built] (`boot.js` `SysRouterHost.command`, `readers_acted` guard; page proposal `apply-command`) | R-BND-3 | `test_providers`, `test_funnel` |
+| L5 | **The person's newest words decide.** A decision about older words that lands after newer words is dropped (`stale`). The creature's words are not newer *person* words. | [built] for person-only routes. **[differs]:** on `input: 'both'` routes, creature words mark the person's in-flight decision `stale` (A12, #23); capabilities have no staleness rule at all (A1, #26) | funnel convention | `test_router` "newest words" |
+| L6 | **Requests, never control.** The router reaches Brit's layer only by requesting a command he exposed, through the same path his own reader uses for that command (§9.2). What happens next is his. | [built]: `boot.js` `SysRouterHost.command`, the `readers_acted` guard, page proposal `apply-command`. **[differs]:** boot offers and registers all eight fuzzy kinds whatever the host exposes, and the only `command()` implementation handles four (A13, #28, rule R2); an extension can be granted Brit's commands without his exposure (A5, #19) | R-BND-3 | `test_providers`, `test_funnel` |
 | L7 | **Never pre-empt; never call `think()`.** The router has no mode that skips, delays or replaces anything in Brit's layer, and no path to `think()`. | [built] (`preempt` removed; no path to `think()`) | R-BND-1, R-BND-4 | `test_router` |
-| L8 | **Stops are Brit's.** His stop commands are registered before `seal()`. A probability alone never reaches them: only an exact engine chain, or a capability marked `addsRecall`, which can request a stop his readers missed and can never block or delay one. A third-party trigger can never reach them. | [built] | R-SAFE-1 | `test_router` "stop is code"; `test_readers_regression` part 3 |
+| L8 | **Stops are Brit's.** His stop commands are registered before `seal()`. A probability alone never reaches them: only an exact engine chain, or a capability marked `addsRecall`, which can request a stop his readers missed and can never block or delay one. A third-party trigger can never reach them. | [built] for routes and for the extension lane. **[differs]:** a capability's `behavior.request` reaches a reserved command on a probability alone; `addsRecall` is stored but never read (A3, #24) | R-SAFE-1 | `test_router` "stop is code"; `test_readers_regression` part 3 |
 | L9 | **Privilege is possession.** A lane's power is the reference the loader holds. Registrations never declare their own lane. | [built] (`seal()` closes system lane; `boot.js` publishes `sr.port()`) | R-TRUST-1 | `test_router` "tiers and grants" |
 | L10 | **The kill switch is total.** `?sysrouter=0` (persisted): no engine is asked, nothing is requested, no row is written. | [built] | R-SAFE-4 | `test_router` "kill switch" |
 | L11 | **The words never enter a row.** A journal row carries capability, engine, answer, probability, timing and cost, never the text. | [built] | R-OBS-2 | `test_router` "observability"; fuzz invariant |
@@ -114,7 +120,7 @@ A decision primitive asks one question, in the request shape TypeSafe Jev, Cloud
 
 Every field is checked before use (`readAnswer`, [built]). A pick outside the options, a probability outside 0..1, a non-number, or a prototype key (`__proto__`, `constructor`) is `bad_answer`. An engine may also return `{ abstain: true }`, meaning "my rules do not cover this". That lets a cascade continue and is never a confident no.
 
-### 4.2 Other primitives [built]
+### 4.2 Other primitives [built: declaration and output checkers in `src/registry.js` `readPrimitive`; `box` stays [specified] (plan P9)]
 
 The class is open: an engine declares each primitive it provides, with its input type, output type and output checks. Members named so far:
 
@@ -150,9 +156,21 @@ The creature agent is not a primitive the router can call. The router reads `thi
 
 Adding an engine is configuration (`bench/arms.json` for the benchmark, `?s1=<model>` in the page). No capability changes (R-RT-2).
 
-### 5.2 Engines beyond decisions [specified]
+### 5.2 Engines beyond decisions [built for the system lane: `primitives`, `src/worker-engine.js`; [differs] for third parties (A9, #32)]
 
 An engine declares `primitives: { name: { in, out } }` in place of `types`. Third-party engines run behind a URL, or in a dedicated Web Worker, and reach the router only by messages (§8.4). An attachment is an engine whose primitives are `sense` and `actuate` (§8.5).
+
+**R3: how a third party brings an engine** [specified; derived from §5.2, §8.4, plan 1D.7, plan P7, L3, L8, L9 and MISSION §5]:
+
+1. **Manifest shape.** The manifest carries `engines: [{ id, model, primitives: { <name>: { in, out } }, worker: { source: "<ES module source text>" } }]`.
+2. **Loading.** The loader starts each engine from a `Blob` of that source (`new Worker(URL.createObjectURL(blob), { type: 'module' })`), wraps it with `workerEngine`, and registers it in the extension's lane with `owner` = the extension's name.
+   - Browsers start Workers only from same-origin, `blob:` or `data:` URLs, so the source travels as text.
+   - Carrying it as text also puts the code inside the manifest hash (§9.5).
+3. **Forbidden flags.** A third-party engine may not declare `exact` or `inFunnel`; `install` refuses the manifest.
+   - L9: privilege is possession, never declaration.
+   - `exact` skips the gate (L3), and an exact chain reaches stops (L8).
+4. **Gates.** A third-party decision engine has no gate in `models/gates.json`, so by L3 it never acts and runs in shadow only. Its rows are the evidence for adopting it into the system lane, where Brit's lane fits its gate (MISSION §5). Non-decision primitives (`actuate`, `sense`, `generate`, `embed`, `query`) need no gate.
+5. **Sense ownership.** A sensing engine emits only onto streams owned by its own extension, never onto a core stream (§8.5; A7, #21).
 
 ### 5.3 Reliability limits [built]
 
@@ -168,34 +186,36 @@ Both are overridable at `createRouter`.
 | Stream | Owner | Status |
 |---|---|---|
 | The person's transcribed words | Brit | [built]: `hear(t)` in `sendTxtFrom` (integration line 2) |
-| The creature's replies | Brit | Router side [built] (`input: 'creature' \| 'both'`); the feed from the page [specified] (§9.1) |
-| His sensor triggers (`tap`, `loud`, `fall`, …) | Brit | [proposal to Brit]: a one-line tap where `fireReflex` is called, if he chooses to share them |
-| A capability's published results | the capability's lane | [specified] (§6.3) |
-| An attachment's sensor | the attachment's lane | [specified] (§8.5) |
+| The creature's replies | Brit | [built]: `replied(o, kind)` emits every reply's `say` as a `creature` event on `speech` (integration line 3). **[differs]:** creature events share per-route state with person events (A12, #23) |
+| His sensor triggers (`tap`, `loud`, `fall`, …) | Brit | [built] as an opt-in hunk (`apply.mjs --with-sensors` → `port.sense(trig)` → stream `body.sense`); applying it at the source is a [proposal to Brit] |
+| A capability's published results | the capability's lane | [built] (`behavior.publish`). **[differs]:** the hop limit fails after an async step (A2, #18) |
+| An attachment's sensor | the attachment's lane | [built] for system-lane engines. **[differs]:** sense events can be emitted onto any stream, core streams included (A7, #21), and third parties cannot bring an engine (A9, #32) |
 
-### 6.2 Rules for streams [specified]
+### 6.2 Rules for streams [built: discrete events, 600-character text cap, trigger stream grants; [differs]: extension routes read `speech` without a grant (A10, #30); system streams have no exposure ceiling (A5, #19)]
 
 - **Discrete events only.** Nothing at sensor or motor rate enters the router. A raw signal (an IR level at 50 Hz, an IMU stream) becomes events in its own detector first, the way Brit's code turns 20 Hz sensors into debounced triggers before the reflex table sees them.
 - **Declared shape.** A stream declares its event types and what each event's `data` holds. Text events hold a string, capped at 600 characters, as `hear()` does today.
 - **Read permission.** A third-party trigger can listen to a stream only if the person granted it that stream (§8.3).
 
-### 6.3 Chaining [specified]
+### 6.3 Chaining [built for synchronous chains; [differs] across async steps (A2, #18)]
 
 A capability may publish its results as events on a stream it registers. Other triggers may listen to that stream. That is how capabilities compose across lanes and how Brit's layer reads results (§9.3).
 
-Loops are prevented by a hop count carried on every event. An event caused by another event carries the parent's count plus one, and the router drops any event past the limit, writing a row (the limit is [open], §15). Today's code has the one-level version of this: `hear()` refuses re-entry deeper than one nested call [built].
+Loops are prevented by a hop count carried on every event. An event caused by another event carries the parent's count plus one, and the router drops any event past the limit, writing a `hops` row. The limit is `maxHops: 3`, set at `createRouter` (plan P6).
+
+**The hop belongs to the causal chain, not to the call stack.** It must be passed explicitly from the triggering event, through the trigger, the command and the capability, to the published event, however many `await`s lie between them. At `2ad6542` the hop lives in a router-wide variable that `emit()` restores when it returns. A publish after any async step therefore gets `hop: 0`, and two capabilities that publish to each other loop without end (reproduced in #18).
 
 ## 7. Triggers, commands and capabilities
 
-### 7.1 The decision capability, as built [built]
+### 7.1 The decision capability, as built [built as `route`; [differs]: not yet expressed as a one-step capability (A1, #26)]
 
 ```js
 sr.route({
-  id: 'wake',                              // v2 name: fuzzy commands
+  id: 'fuzzy',                             // v1 id `wake` is accepted in flags and gates as an alias (plan P1)
   question: { type: 'choice', instructions: '…', criteria: { halt: '…', …, none: '…' } },
   notFor: 'what this must NOT fire on',    // required (R-REG-5)
   on: { halt: 'halt', … },                 // answer -> command
-  providers: ['readers', 'ngram-wake', 'hosted'], policy: 'cascade', shadow: [],
+  providers: ['readers', 'ngram-fuzzy', 'hosted'], policy: 'cascade', shadow: [],
   input: 'person',                         // which speaker on the speech stream
   mode: 'shadow', budgetMs: 900, cooldownMs: 800, addsRecall: true, agree: ''
 });
@@ -215,13 +235,18 @@ sr.route({
 | Mode | Status | Behaviour |
 |---|---|---|
 | `off` | [built] | nothing is asked |
-| `shadow` (default) | [built] | decided and logged; nothing requested |
-| `live` | [built] under the name `parallel` | the command is requested; everything in Brit's layer carries on exactly as it would have |
-| ~~`preempt`~~ | [differs]: still in the code | **Removed from the design.** Pre-emption is Brit's mechanism for his body, and the router never does it (L7). |
+| `shadow` (default) | [built] for routes; **[differs]** for capabilities (A4, #25) | decided and logged; **no behavior runs**: nothing requested, nothing actuated, nothing published (R1, below) |
+| `live` | [built] (`parallel` accepted as an alias, plan P3) | the command is requested; everything in Brit's layer carries on exactly as it would have |
+| ~~`preempt`~~ | [built]: removed (plan 1B.1) | Refused at registration and dropped from flags. Pre-emption is Brit's mechanism for his body, and the router never does it (L7). |
+
+**R1: shadow holds back every behavior** [specified for capabilities; derived from L2 and §7.3].
+- §7.3 lists three behaviors: `publish`, `request` and an actuation. In shadow, a capability runs all its steps and writes every engine row, and none of the three happens. The trigger's own row is `why: "shadow"`, `did: 0`.
+- **Publishing is a behavior.** A published event can start other capabilities and is readable by Brit's layer, so it is held back like a request. This is the "log-only first" convention (INTEGRATION.md).
+- **At `2ad6542`, `act()` returns `shadow` before it reaches the capability**, so in shadow no engine of a capability is ever asked (A4, #25).
 
 Gates have two numbers per (capability, engine, model version) [built]. `p` is the bar for an answer that requests a command. `pn` is the bar for an answer that requests nothing: how sure "nothing was asked" must be before a cascade stops there instead of asking the next engine.
 
-### 7.2 Commands [specified as separate registrations; built as `action`]
+### 7.2 Commands [built: `sr.command`, argument schema, `bad_args`, `exposeTo`; `action()` is sugar for it. [differs]: a command may name a capability that does not exist and still log `did: 1` (A15, #27); a third-party command may carry an executable `run` (A8, #22)]
 
 ```js
 { id: 'siren.on', capability: 'siren', args: { seconds: { type: 'number', min: 1, max: 10 } },
@@ -232,8 +257,10 @@ Gates have two numbers per (capability, engine, model version) [built]. `p` is t
 - A command a lane owns, that lane calls. A command another lane owns and exposed can only be **requested**.
 - A **resource hold** (`resource`, `holdMs`) arbitrates between commands **the router requests**, by lane: a third-party command never displaces a system command's hold [built]. Brit's layer arbitrates itself (the get-up lab "owns the legs", `fireReflex` will not fire while the creature moves or speaks, `next.html:8063`). The router never claims to referee his layer.
 - `cooldownMs` is per command [built]: a debounce against the same thing twice, never a block on a different command.
+- **Only the system lane may give a command an executable `run`.** A third-party command's work is always a capability, ending in a Worker engine's `actuate` where it acts on the world (§8.4, R3). [differs] (A8, #22)
+- **A command names an existing capability.** Registration refuses an unknown one. `did: 1` is written only when the capability's behavior actually ran, and the row is written when the capability settles. [differs] (A15, #27)
 
-### 7.3 Capabilities [specified as separate registrations; built as the decision part of `route`]
+### 7.3 Capabilities [built: `sr.capability`, ordered steps in one budget, `publish` / `request` / `actuate` behaviors. [differs]: see the list below the example]
 
 ```js
 { id: 'emote',
@@ -251,7 +278,19 @@ A capability is an ordered list of primitive steps. Each step names its primitiv
 
 The data shape above is a proposal for review. What is decided is the structure: steps, engines per step, a behavior.
 
-### 7.4 Triggers [specified as separate registrations; built as `input` on a route]
+**One validator, one resolver** (plan 1D.0, 1D.4). A route is a one-step `choice` capability plus a command table plus a trigger, so every rule stated for routes holds for every capability:
+- `notFor` (R-REG-5);
+- option-count, option-name, prototype-key and size checks;
+- the 600-character instructions cap;
+- collision checks;
+- L8 (exact chain or `addsRecall` for reserved commands);
+- the `race` policy and shadow engines;
+- one flight per capability, and `stale` for older words (L5);
+- the extension's `perMin`.
+
+**[differs]** at `2ad6542`: `addCapability` / `resolveCapability` are a second, weaker pipeline beside `addRoute` / `resolve()`, and none of the rules above is enforced on it (A1, #26; A3, #24). Reproduced: a capability step with a 5,000-character question, an option named `bad key!` and no `notFor` registers.
+
+### 7.4 Triggers [built: `sr.trigger` on a stream (and type), on `person: true` or on `creature: true`. [differs]: person and creature sources are not checked against the command's `exposeTo` (A6, #20)]
 
 ```js
 { id: 'emote-on-words', on: { stream: 'speech', from: 'both' }, command: 'emote.read', mode: 'shadow', cooldownMs: 0 }
@@ -261,42 +300,51 @@ The data shape above is a proposal for review. What is decided is the structure:
 
 A trigger names its source and one command. Whether a trigger can also carry a condition on context (`when`) is [open] (§15.1).
 
+A trigger whose source is `person: true` or `creature: true` is refused at registration unless the command's `exposeTo` includes that source. `port.request(id, args, { from })` checks `exposeTo`, and the person's grant for third-party commands, **before** any trigger fires, on every path (plan 1D.9). [differs] (A6, #20)
+
 ## 8. Lanes, permissions and isolation
 
-### 8.1 The system lane [built for registration; [differs] in §16 for the published handle and the seal]
+### 8.1 The system lane [built: `seal()` closes every system-lane registration, and `extension()` throws after it; `boot.js` publishes only the frozen `sr.port()` (plan 1B.2, 1B.3)]
 
 - It is everything registered through `sr.core()`, `sr.action()`, `sr.provider()` and `sr.route()` by the code that created the router: Brit's code, or `boot.js` on his behalf. `core` holds his stop commands. `system` holds his features.
 - **It is closed when the page has loaded.** `seal()` ends registration in the system lane: no new stop commands, no new system triggers, commands, engines or gates. Precedent: Brit's system features are present when the page loads and are switched by flags, never added at runtime. Runtime registration is only for low-trust authors over whitelists (`scratchpad.reflex`).
-- **The system reference is never published.** The page gets a public port: `hear`, `replied`, `list`, `spent`, `release`, and `install(manifest)` for the third-party lane. Holding the router object is the privilege, so it stays with the code that booted it.
+- **The system reference is never published.** The page gets a public port with exactly `hear`, `replied`, `read`, `watch`, `sense`, `request`, `list`, `extensions`, `install`, `uninstall`, `spent`, `release` and a read-only `flags()`. Holding the router object is the privilege, so it stays with the code that booted it.
 
-### 8.2 The third-party lane [built: the facade; specified: everything else]
+### 8.2 The third-party lane [built: `port.install(manifest, permissions)` (async, SHA-256 manifest hash), `port.extensions()`, `port.uninstall(name)`; streams, capabilities, commands, triggers and routes in a manifest. [differs]: see below]
 
-An extension is installed through the public port and receives a frozen facade, and nothing more.
+An extension is installed through the public port as a manifest of data.
 
-- **[built]** It can add and remove its own decision capabilities, over the commands and engines it was granted, at its own rate cap (`perMin`, default 20).
-- **[specified]** It can also register its own streams, engines (behind a URL or in a Worker), capabilities, commands and triggers.
-- **[built]** It can never reach a stop command, run in any mode Brit's lane reserves, or see other registrations, gates or keys.
-- **[specified]** It can request one of Brit's commands only if he exposed that command and the person granted that request.
+- **[built]** It can register its own streams, capabilities, commands, triggers and decision routes, over the commands and engines it was granted.
+- **[differs] (A9, #32)** It cannot bring an engine: manifests have no `engines` section, and `provider()` is sealed. R3 (§5.2) says how it must.
+- **[built]** It can never reach a stop command, and it cannot be granted one.
+- **[differs] (A5, #19)** It can request one of Brit's commands only if he exposed that command to third parties (`exposeTo` includes `'third-party'`) and the person granted it. At `2ad6542`, any non-reserved system command can be granted.
+- **[differs] (A8, #22)** Its manifest is pure JSON. At `2ad6542`, a manifest command may carry a function (`run`) that executes in the page's scope.
+- **[differs] (A10, #30; A11, #31)** Every listener it registers, routes included, needs the stream grant, and its `perMin` and `maxUsd` bound everything it causes.
 
-### 8.3 Permissions [built: `grants` for actions, providers, rate; specified: the rest]
+### 8.3 Permissions [built: `streams`, `commands`, `engines` checked at registration for triggers, commands and capabilities. [differs]: no exposure ceiling (A5, #19); routes skip stream grants (A10, #30); `perMin` / `maxUsd` not enforced (A11, #31)]
 
 - **Brit sets the ceiling.** Only what he exposes can ever be granted: which of his streams, which of his commands.
 - **The person grants within it**, per extension: streams it may read, exposed commands it may request, engines it may call, keys and spend.
 - **Every install is visible and revocable.** It shows a confirmation when installed (precedent: the "⚡ reflex set" toast, added because testers could not tell a reflex had installed, `next.html:11619`). A list of extensions with what each may do is one tap away, with a way to remove each (precedent: "the person has the x", `next.html:11627`).
 
-### 8.4 Isolation [decided, §14.2]
+### 8.4 Isolation [decided, §14.2. [differs]: manifest functions run in page scope (A8, #22); a Worker's sense messages can reach any stream (A7, #21)]
 
 Third-party registrations are **data**: a manifest the loader passes to the facade. No third-party code runs in the page's scope. Code a third party brings (an engine, an attachment driver) runs in a **dedicated Web Worker** or behind a URL, and reaches the router only by messages.
 
-The measured cost of a Worker message round trip is in `results/browser.json`:
-- at full speed: p50 0.1 ms, p95 0.2 ms, p99 3 ms;
-- with the CPU slowed 6×: p95 0.7 ms, p99 5.3 ms.
+The messages are its only power, so the router confines them:
+- every reply is checked by its primitive's checker [built];
+- sense events go only to streams the same extension owns [differs] (A7, #21).
 
-These were measured on desktop Chromium 153 with CPU throttling, not on a phone.
+The measured cost of a Worker message round trip is in `results/browser.json` (300 round trips per rate):
+- at full speed: p50 0.0 ms, p95 0.1 ms, p99 0.2 ms;
+- with the CPU slowed 4×: p50 0.1 ms, p95 0.8 ms, p99 1.0 ms;
+- with the CPU slowed 6×: p50 0.1 ms, p95 1.2 ms, p99 1.4 ms.
+
+These were measured on desktop Chromium 156.0.8078.79 with CPU throttling, not on a phone.
 
 The in-page checks of §8.2 are a second line of defence, not the boundary. Hostile script that is already in the page is out of scope (`THREAT-MODEL.md` T6).
 
-### 8.5 Attachments [specified; one path open]
+### 8.5 Attachments [built for the system lane: `workerEngine` with `sense` and `actuate`, mock siren in `test_providers.mjs`. [differs]: no third-party path (A9, #32); sense not confined to owned streams (A7, #21); one path [open]]
 
 An attachment is an engine. Its sensor is a stream, its actuator is an `actuate` primitive, and its driver is code in a dedicated Worker.
 
@@ -320,13 +368,34 @@ This section is what `INTEGRATION.md` asks of Brit, stated as contract.
 | Feed | Line in the page | Status |
 |---|---|---|
 | The person's words | `SysRouter.hear(t)` in `sendTxtFrom`, after every local reader has acted, before `_imitationRequest` and the queue | [built] (integration line 2) |
-| The brain's reply, for agreement rows | `SysRouter.replied(o)` in the reply handler | [built] (integration line 3) |
-| The creature's spoken reply as a stream | `SysRouter.hear(o.say, { from: 'creature' })` where the reply's words are spoken | [specified]; needed by emote (`input: 'both'`) |
-| His sensor triggers | `SysRouter.sense(trig)` beside each `fireReflex(trig)`, or once inside it | [proposal to Brit] |
+| The brain's reply, for agreement rows | `SysRouter.replied(o, kind)` in the reply handler, before the mood guard, outside every `kind` guard (plan 2C.1) | [built] (integration line 3). `agree` rows only when `kind === 'event'`. **[differs]:** a call with no `kind` is treated as an event (B4, #39) |
+| The creature's spoken reply as a stream | emitted by `replied(o, kind)` itself: every reply's non-empty `say` becomes a `creature` event on `speech` (plan 2B.3, C5) | [built]. **[differs]:** creature events overwrite the person's pending pick and make person decisions stale (A12, #23). Note: each reply, ticks included, now also gets an emote decision, which is one more paid call per reply when a hosted engine is configured |
+| His sensor triggers | `SysRouter.sense(trig)` at the top of `fireReflex` (`apply.mjs --with-sensors`, off by default) | [built] as an opt-in hunk; [proposal to Brit] to apply |
 
-### 9.2 Commands he exposes [built shape; [differs] in content]
+### 9.2 Commands he exposes [built: `SysRouterHost.command(kind, by)` preferred, `run` fallback, the `readers_acted` guard. [differs]: exposure is not honoured (A13, #28)]
 
-Brit defines `SysRouterHost.run`, one entry per command he exposes. Today `boot.js` registers each entry as a command, and his stop commands as reserved, before `seal()`.
+Brit defines `SysRouterHost.command(kind, by)`, his whole command path, or `SysRouterHost.run`, one entry per command. `boot.js` registers his commands, and his stop commands as reserved, before `seal()`.
+
+**R2: what Brit exposes, and how it is honoured** [specified; derived from plan 2A.2's purpose, plan C3 and §7 (new label sets are out of scope), L3, §14.1]:
+
+1. **The question is fixed.** Brit's fuzzy question is always the trained `FUZZY.question`: 8 options plus `none`.
+   - It is never rebuilt from what the host exposes. The shipped on-device engines abstain on every line when the options differ from their trained classes (`s1-ngram.js:61`; `s1-embed.js` "trained for another route"), and every gate was fitted on that exact question.
+   - Measured: "please spin around" gives `spin` with the full question and `abstain` with only `halt`, `follow` and `none`.
+2. **The host declares the kinds it exposes:**
+   - with `run`: the keys that hold functions;
+   - with `command()`: the list `SysRouterHost.commands`;
+   - with `command()` and no list: exactly `halt`, `still`, `follow` and `unfollow`, the kinds Brit's command branch handles (`integration/proposals/apply-command.mjs`).
+3. **An unexposed pick requests nothing.** A pick of an unexposed kind requests nothing and writes `why: "unexposed"`, `did: 0`. `did: 1` is never written for a kind his command path does not handle.
+4. **Developer commands get their own question.** Third-party commands the person exposes to fuzzy commands (plan 2A.3, §13.3 step 4) are asked in a separate fuzzy question with its own capability id, never in Brit's.
+   - It has no gates, so it runs in shadow until calibrated (L3).
+   - It never changes Brit's question or gates (§14.1: opening a class never grants access to his members).
+
+This replaces the literal mechanism of plan 2A.2 ("the option set is built from the commands the host exposed"), which cannot be met in scope without retraining. The plan's purpose, that an unexposed command is never acted on, is met.
+
+**[differs]** at `2ad6542`:
+- `boot.js:57` gives every kind a function, so all eight are always offered and registered;
+- `fuzzy.js` merges `extraCommands` into Brit's question;
+- with the proposal's `command()`, `walk_forward`, `walk_back`, `spin` and `sing` log `acted`, `did: 1` and do nothing (A13, #28).
 
 **An entry must be his whole command path, not one function inside it.** When his reader hears a literal "stop", `sendTxtFrom` (`next.html:12010` onward) does several things:
 - it runs `_namedHalt`, `_gsHear`, `_recHalt`, `_partsHalt("words")` and `_bodyHalt()`;
@@ -336,9 +405,9 @@ Brit defines `SysRouterHost.run`, one entry per command he exposes. Today `boot.
 
 A fuzzy "stop" must produce exactly the same. The contract is therefore that Brit factors that branch into one function his reader also calls, for example `_applyCommand(kind, by)`, and exposes `SysRouterHost.command(kind, by)` (`boot.js`, `src/fuzzy.js`, `integration/proposals/apply-command.mjs`). Today `boot.js` falls back to `SysRouterHost.run[kind]` if `command` is not defined.
 
-**No double requests.** When his reader already matched the words (the `readers` engine answered exactly), his funnel has already acted. The router then requests nothing and writes `why: "readers_acted"`. It requests only what his readers missed. [specified]
+**No double requests.** When his reader already matched the words (the `readers` engine answered exactly), his funnel has already acted. The router then requests nothing and writes `why: "readers_acted"`. It requests only what his readers missed. If the matched command is a stop, it still clears every router hold (plan P5). [built] (plan 1C.2; `demo/index.html?mode=parallel` shows the rows)
 
-### 9.3 What the router publishes for him [specified]
+### 9.3 What the router publishes for him [built: `port.read`, `port.watch`; emote publishes on stream `emote` from its command in live mode]
 
 `sr.read(stream)` returns the latest event on a published stream, and `sr.watch(stream, fn)` calls `fn` with each new one. With these his layer can:
 - show results to the brain as context, the way the "quiet WATCH" beat reads senses against standing rules (`next.html:13431`);
@@ -347,7 +416,7 @@ A fuzzy "stop" must produce exactly the same. The contract is therefore that Bri
 
 The router never calls `think()`.
 
-### 9.4 The creature's door [proposal to Brit]
+### 9.4 The creature's door [proposal to Brit: `integration/proposals/creature-door.md`. Router half built: `port.request(id, args, { from: 'creature' })`. [differs]: bypassed through triggers (A6, #20); do not offer the door to Brit until A6 is fixed]
 
 For the creature to use a command a developer brought (the siren "at will", a retrieval oracle), two things inside the agent have to happen, and both are Brit's:
 
@@ -358,13 +427,17 @@ With that one door, every later developer command becomes usable by the creature
 
 **Without the door**, the third-party lane can still listen to the creature's reply stream (§9.1) and react to what the creature *said*. This works with no change to the agent, but it is less reliable.
 
-### 9.5 The block list [specified]
+### 9.5 The block list [built: `createRouter({ blockList })`, `sr.setBlockList()`, refusal by name and hash at install, removal on refresh. [differs]: the hash does not cover code (A8, #22)]
 
 Brit can publish a list of blocked third-party contributions from his server, the way `/api/config` already delivers model choices. The loader refuses to install, and removes, any extension on the list.
 
 Entries name an extension and the hash of its manifest. The name catches renamed copies of known extensions; the hash catches copies under another name.
 
 **What it can and cannot do:** it works against widely shared contributions. A determined individual can change a manifest and get a new hash. The block list is a curation tool, not a security boundary.
+
+**The hash covers everything that can run.** The hash is SHA-256 over the canonical JSON of the manifest (plan P7). A manifest that contains anything canonical JSON cannot represent (a function, a symbol, `undefined`, a getter) is refused, and Worker code is part of the manifest as text (R3).
+
+At `2ad6542`, `canonJson` drops functions. Two manifests whose `run` bodies differ therefore hash identically, which defeats the hash's purpose of catching copies under another name (A8, #22).
 
 ## 10. The journal row [built]
 
@@ -377,7 +450,7 @@ One row per decision, written through `logEv("sysroute", …)` in the journal's 
 | `a`, `pr` | the answer and its probability (3 decimals) |
 | `ms`, `tok`, `usd` | time to answer, input tokens, cost of the call |
 | `act`, `did` | the command the answer maps to, and `1` if it was requested |
-| `why` | `acted`, `shadow`, `none`, `unsure`, `no_gate`, `abstain`, `bad_answer`, `timeout`, `error`, `stale`, `open` (circuit breaker), `budget` (spend cap), `cooldown`, `held`, `rate`, `act_error`, `shadow_arm`, `agree`, `boot`, `unwired`, `lost`, `readers_acted`, `hops`, `bad_args`, `refused` |
+| `why` | `acted`, `shadow`, `none`, `unsure`, `no_gate`, `abstain`, `bad_answer`, `timeout`, `error`, `stale`, `open` (circuit breaker), `budget` (spend cap), `cooldown`, `held`, `rate`, `act_error`, `shadow_arm`, `agree`, `boot`, `unwired`, `lost`, `readers_acted`, `hops`, `bad_args`, `refused`. To add, [specified]: `unexposed` (R2, A13, #28). Rule: `did: 1` means a behavior actually ran (A15, #27) |
 
 `sr.replied(o, kind)` writes one `agree` row per capability that set `agree` on person events (`kind === 'event'`). The row holds what the fast engine picked, what the brain's reply said, and whether they matched (R-OBS-3).
 
@@ -419,11 +492,13 @@ One list of every variable, what reads it and where it is sent: `env.example` at
 ### 13.1 Fuzzy commands (ships)
 
 1. The person says "okay, that's enough now". Brit's funnel runs his readers; `_ftWords` matches nothing, so his layer does nothing early and the words go on to the brain as always.
-2. `hear(t)` puts the words on the speech stream. The fuzzy-commands trigger calls its command; the capability asks `choice` over the commands Brit exposed. His readers abstain, the on-device model answers `halt` at p = 0.97, and its gate for this model version is 0.94.
-3. The behavior requests Brit's `halt`. His command path does exactly what it does for a literal "stop". The row says `why: "acted"`.
+2. `hear(t)` puts the words on the speech stream. The fuzzy-commands capability asks its trained `choice` question (R2, §9.2). His readers abstain, and the on-device model answers `halt` with a probability above its gate for this model version.
+   - The numbers in this walk-through are **illustrative, not measured**. At `2ad6542` the n-gram gate is `ngram-fuzzy@wake.ngram-v1` p = 0.9349 (`models/gates.json`).
+   - This exact sentence comes out `unsure` in `demo/index.html` (audit, 2026-11-18).
+3. The behavior requests Brit's `halt`, because he exposed it. His command path does exactly what it does for a literal "stop". The row says `why: "acted"`.
 4. If the person had said "stop", his readers would have matched in step 1. The router writes `readers_acted` and requests nothing.
 
-Status: steps 1–2 [built], in shadow; step 3 [differs] (§9.2); step 4 [specified].
+Status: steps 1, 2 and 4 [built] (step 4 verified in the demo); step 3 [built] for exposed kinds through `SysRouterHost.command`, [differs] for exposure filtering (A13, #28).
 
 ### 13.2 Emote (ships)
 
@@ -432,7 +507,11 @@ Status: steps 1–2 [built], in shadow; step 3 [differs] (§9.2); step 4 [specif
 3. The behavior requests the expression output: Brit's expression path if he exposes it, or the developer's own display attachment.
 4. When the brain's reply lands, `replied()` logs whether the two agreed. The brain's reply still wins in Brit's layer, because the router never touches it.
 
-Status: the person's words, the `choice` capability and agreement rows are [built] in shadow; the creature's words and composed steps are [specified]; the display attachment is [specified].
+Status:
+- **[built] in shadow:** the person's words, the creature's words (`input: 'both'`), the one-step n-gram `choice` route, and agreement rows on `kind === 'event'`.
+- **[differs], speaker state (A12, #23):** creature events overwrite the person's pending pick and mark person decisions stale. Agreement rows are not reliable evidence until this is fixed.
+- **[differs], the composed path, plan 2B.2 (A14, #29):** `embed` (MiniLM) → `choice` (`express.minilm-head-v1`) is never built by `boot.js`. When built through `registerEmote`, it has no trigger and writes no agree rows. The n-gram route is meant to be the fallback only when MiniLM is not loaded.
+- **[specified]:** the display attachment.
 
 ### 13.3 Siren attachment (documented, not shipped)
 
@@ -445,10 +524,12 @@ Status: the person's words, the `choice` capability and agreement rows are [buil
    - the commands `siren.on` and `siren.off`;
    - three triggers: on an IR event, on a button, and on the creature's request.
 3. The person grants the extension its permissions and sees it in the list.
-4. The fuzzy-commands capability includes the exposed commands the person allowed. "Sound the alarm" therefore requests `siren.on` as readily as "stop it" requests Brit's `halt`.
+4. The person may expose `siren.on` to fuzzy commands. It is then asked in the **developer fuzzy question**, never added to Brit's (R2, §9.2). That question runs in shadow until its gate is fitted (L3). After that, "sound the alarm" requests `siren.on` as "stop it" requests Brit's `halt`.
 5. The creature can sound it only if Brit has opened the door (§9.4). Without the door, a trigger on the creature's reply stream is the fallback.
 
-Status: [specified] throughout.
+Status:
+- **[built], system lane only:** a mock siren Worker with IR `sense` → trigger → `siren.on` → `actuate` with checked arguments (`test_providers.mjs`). The engine is registered through the system lane on an unsealed router.
+- **[differs]:** the third-party path to bring the engine (A9, #32), sense confinement (A7, #21), the developer fuzzy question (A13, #28), and the demo's mock siren, which uses a page-scope `run` (A8, #22).
 
 ## 14. Decisions, with reasons
 
@@ -469,9 +550,17 @@ A third-party registration is pure data, so third-party code never needs to shar
 
 ### 14.3 Where thresholds live
 
-In `models/gates.json`, keyed by capability, engine and the model id the engine reports (`hosted@typesafe/jev-1.14-20261014`). A new model version has no gate, so by L3 it cannot act until it has been measured.
+In `models/gates.json`, keyed by capability, engine and the model id the engine reports (`hosted@typesafe/jev-1.14-20261014`), with `@<host>` for a non-default host (`hosted@cloudflare/clef@primeintellect`). A new model version has no gate, so by L3 it cannot act until it has been measured.
 
-The benchmark shows why this matters: fitted gates differ between engines, and between two hosts serving the same weights (`results/TABLES.md`: `clef` 0.7193 against `clef@primeintellect` 0.7002; `clef-flash` 0.8147 against 0.8703).
+**A gate also belongs to the exact question it was fitted on.** A capability whose options change has no gate for the new question, and runs in shadow until it is measured (R2, §9.2).
+
+**A third-party decision engine has no gate.** It runs in shadow, and its gate is fitted by Brit's lane when the contribution is adopted, never declared by the extension (R3, §5.2).
+
+The benchmark shows why this matters: fitted gates differ between engines, and between two hosts serving the same weights. From `results/TABLES.md` and `models/gates.json` at `2ad6542`:
+- `clef` 0.8846 against `clef@primeintellect` 0.8559;
+- `clef-flash` 0.8794 against 0.9101.
+
+Phase 1 documents quoted 0.7193, 0.7002, 0.8147 and 0.8703. Those came from a Phase 1 table that did not match its own committed raw data (`AUDIT-PHASE2.md` §7).
 
 ### 14.4 The router never pre-empts
 
@@ -497,12 +586,46 @@ Developers bring "their own models, their own primitives". A generative model is
    - (c) A trigger may carry a CSS selector tested against the live document. This would need his state reflected into the DOM, which his code does not do today.
 2. **Bluetooth and serial attachments.** Neither API has recorded Worker support (§8.5). A path for them would need page-scope code, which §14.2 rules out for third parties. Options: a small bridge Brit's layer owns, or network-only attachments.
 3. **The creature's door (§9.4).** Brit's decision. If he opens it, decide whether the person approves each command once at install time or each time the creature uses it.
-4. **The hop limit for chaining** (§6.3). Today's code allows one nested level.
-5. **The exact data shapes** of §7.2–7.4, for review once the structure is accepted.
+4. ~~**The hop limit for chaining**~~ (§6.3). Decided: `maxHops: 3` (plan P6). Built for synchronous chains; [differs] across async steps (A2, #18).
+5. **The exact data shapes** of §7.2–7.4, for review once the structure is accepted. The third-party `engines` entry is fixed by R3 (§5.2).
 
 ## 16. Where the code differs from this specification
 
-All Phase 2 items (D1–D8) are now `[built]` in `src/` and `integration/`. Remaining items are only the deliberate exclusions (`box` primitive without a verified shape, `when` conditions in §15.1, Bluetooth/serial attachments in §15.2) and Brit's optional page proposals (`integration/proposals/`).
+Work to do, from the Phase 2 audit (`AUDIT-PHASE2.md`, which gives for each item the file and line, the required behavior, the acceptance test and the mutant to add). The fixes wait for the Phase 3 plan, which may re-scope them.
+
+**Phase 1 differences D1–D7 are closed** at `2ad6542`:
+- D1 `preempt` removed;
+- D2 port only;
+- D3 seal closes the system lane;
+- D4 `SysRouterHost.command`;
+- D5 `readers_acted`;
+- D6 emote reads both speakers;
+- D7 v2 names, with v1 aliases.
+
+**D8 (the v2 registry) is built in part.** What remains:
+
+| # | Spec | Code at `2ad6542` | Item, issue |
+|---|---|---|---|
+| D9 | One validator and one resolver; a route is a one-step capability (§7.3, plan 1D.0, 1D.4) | Two pipelines; capabilities skip route validation, `race`, shadow engines, staleness, `perMin` | A1, #26 (+ B2 #37, B5 #40, B6 #41) |
+| D10 | Hop count follows the causal chain (§6.3) | Reset to 0 after any async step; loops without end | A2, #18 |
+| D11 | L8 on every path (§3) | Capabilities reach stops by probability alone | A3, #24 |
+| D12 | Shadow decides, logs, and holds back every behavior (L2, R1) | Shadow trigger never runs its capability | A4, #25 |
+| D13 | Brit sets the ceiling (§8.3) | Any non-reserved system command can be granted | A5, #19 |
+| D14 | `request()` and person/creature triggers check `exposeTo` (§7.4, plan 1D.9) | Triggers fire before the check | A6, #20 |
+| D15 | Sense only onto the owner's streams (§8.4, R3) | Onto any stream, `speech` included | A7, #21 |
+| D16 | Manifests are pure JSON; the hash covers all code (§8.4, §9.5) | `run` functions accepted and executed in page; hash ignores them | A8, #22 |
+| D17 | Third-party engines come in the manifest (§5.2, R3) | No path after seal | A9, #32 |
+| D18 | Every extension listener needs its stream grant (§6.2) | Extension routes read `speech` without one | A10, #30 |
+| D19 | Per-extension `perMin` and `maxUsd` (§8.3) | Routes only / never | A11, #31 |
+| D20 | Person and creature state kept apart (L5, plan 2B.3) | Creature rows overwrite the person's pick; creature words stale person decisions | A12, #23 |
+| D21 | Exposure filters the command table; developer commands get their own question (R2) | All eight kinds always offered; extras merged into Brit's question | A13, #28 |
+| D22 | Composed emote on the shipped path (plan 2B.2) | Never built by boot; no trigger; no agree rows | A14, #29 |
+| D23 | Commands name existing capabilities; `did: 1` only when something ran (§7.2) | Missing capability accepted; `acted` logged | A15, #27 |
+| D24 | Counts in this document are checked (plan 3C.5) | `doccheck` skips SPEC.md | A16, #33 |
+| D25 | `agree` rows only for `kind === 'event'` (plan 2B.3) | Missing `kind` treated as event | B4, #39 |
+| D26 | v2 names in the demo and in header comments (plan P3) | Demo takes only `?mode=parallel`; headers describe v1 | B1, #36 |
+
+Deliberate exclusions, unchanged: the `box` primitive without a verified shape (P9), `when` conditions (§15.1), Bluetooth and serial attachments (§15.2), and Brit's optional page proposals (`integration/proposals/`).
 
 ## 17. What is deliberately not here
 

@@ -47,7 +47,7 @@ import { keyring, browserEnv } from '../src/keys.js';
 import { registerFuzzy, FUZZY } from '../src/fuzzy.js';
 import { registerEmote } from '../src/emote.js';
 
-const $ = (id) => document.getElementById(id), q = new URLSearchParams(location.search), mode = q.get('mode') === 'parallel' ? 'parallel' : 'shadow';
+const $ = (id) => document.getElementById(id), q = new URLSearchParams(location.search), mode = q.get('mode') === 'parallel' ? 'parallel' : 'shadow';   // AUDIT-PHASE2 B1 (#36): accept ?mode=live (parallel as alias) and print live.
 const journal = [], acted = []; let current = '';
 const V2_WARN = new Set(['readers_acted', 'lost', 'hops', 'bad_args', 'refused', 'open', 'budget', 'rate']);
 const log = (e, d) => { journal.push(d); $('journal').textContent = journal.slice(-12).map((r) => JSON.stringify(r)).join('\n'); if (d.why !== 'boot') draw(d); };
@@ -118,7 +118,7 @@ function renderExtensions() {
 async function installMockSiren() {
   if (port.extensions().some((e) => e.name === 'mock-siren')) return;
   await port.install({
-    name: 'mock-siren',
+    name: 'mock-siren',   // AUDIT-PHASE2 A8 (#22): this manifest's command carries run(), page-scope code the design forbids; rewrite with a Worker engine in the manifest once A9 lands.
     commands: [{
       id: 'siren.on',
       description: 'Sound the mock siren for a short duration',

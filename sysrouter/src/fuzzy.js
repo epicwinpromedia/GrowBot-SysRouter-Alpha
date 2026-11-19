@@ -45,12 +45,12 @@ export function registerFuzzy(sr, run, providers, over) {
     sing: { resource: 'voice', holdMs: 3000 }
   };
   for (const k of Object.keys(FUZZY.on)) {
-    if (typeof run[k] !== 'function') continue;
+    if (typeof run[k] !== 'function') continue;   // AUDIT-PHASE2 A13 (#28): rule R2 (SPEC §9.2) replaces this filter: the question is never rebuilt (on-device engines abstain on any other option set); exposure filters the command table instead.
     sr.command(Object.assign({ id: k, run: run[k], exposeTo: ['person'] }, meta[k] || {}));
     criteria[k] = FUZZY.question.criteria[k];
     on[k] = k;
   }
-  const extra = over && over.extraCommands;
+  const extra = over && over.extraCommands;   // AUDIT-PHASE2 A13 (#28): developer commands must NOT be merged into Brit's question (changes his question, voids his gates, makes on-device engines abstain); they get their own fuzzy question, shadow until calibrated (R2.5).
   if (Array.isArray(extra)) {
     for (const c of extra) {
       if (!c || !c.id || !c.description) continue;

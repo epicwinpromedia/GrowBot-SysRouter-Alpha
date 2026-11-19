@@ -45,7 +45,7 @@ export function registerEmote(sr, react, providers, over) {
   if (!sr.read('emote')) {
     try { sr.stream({ id: 'emote', types: ['pick'] }); } catch (e) {}
   }
-  if (over.embedEngine && over.headEngine) {
+  if (over.embedEngine && over.headEngine) {   // AUDIT-PHASE2 A14 (#29): the composed capability below gets no trigger (never runs on speech) and replied() never writes its agree rows.
     return sr.capability({
       id: over.id || 'emote_composed',
       steps: [

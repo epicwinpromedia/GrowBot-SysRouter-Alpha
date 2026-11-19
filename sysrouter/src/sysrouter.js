@@ -1,4 +1,4 @@
-// sysrouter.js — the GrowBot System Router. One registry for the fast paths.
+// sysrouter.js — the GrowBot System Router. One registry for the fast paths.   // AUDIT-PHASE2 B1 (#36): this header (lines 1-28) still describes the v1 model (route/provider/wake, unversioned gate keys). The v2 vocabulary is SPEC.md §2. Before changing ANY code in sysrouter/, read sysrouter/AUDIT-PHASE2.md, the work order for every AUDIT-PHASE2 comment in this repo (grep -rn AUDIT-PHASE2 sysrouter/).
 // A ROUTE is a typed question about what was just said (yes/no, pick one, score) plus a table
 // of which registered ACTION each answer may trigger. A PROVIDER answers the question: Brit's
 // own regex readers, an on-device model, Jev, Clef, a small language model. The router asks,
@@ -103,7 +103,7 @@ export function createRouter(opts) {
     const o = { r: r.id, tier: r.tier, mode: modeOf(r), why };
     if (r.owner) o.ext = r.owner;
     if (x) for (const k in x) if (x[k] !== undefined && x[k] !== null && x[k] !== '') o[k] = x[k];
-    if (r.agree && o.a && why !== 'agree' && why !== 'shadow_arm' && o.from !== 'creature') lastPick[r.id] = o.a;
+    if (r.agree && o.a && why !== 'agree' && why !== 'shadow_arm' && o.from !== 'creature') lastPick[r.id] = o.a;   // AUDIT-PHASE2 A12 (#23): `from` is set only on acting rows (finish(), line 424), so a creature event's unsure/no_gate/bad_answer row overwrites the PERSON's pending pick. Key lastPick by route+speaker and set `from` on every row of an input:'both' route.
     try { log('sysroute', o); } catch (e) {}
     return o;
   }
@@ -128,7 +128,7 @@ export function createRouter(opts) {
     if (flags.off) return null;
     const s = has(streams, streamId) ? streams[streamId] : null;
     if (!s || !event || typeof event !== 'object' || typeof event.type !== 'string' || !has(s.types, event.type)) throw new Error('sysrouter: bad event for ' + streamId);
-    const hop = activeHop >= 0 ? activeHop + 1 : 0;
+    const hop = activeHop >= 0 ? activeHop + 1 : 0;   // AUDIT-PHASE2 A2 (#18): the hop lives in router-wide activeHop and is restored when emit() returns, so a publish after any await (resolveCapability, line 540) gets hop 0 and A->B->A loops forever. Pass the hop explicitly along the causal chain (fireTrigger -> act -> resolveCapability -> emit).
     if (hop > maxHops) { row({ id: streamId, tier: s.tier, owner: s.owner, mode: 'live' }, 'hops', { stream: streamId, type: event.type, hop }); return null; }
     const raw = event.data, data = typeof raw === 'string' ? (raw.length > 600 ? raw.slice(0, 600) : raw) : raw;
     const ev = Object.freeze({ stream: streamId, type: event.type, data, t: now(), seq: ++evSeq, hop });
@@ -154,13 +154,13 @@ export function createRouter(opts) {
 
   function addCommand(rawSpec, who) {
     if (!rawSpec || typeof rawSpec !== 'object') throw new Error('sysrouter: bad command');
-    const id = rawSpec.id, cap = rawSpec.capability, run = rawSpec.run, rArgs = rawSpec.args, rExp = rawSpec.exposeTo;
+    const id = rawSpec.id, cap = rawSpec.capability, run = rawSpec.run, rArgs = rawSpec.args, rExp = rawSpec.exposeTo;   // AUDIT-PHASE2 A8 (#22): `run` is accepted from every lane, so a third-party manifest command executes a function in the page's scope (SPEC §8.4 forbids). Accept `run` from the system lane only.
     const resource = rawSpec.resource ? String(rawSpec.resource) : '', holdMs = +rawSpec.holdMs || 0, cooldownMs = Math.max(0, +rawSpec.cooldownMs || 0), reserved = !!rawSpec.reserved;
     if (!ID.test(id || '')) throw new Error('sysrouter: bad command ' + id);
     if (has(actions, id)) throw new Error('sysrouter: action exists: ' + id);
     if (reserved && sealed) throw new Error('sysrouter: reserved actions are registered before seal()');
     if (who.tier !== 'extension') assertOpen();
-    if (typeof run !== 'function' && (typeof cap !== 'string' || !ID.test(cap))) throw new Error('sysrouter: command ' + id + ' needs capability or run');
+    if (typeof run !== 'function' && (typeof cap !== 'string' || !ID.test(cap))) throw new Error('sysrouter: command ' + id + ' needs capability or run');   // AUDIT-PHASE2 A15 (#27): only the id shape is checked; a command naming a capability that does not exist registers, and act() then logs acted/did:1 while nothing runs. Refuse unknown capabilities.
     const exposeTo = [];
     if (rExp !== undefined) {
       if (!Array.isArray(rExp)) throw new Error('sysrouter: bad exposeTo');
@@ -215,7 +215,7 @@ export function createRouter(opts) {
     providers[id] = { ask: p.ask, sync: !!p.sync, exact: !!p.exact, inFunnel: !!p.inFunnel, model: String(p.model || ''), types: Object.keys(prims), primitives: prims };
     if (has(prims, 'sense') && typeof p.subscribeSense === 'function') {
       p.subscribeSense((ev) => {
-        if (!flags.off && ev && has(streams, ev.stream) && has(streams[ev.stream].types, ev.type)) emit(ev.stream, { type: ev.type, data: ev.data });
+        if (!flags.off && ev && has(streams, ev.stream) && has(streams[ev.stream].types, ev.type)) emit(ev.stream, { type: ev.type, data: ev.data });   // AUDIT-PHASE2 A7 (#21): a sensing Worker may emit onto ANY existing stream, including core `speech` (forges the person's words) and `body.sense`. Accept only streams whose owner equals the engine's owner, never core streams (SPEC R3.5).
       });
     }
   }
@@ -271,7 +271,7 @@ export function createRouter(opts) {
     const onArgs = dict();
     for (const k of Object.keys(on)) {
       if (!keys.includes(k)) fail('on.' + k + ' is not an answer');
-      const rawEntry = on[k], aid = typeof rawEntry === 'string' ? rawEntry : (rawEntry && typeof rawEntry === 'object' && typeof rawEntry.command === 'string' ? rawEntry.command : '');
+      const rawEntry = on[k], aid = typeof rawEntry === 'string' ? rawEntry : (rawEntry && typeof rawEntry === 'object' && typeof rawEntry.command === 'string' ? rawEntry.command : '');   // AUDIT-PHASE2 B6 (#41): object-form entry `.command` is read twice and `.args` twice (plan 1A.4: every field read exactly once). One snapshot helper for every registration.
       if (!aid || !has(actions, aid)) fail('unknown action ' + aid);
       on[k] = aid;
       if (rawEntry && typeof rawEntry === 'object' && rawEntry.args !== undefined) onArgs[k] = copyDict(rawEntry.args);
@@ -296,12 +296,12 @@ export function createRouter(opts) {
   // The loader hands an extension this facade and nothing else (R-TRUST-1..4): it can add and
   // remove ITS OWN routes, over the actions and providers it was granted, at its own rate cap.
   function normPerms(p) {
-    const acts = ((p && (p.commands || p.actions)) || []).slice();
+    const acts = ((p && (p.commands || p.actions)) || []).slice();   // AUDIT-PHASE2 A5 (#19): no exposure ceiling. Any non-reserved SYSTEM command can be granted, including Brit's leg commands exposed only to `person`. Refuse a system command unless its exposeTo includes 'third-party' (SPEC §8.3); same for system streams.
     if (acts.some((id) => actions[id] && actions[id].reserved)) throw new Error('sysrouter: extensions cannot be granted reserved actions');
     const engs = ((p && (p.engines || p.providers)) || []).slice();
     const strms = ((p && p.streams) || []).slice();
     const perMin = Math.max(1, Math.min(120, +(p && p.perMin) || 20));
-    const pMaxUsd = p && p.maxUsd >= 0 ? +p.maxUsd : 0;
+    const pMaxUsd = p && p.maxUsd >= 0 ? +p.maxUsd : 0;   // AUDIT-PHASE2 A11 (#31): stored but never read anywhere; perMin is read only for routes (line 421). Enforce one per-extension rate and spend meter on routes, triggers, capabilities and requests.
     return { actions: acts, providers: engs, streams: strms, perMin, maxUsd: pMaxUsd };
   }
   function extension(name, grants) {
@@ -319,7 +319,7 @@ export function createRouter(opts) {
     if (!aid) return row(r, 'none', x);
     const a = actions[aid], t = now(), tier = TIERS[r.tier];
     x.act = aid;
-    if (mode === 'shadow') return row(r, 'shadow', x);
+    if (mode === 'shadow') return row(r, 'shadow', x);   // AUDIT-PHASE2 A4 (#25): for a capability-backed command this returns before line 341, so in shadow NO engine is asked and no evidence is gathered. Shadow must run the capability, log its rows, and hold back request, actuation AND publish (SPEC §7.1 R1).
     const clearHolds = () => { for (const k in held) delete held[k]; };
     if (x.p && providers[x.p] && providers[x.p].inFunnel) {
       if (a.reserved) clearHolds();
@@ -338,7 +338,7 @@ export function createRouter(opts) {
     last[r.id + '>' + aid] = t;
     if (a.reserved) clearHolds();                                                        // a stop clears every hold, whoever owns it
     else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };
-    if (!a.run && a.capability && has(capabilities, a.capability)) resolveCapability(capabilities[a.capability], checkedArgs, mode);
+    if (!a.run && a.capability && has(capabilities, a.capability)) resolveCapability(capabilities[a.capability], checkedArgs, mode);   // AUDIT-PHASE2 A15 (#27): fire-and-forget; did:1 / 'acted' (lines 342-343) are written before the capability ran and regardless of its outcome. Write the row when it settles; did:1 only if its behavior ran.
     x.did = 1;
     return row(r, 'acted', x);
   }
@@ -379,7 +379,7 @@ export function createRouter(opts) {
     ).then(mark);
   }
 
-  function resolve(r, req, fresh, finish) {
+  function resolve(r, req, fresh, finish) {   // AUDIT-PHASE2 A1 (#26): one of TWO resolvers (the other is resolveCapability, line 500). Plan 1D.0/1D.4: one resolver for all; a route is a one-step capability + command table + trigger. Do A1 first: it fixes A3/A4 and gives A2/A10/A11 one place.
     const rid = r.id;
     // 1. the leading sync providers, in order, in this tick
     let i = 0, decided = false;
@@ -392,7 +392,7 @@ export function createRouter(opts) {
     const rest = decided ? [] : r.providers.slice(i);
     if (!rest.length && !r.shadow.length) return null;
     // 2. the async providers, outside the brain's single flight (R-RT-5), under the route's budget
-    if (flight[rid]) flight[rid].abort('stale');                                         // one flight per route: the engines still working on older words are told to stop
+    if (flight[rid]) flight[rid].abort('stale');                                         // one flight per route: the engines still working on older words are told to stop   // AUDIT-PHASE2 A12 (#23): flight is keyed by route only, so a CREATURE event aborts the person's in-flight decision as stale. Key by route+speaker for input:'both' routes.
     const ctl = flight[rid] = new AbortController(), sctl = new AbortController(), timer = setTimeout(() => { ctl.abort('timeout'); sctl.abort('timeout'); }, r.budgetMs);
     const sh = r.shadow.map((pid) => askAsync(r, pid, req, sctl.signal).then((res) => { row(r, 'shadow_arm', Object.assign(res.x, { arm: res.why || 'ok' })); }));
     let main;
@@ -418,10 +418,10 @@ export function createRouter(opts) {
     try { for (const rid in routes) {
       const r = routes[rid];
       if (modeOf(r) === 'off' || (r.input !== 'both' && r.input !== from)) continue;
-      if (r.perMin) { const m = Math.floor(now() / 60000), s = spend[r.owner] = spend[r.owner] && spend[r.owner].m === m ? spend[r.owner] : { m, n: 0 }; if (++s.n > r.perMin) { row(r, 'rate'); continue; } }
-      seqOf[rid] = my;
+      if (r.perMin) { const m = Math.floor(now() / 60000), s = spend[r.owner] = spend[r.owner] && spend[r.owner].m === m ? spend[r.owner] : { m, n: 0 }; if (++s.n > r.perMin) { row(r, 'rate'); continue; } }   // AUDIT-PHASE2 A11 (#31): the only place an extension's perMin is enforced (routes only).
+      seqOf[rid] = my;   // AUDIT-PHASE2 A12 (#23): keyed by route only; creature words make the person's pending decision stale (L5 says the PERSON's newest words decide).
       const req = { state, questions: { q: r.question } }, fresh = () => seqOf[rid] === my;
-      const finish = (res) => { if (r.input === 'both') res.x.from = from; const o = act(r, res.d.pick, res.x); if (o.did) out.acted.push(o.act); };
+      const finish = (res) => { if (r.input === 'both') res.x.from = from; const o = act(r, res.d.pick, res.x); if (o.did) out.acted.push(o.act); };   // AUDIT-PHASE2 A12 (#23): `from` is attached here only, i.e. only to acting/shadow rows.
       const p = resolve(r, req, fresh, finish);
       if (p) waits.push(p);
     } } finally { activeHop = prevHop; }
@@ -433,19 +433,19 @@ export function createRouter(opts) {
   // each route decided for the same words. route.agree names the reply field to compare.
   function replied(reply, kind) {
     if (flags.off || !reply || typeof reply !== 'object') return;
-    if (kind === undefined || kind === 'event') {
+    if (kind === undefined || kind === 'event') {   // AUDIT-PHASE2 B4 (#39): a missing kind is treated as an event; plan 2B.3 says agree rows ONLY when kind === 'event'.
       for (const rid in routes) { const r = routes[rid], lp = lastPick[rid]; if (!r.agree || !lp) continue; delete lastPick[rid];
         row(r, 'agree', { a: lp, brain: typeof reply[r.agree] === 'string' ? reply[r.agree].slice(0, 24) : '', ok: reply[r.agree] === lp ? 1 : 0 }); }
     }
-    if (typeof reply.say === 'string' && reply.say.trim()) hear(reply.say, { from: 'creature' });
+    if (typeof reply.say === 'string' && reply.say.trim()) hear(reply.say, { from: 'creature' });   // AUDIT-PHASE2 A12 (#23) + cost note: every reply (ticks included) now gets an emote decision; with a hosted engine that is one more paid call per reply.
   }
 
-  function addCapability(rawSpec, who) {
+  function addCapability(rawSpec, who) {   // AUDIT-PHASE2 A1 (#26): skips everything addRoute validates: notFor (R-REG-5), option count/name/prototype/size checks, 600-char instructions cap, collisions; steps ignore race and shadow engines; no staleness (L5); no perMin.
     if (!rawSpec || typeof rawSpec !== 'object') throw new Error('sysrouter: bad capability');
     const id = rawSpec.id, rawSteps = rawSpec.steps, rawBeh = rawSpec.behavior;
     const capPolicy = rawSpec.policy || 'single', budgetMs = Math.max(20, Math.min(10000, +rawSpec.budgetMs || 1500));
     const rawMode = rawSpec.mode || 'shadow', mode = rawMode === 'parallel' ? 'live' : rawMode;
-    const addsRecall = !!rawSpec.addsRecall, agree = typeof rawSpec.agree === 'string' ? rawSpec.agree : '';
+    const addsRecall = !!rawSpec.addsRecall, agree = typeof rawSpec.agree === 'string' ? rawSpec.agree : '';   // AUDIT-PHASE2 A3 (#24): stored, never read.
     if (!ID.test(id || '')) throw new Error('sysrouter: bad capability id ' + id);
     if (has(capabilities, id)) throw new Error('sysrouter: capability exists: ' + id);
     if (!MODES.includes(mode) || !POLICIES.includes(capPolicy)) throw new Error('sysrouter: bad mode or policy');
@@ -485,7 +485,7 @@ export function createRouter(opts) {
           const entry = rawBeh.request[k], aid = typeof entry === 'string' ? entry : (entry && typeof entry === 'object' ? entry.command : '');
           if (!aid || !has(actions, aid)) throw new Error('sysrouter: unknown action ' + aid);
           const a = actions[aid];
-          if (a.reserved && who.tier === 'extension') throw new Error('sysrouter: extensions cannot reach reserved actions');
+          if (a.reserved && who.tier === 'extension') throw new Error('sysrouter: extensions cannot reach reserved actions');   // AUDIT-PHASE2 A3 (#24): L8 checked for the extension lane only; a system capability reaches a stop on one probabilistic engine. Require all-exact engines or addsRecall, as addRoute does (line 280).
           if (who.grants && !who.grants.actions.includes(aid)) throw new Error('sysrouter: no grant for action ' + aid);
           reqMap[k] = aid;
           if (entry && typeof entry === 'object' && entry.args !== undefined) beh.onArgs[k] = copyDict(entry.args);
@@ -497,7 +497,7 @@ export function createRouter(opts) {
     return id;
   }
 
-  async function resolveCapability(cap, input, modeOverride) {
+  async function resolveCapability(cap, input, modeOverride) {   // AUDIT-PHASE2 A1 (#26): the second, weaker resolver; fold into one with resolve() (line 382).
     const r = { id: cap.id, tier: cap.tier, owner: cap.owner, mode: modeOverride || cap.mode, on: cap.behavior.request || dict(), onArgs: cap.behavior.onArgs, cooldownMs: 0, agree: cap.agree };
     const ctl = new AbortController(), timer = setTimeout(() => ctl.abort('timeout'), cap.budgetMs);
     let cur = input, finalDecision = null;
@@ -537,7 +537,7 @@ export function createRouter(opts) {
           cur = checked;
         }
       }
-      if (cap.behavior.publish) emit(cap.behavior.publish, { type: cap.behavior.publishType, data: finalDecision ? finalDecision.d.pick : cur });
+      if (cap.behavior.publish) emit(cap.behavior.publish, { type: cap.behavior.publishType, data: finalDecision ? finalDecision.d.pick : cur });   // AUDIT-PHASE2 A2 (#18): this publish runs after an await, when activeHop is already reset, so the event gets hop 0. Also R1 (A4): never publish in shadow.
       if (cap.behavior.request && finalDecision) act(r, finalDecision.d.pick, finalDecision.x);
       return { ok: true, output: cur, decision: finalDecision ? finalDecision.d : null };
     } finally { clearTimeout(timer); }
@@ -562,7 +562,7 @@ export function createRouter(opts) {
       const t = ro.type;
       if (t !== undefined && (typeof t !== 'string' || !has(streams[ro.stream].types, t))) throw new Error('sysrouter: bad trigger stream type ' + t);
       onSnap = { stream: ro.stream, type: t || '' };
-    } else if (ro.person === true) onSnap = { person: true };
+    } else if (ro.person === true) onSnap = { person: true };   // AUDIT-PHASE2 A6 (#20): person/creature sources are not checked against the command's exposeTo; refuse unless exposeTo includes that source.
     else if (ro.creature === true) onSnap = { creature: true };
     else throw new Error('sysrouter: bad trigger on');
     const argsSnap = ra === undefined ? undefined : (ra && typeof ra === 'object' && !Array.isArray(ra) ? copyDict(ra) : ra);
@@ -583,7 +583,7 @@ export function createRouter(opts) {
     const m = Math.floor(now() / 60000), rs = reqSpend[from] && reqSpend[from].min === m ? reqSpend[from] : (reqSpend[from] = { min: m, n: 0 });
     if (++rs.n > reqPerMin) return row({ id: 'request', tier: 'system', mode: 'live' }, 'rate', { act: String(commandId || ''), from, did: 0 });
     let res = null;
-    for (const tid in triggers) {
+    for (const tid in triggers) {   // AUDIT-PHASE2 A6 (#20): triggers fire BEFORE the exposeTo and person-grant checks (lines 593-595); an extension's creature:true trigger bypasses them. Check first, on every path (plan 1D.9).
       const tr = triggers[tid];
       if (tr.on[from] === true && tr.command === commandId) res = fireTrigger(tr, args);
     }
@@ -608,7 +608,7 @@ export function createRouter(opts) {
     return true;
   }
 
-  async function install(manifest, permissions) {
+  async function install(manifest, permissions) {   // AUDIT-PHASE2 A9 (#32): no `engines` section, so a third party cannot bring an engine/attachment after seal. Shape: SPEC §5.2 R3 (Worker source text in the manifest, Blob Worker, owner = extension, never exact/inFunnel). A8 (#22): refuse any non-JSON value.
     if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) throw new Error('sysrouter: bad manifest');
     const name = manifest.name;
     if (!ID.test(name || '')) throw new Error('sysrouter: bad extension name');
@@ -625,12 +625,12 @@ export function createRouter(opts) {
         created.streams.push(addStream(s, who));
       }
       for (const c of (manifest.capabilities || [])) created.capabilities.push(addCapability(c, who));
-      for (const c of (manifest.commands || [])) {
+      for (const c of (manifest.commands || [])) {   // AUDIT-PHASE2 A8 (#22): manifest commands may carry `run` functions (executed in page scope); refuse them.
         if (!p.actions.includes(c && c.id)) throw new Error('sysrouter: no grant for action ' + (c && c.id));
         created.actions.push(addCommand(c, who));
       }
       for (const t of (manifest.triggers || [])) created.triggers.push(addTrigger(t, who));
-      for (const r of (manifest.routes || [])) created.routes.push(addRoute(r, who));
+      for (const r of (manifest.routes || [])) created.routes.push(addRoute(r, who));   // AUDIT-PHASE2 A10 (#30): extension routes hear `speech` without a stream grant; require 'speech' in grants.streams.
     } catch (e) {
       for (const k of created.routes) delete routes[k];
       for (const k of created.triggers) delete triggers[k];

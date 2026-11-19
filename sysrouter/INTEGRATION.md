@@ -4,6 +4,14 @@ For Brit. Every step is small, stands on its own, changes nothing a user can see
 
 It follows `CONTRIBUTING.md`: an issue first, one change per pull request, about 300 lines, nothing against `app/`.
 
+> **Readiness at `2ad6542` (Phase 2 audit, `AUDIT-PHASE2.md`).**
+> - **Ready:** steps 1–4 with fuzzy commands in shadow and on-device engines. The page change is proven to change nothing, and the double-request guard works.
+> - **Not ready:**
+>   - **Step 5 (emote) agreement evidence** is not reliable until A12 (#23): creature replies overwrite the person's pending pick.
+>   - **Step 7 (letting a capability act)** needs A13 (#28) first. Today all eight fuzzy kinds are offered whatever you expose, and the proposal's `command()` handles four.
+>   - **The third-party lane** stays closed until A5–A8 (#19–#22): no extension is installed outside tests.
+> - **Cost note:** every brain reply, ticks included, now also gets an emote decision on the creature's words. With a hosted engine configured (`?s1=`), that is one more paid call per reply, within the session spend cap.
+
 ## What this is, in one paragraph
 
 SysRouter runs **alongside** your layer, never in front of it. It reads what your page already produces (the person's words, the brain's reply). It reaches your layer only by **requesting** commands you chose to expose, and your own code decides what happens. It never pre-empts anything and never calls `think()`. Your body layer and your creature agent stay entirely yours. What it adds is a sanctioned, controlled place where engines (your regex readers, small on-device models, Jev, Clef, a developer's own model or hardware) co-process in parallel, plus an open lane where developers can bring their own engines, sensors and effects without touching your code. `MISSION.md` §3–§5 has the boundary; `SPEC.md` §9 has the contract.

@@ -4,7 +4,7 @@
 //
 // OFF BY DEFAULT. It boots only after ?sysrouter=1 (persisted, like ?express=bench), and
 // ?sysrouter=0 turns it off again. Once on, every route starts in SHADOW: it decides, writes
-// its journal row, and acts on nothing. A route acts only when ?sysroute=<id>:parallel says so.
+// its journal row, and acts on nothing. A route acts only when ?sysroute=<id>:parallel says so.   // AUDIT-PHASE2 B1 (#36): v2 name is `live` (parallel is an alias).
 //
 // What the page provides (all optional, all existing functions):
 //   logEv(e, d)            the journal                  -> rows named "sysroute"
@@ -54,10 +54,10 @@ export async function boot(w, opts) {
 
   if (wake.length) {
     const run = host.run || {}, r = {};
-    for (const k in FUZZY.on) r[k] = typeof host.command === 'function' ? () => host.command(k, 'sysrouter') : (typeof run[k] === 'function' ? run[k] : unwired(k));
+    for (const k in FUZZY.on) r[k] = typeof host.command === 'function' ? () => host.command(k, 'sysrouter') : (typeof run[k] === 'function' ? run[k] : unwired(k));   // AUDIT-PHASE2 A13 (#28): gives EVERY kind a function, so all eight are always offered/registered whatever the host exposes, and with the proposal's command() four of them log acted while doing nothing. Follow SPEC §9.2 R2: fixed trained question, host declares exposed kinds (run keys / SysRouterHost.commands / default halt,still,follow,unfollow), unexposed picks -> why:'unexposed', did:0.
     registerFuzzy(sr, r, wake);
   }
-  if (express.length) registerEmote(sr, typeof host.react === 'function' ? host.react : (fields, id) => unwired(id)(), express);
+  if (express.length) registerEmote(sr, typeof host.react === 'function' ? host.react : (fields, id) => unwired(id)(), express);   // AUDIT-PHASE2 A14 (#29): never loads MiniLM or passes embedEngine/headEngine, so the composed emote (plan 2B.2) never ships; load it when model files exist, with a trigger on speech, n-gram as fallback.
   if (gates) {
     const cal = {};
     for (const rk in gates) {

@@ -1,5 +1,5 @@
 // doccheck.mjs — verifies that README.md, SPEC.md, and INTEGRATION.md match actual wc-equivalent
-// file/line counts, mutant counts, and test counts (PLAN 3C.5, #16).
+// file/line counts, mutant counts, and test counts (PLAN 3C.5, #16).   // AUDIT-PHASE2 A16 (#33): does NOT check SPEC.md counts (only old file names, line 68) and the mutant check (line 71) is a hard-coded floor; check SPEC.md §0/§3 against run-all and mutants.mjs.
 //   node sysrouter/tools/doccheck.mjs
 
 import { readFileSync, readdirSync } from "node:fs";
