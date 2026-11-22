@@ -44,11 +44,11 @@ Sizes are lines of code under review. Tests are counted separately because they 
 
 | Step | Pull request | Code | Tests | Page change | Users see |
 |---|---|---|---|---|---|
-| 1 | **The router.** `sysrouter.js`, `registry.js` | 683 + 75 | `test_router.mjs` 572, `mutants.mjs` 89, `fuzz_router.mjs` 104 | none | nothing |
+| 1 | **The router.** `sysrouter.js`, `registry.js` | 470 + 380 | `test_router.mjs` 707, `mutants.mjs` 96, `fuzz_router.mjs` 104 | none | nothing |
 | 2 | **Your readers as the first engine.** `s1-readers.js` | 31 | `test_readers_regression.mjs` 66 + golden file | none | nothing |
 | 3 | **The on-device engine and fuzzy commands.** `s1-ngram.js`, `fuzzy.js`, `models/wake.ngram.json` | 133 | `test_providers.mjs`, `fuzz_readers.mjs` | none | nothing |
 | 4 | **Shadow on the live page.** `boot.js` + your three insertions | 77 + 5 | `test_funnel.mjs` 161 | the insertions | nothing: rows in the journal for anyone who opens `?sysrouter=1` |
-| 5 | **Emote.** `emote.js`, `models/express.ngram.json` | 64 | `test_providers.mjs` | none | nothing (shadow) |
+| 5 | **Emote.** `emote.js`, `models/express.ngram.json` | 65 | `test_providers.mjs` | none | nothing (shadow) |
 | 6 | **Keys and hosted engines.** `keys.js`, `s1-http.js`, `env.example`, `tools/keyscan.mjs`, `tools/proxy.mjs` | 101 + 98 tools | `test_keys.mjs` 70 | none | nothing, unless they name an engine with `?s1=` and have supplied their own key or server |
 | 7 | **Let one capability act.** You expose commands (below), and flip `?sysroute=fuzzy:live` on the bench | your code | your harness | `SysRouterHost` | on the bench link only: a command your readers missed is requested through your own command path |
 | 8 | **Soft reflexes.** `soft-reflex.js` | 55 | `test_providers.mjs` | a branch where `scratchpad.reflex` is applied | on the bench: the creature can write "when someone says something celebratory, trill" |

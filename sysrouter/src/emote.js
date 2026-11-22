@@ -54,6 +54,7 @@ export function registerEmote(sr, react, providers, over) {
       ],
       budgetMs: over.budgetMs || EMOTE.budgetMs,
       mode: over.mode || EMOTE.mode,
+      notFor: over.notFor || EMOTE.notFor,
       agree: EMOTE.agree,
       behavior: { publish: 'emote', request: EMOTE.on }
     });
