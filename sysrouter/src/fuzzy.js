@@ -20,7 +20,7 @@ export const FUZZY = {
       none: 'Not a direct command to the robot: conversation, a question, a story, a statement about something else, or a sentence that only mentions one of these words.'
     }
   },
-  notFor: 'Sentences that mention a command word without ordering the robot (“let’s stop by the store”, “I follow a cooking channel”), questions, quoted speech, and plans for later.',
+  notFor: 'Sentences that mention a command word in passing or indirenctly, without intent to ordering the robot (“let’s stop by the store”, “I follow a cooking channel”), questions, quoted speech, and plans for later.',
   on: { halt: 'halt', still: 'still', follow: 'follow', unfollow: 'unfollow', walk_forward: 'walk_forward', walk_back: 'walk_back', spin: 'spin', sing: 'sing' },
   addsRecall: true,
   policy: 'cascade',
