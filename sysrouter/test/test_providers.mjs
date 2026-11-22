@@ -157,36 +157,61 @@ for (const name of ["jev", "clef", "clef-flash"]) {
   check("workerEngine works as a router choice provider", ran.join() === "spin" && sr.spent() === 0.0001, [ran, sr.spent()]);
   await w.terminate();
 
-  // mock siren attachment worker (1D.8): IR sense -> trigger -> siren.on -> actuate with checked args
+  // mock siren attachment worker (1D.8, #21, #32): installed in manifest.engines on a SEALED router
   const sirenCode = `
     const { parentPort } = require('node:worker_threads');
+    setTimeout(() => {
+      parentPort.postMessage({ sense: 'speech', type: 'person', data: 'stop' });
+      parentPort.postMessage({ sense: 'body.sense', type: 'trig', data: 'fall' });
+      parentPort.postMessage({ sense: 'siren_ir', type: 'ir', data: { motion: 1 } });
+    }, 15);
     parentPort.on('message', (m) => {
-      if (m.triggerSense) { parentPort.postMessage({ sense: 'siren_ir', type: 'ir', data: { motion: 1 } }); return; }
       if (m.primitive === 'actuate') {
         parentPort.postMessage({ sense: 'siren_ir', type: 'ack', data: m.input });
         parentPort.postMessage({ id: m.id, ok: true, output: { ok: true }, model: 'siren-v1' });
       }
     });
   `;
-  const sw = new Worker(sirenCode, { eval: true });
-  const sEng = workerEngine(sw, { primitives: { sense: {}, actuate: {} }, model: "siren-v1" });
   const sRows = [], sSr = createRouter({ log: (e, d) => sRows.push(d) });
-  sSr.provider("siren_w", sEng);
+  const forged = [];
+  sSr.watch("speech", (ev) => forged.push("speech:" + ev.data));
+  sSr.watch("body.sense", (ev) => forged.push("body.sense:" + ev.data));
   sSr.seal();
-  await sSr.port().install({
+  let ack = null;
+  const sInfo1 = await sSr.port().install({
     name: "siren_ext",
     streams: [{ id: "siren_ir", types: ["ir", "ack"] }],
+    engines: [{ id: "siren_w", model: "siren-v1", primitives: { sense: {}, actuate: {} }, worker: { source: sirenCode } }],
     capabilities: [{ id: "siren_act", steps: [{ primitive: "actuate", engines: ["siren_w"] }], mode: "live" }],
     commands: [{ id: "siren.on", capability: "siren_act", args: { seconds: { type: "number", min: 1, max: 30 } } }],
     triggers: [{ id: "ir_siren", on: { stream: "siren_ir", type: "ir" }, command: "siren.on", args: { seconds: 5 }, mode: "live" }]
   }, { streams: ["siren_ir"], commands: ["siren.on"], engines: ["siren_w"] });
-  let ack = null;
   const unwatch = sSr.watch("siren_ir", (ev) => { if (ev.type === "ack") ack = ev.data; });
-  sw.postMessage({ triggerSense: true });
-  await new Promise((r) => setTimeout(r, 80));
+  await new Promise((r) => setTimeout(r, 120));
   unwatch();
-  check("mock siren attachment: IR sense -> trigger -> siren.on -> actuate with checked args", ack && ack.seconds === 5 && sRows.some((r) => r.r === "ir_siren" && r.why === "acted" && r.act === "siren.on"), [ack, sRows]);
-  await sw.terminate();
+  check("#32: mock siren installed via manifest.engines on sealed router: IR sense -> trigger -> siren.on -> actuate",
+    ack && ack.seconds === 5 && sRows.some((r) => r.r === "ir_siren" && r.why === "acted" && r.act === "siren.on" && r.did === 1), [ack, sRows]);
+  check("#21: attachment worker cannot forge speech or body.sense events", forged.length === 0, forged);
+  sSr.port().uninstall("siren_ext");
+
+  // #32: forbidden flags (exact / inFunnel) refused, and manifest hash covers worker source
+  let exactErr = "";
+  try {
+    await sSr.port().install({
+      name: "bad_eng",
+      engines: [{ id: "be", model: "v1", exact: true, primitives: { actuate: {} }, worker: { source: "/* noop */" } }]
+    }, { engines: ["be"] });
+  } catch (e) { exactErr = e.message; }
+  check("#32: manifest engine setting exact:true is refused", /exact or inFunnel/.test(exactErr), exactErr);
+  const sInfo2 = await sSr.port().install({
+    name: "siren_ext",
+    streams: [{ id: "siren_ir", types: ["ir", "ack"] }],
+    engines: [{ id: "siren_w", model: "siren-v1", primitives: { sense: {}, actuate: {} }, worker: { source: sirenCode + "\n// changed" } }],
+    capabilities: [{ id: "siren_act", steps: [{ primitive: "actuate", engines: ["siren_w"] }], mode: "live" }],
+    commands: [{ id: "siren.on", capability: "siren_act", args: { seconds: { type: "number", min: 1, max: 30 } } }]
+  }, { streams: ["siren_ir"], commands: ["siren.on"], engines: ["siren_w"] });
+  check("#32: two manifests differing only in worker source hash differently", sInfo1.hash !== sInfo2.hash, [sInfo1.hash, sInfo2.hash]);
+  sSr.port().uninstall("siren_ext");
 }
 
 // ---- boot() host contract: SysRouterHost.command(kind, by) with run fallback (2A.1) ----

@@ -39,7 +39,7 @@ const MUTANTS = [
   ["a reserved action can be added after seal()", "if (a.reserved && sealed) throw new Error('sysrouter: reserved actions are registered before seal()');", ""],
   ["an executor that throws escapes", "try { if (a.run) a.run({ route: r.id, pick, tier: r.tier, args: checkedArgs }); } catch (e) { return row(r, 'act_error', x); }", "if (a.run) a.run({ route: r.id, pick, tier: r.tier, args: checkedArgs });"],
   ["a failing engine is asked forever (no circuit breaker)", "if (h.until > t0) return skip('open');", ""],
-  ["the spend cap is ignored", "if (paid[pid] && usd >= maxUsd) return skip('budget');", ""],
+  ["the spend cap is ignored", "if (overBudget(r, pid)) return skip('budget');", ""],
   ["an action can loop words back into the router without limit", "const hop = typeof explicitHop === 'number' ? explicitHop : (activeHop >= 0 ? activeHop + 1 : 0);", "const hop = 0;"],
   ["an option may be named like a built-in object member", "KEY.test(k) && !(k in Object.prototype) && ", "KEY.test(k) && ", REG],
   ["a registered question can be edited afterwards by its author", "Object.freeze(Object.assign({}, q.criteria));", "q.criteria;", REG],
@@ -51,8 +51,8 @@ const MUTANTS = [
   ["a race loser trips the breaker", "signal.reason === 'won' ? 'lost'", "signal.reason === 'won' ? 'timeout'"],
   ["an unversioned gate acts", "return g[pid + '@' + model] || null;", "return g[pid + '@' + model] || g[pid] || null;"],
   ["a getter changes `on` after validation", "const spec = snapshot(rawSpec);", "const spec = rawSpec;", REG],
-  ["an extension reaches a stop", "if (acts.some((id) => actions[id] && actions[id].reserved)) throw new Error('sysrouter: extensions cannot be granted reserved actions');", "", REG],
-  ["a cost of $1 or more is not counted", "if (Number.isFinite(res.usd) && res.usd >= 0)", "if (typeof res.usd === 'number' && res.usd >= 0 && res.usd < 1)"],
+  ["an extension reaches a stop", "if (a && a.reserved) throw new Error('sysrouter: extensions cannot be granted reserved actions');", "", REG],
+  ["a cost of $1 or more is not counted", "if (Number.isFinite(cost) && cost >= 0)", "if (typeof cost === 'number' && cost >= 0 && cost < 1)"],
   ["a throwing action keeps its hold", "try { if (a.run) a.run({ route: r.id, pick, tier: r.tier, args: checkedArgs }); } catch (e) { return row(r, 'act_error', x); }\n    finally { activeHop = prevHop; }\n    last[r.id + '>' + aid] = t;\n    if (a.reserved) clearHolds();                                                        // a stop clears every hold, whoever owns it\n    else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };", "last[r.id + '>' + aid] = t;\n    if (a.reserved) clearHolds();                                                        // a stop clears every hold, whoever owns it\n    else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };\n    try { if (a.run) a.run({ route: r.id, pick, tier: r.tier, args: checkedArgs }); } catch (e) { return row(r, 'act_error', x); }\n    finally { activeHop = prevHop; }"],
   ["the system lane registers after seal", "const assertOpen = () => { if (sealed) throw new Error('sysrouter: sealed'); };", "const assertOpen = () => {};"],
   ["the port exposes `route`", "const port = Object.freeze({", "const port = Object.freeze({ route: (spec) => reg.addRoute(spec, { tier: 'system' }),"],
@@ -65,8 +65,16 @@ const MUTANTS = [
   ["a tick reply writes an agree row", "if (kind === undefined || kind === 'event') {", "if (true) {"],
   ["an async capability drops its hop count", "const nextHop = (typeof hop === 'number' ? hop : (activeHop >= 0 ? activeHop : -1)) + 1;", "const nextHop = 0;"],
   ["a probabilistic capability reaches a reserved command", "if (a.reserved && !(who.tier === 'core' || allExact || addsRecall)) fail('reserved action needs exact providers, or addsRecall:true');", "", REG],
-  ["a shadow capability publishes", "if (isShadow) {\n        if (cap.behavior.request && finalDecision) act(r, finalDecision.d.pick, finalDecision.x, undefined, hop);\n        return { ok: true, output: cur, decision: finalDecision ? finalDecision.d : null };\n      }", "if (false) {}"],
-  ["a command bound to an unknown capability registers", "if (typeof run !== 'function' && !has(capabilities, cap)) throw new Error('sysrouter: unknown capability ' + cap);", "", REG]
+  ["a shadow capability publishes", "if (isShadow) {\n        if (cap.behavior.request && finalDecision) act(r, finalDecision.d.pick, finalDecision.x, undefined, hop, true);\n        return { ok: true, output: cur, decision: finalDecision ? finalDecision.d : null };\n      }", "if (false) {}"],
+  ["a command bound to an unknown capability registers", "if (typeof run !== 'function' && !has(capabilities, cap)) throw new Error('sysrouter: unknown capability ' + cap);", "", REG],
+  ["an extension is granted an unexposed system command", "if (a && a.tier !== 'extension' && !a.exposeTo.includes('third-party')) throw new Error('sysrouter: command not exposed to third-party: ' + id);", "", REG],
+  ["a creature trigger registers for an unexposed command", "if (!a.exposeTo.includes('creature')) throw new Error('sysrouter: command not exposed to creature: ' + cmd);", "", REG],
+  ["an attachment emits onto a stream it does not own", "if (s.tier === 'core' || s.tier !== tier || s.owner !== owner) return;", ""],
+  ["a manifest with a function installs", "assertJsonData(manifest);", "", REG],
+  ["an extension route hears speech without a grant", "if (!who.grants || !who.grants.streams || !who.grants.streams.includes('speech')) fail('no grant for stream speech');", "", REG],
+  ["an extension trigger ignores perMin", "if (!metered && !checkExtRate(tr)) return null;", ""],
+  ["an extension ignores its maxUsd cap", "if (r.tier === 'extension' && r.owner && (extUsd[r.owner] || 0) >= (r.maxUsd || 0)) return true;", ""],
+  ["a third-party engine sets exact:true", "if (decl.exact || decl.inFunnel) throw new Error('sysrouter: third-party engines cannot set exact or inFunnel');", ""]
 ];
 
 const dir = mkdtempSync(tmpdir() + "/sysrouter-mutants-");

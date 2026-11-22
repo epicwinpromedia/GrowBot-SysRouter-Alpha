@@ -56,7 +56,11 @@ export function workerEngine(worker, decl) {
     });
   }
 
-  const out = { ask, sync: false, exact: !!decl.exact, inFunnel: !!decl.inFunnel, model, subscribeSense: (fn) => { decl.onSense = fn; } };
+  const out = {
+    ask, sync: false, exact: !!decl.exact, inFunnel: !!decl.inFunnel, model,
+    subscribeSense: (fn) => { decl.onSense = fn; },
+    terminate: () => { try { if (typeof worker.terminate === 'function') worker.terminate(); } catch (e) {} }
+  };
   if (prims) out.primitives = prims; else out.types = types;
   return out;
 }

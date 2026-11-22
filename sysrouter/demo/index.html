@@ -117,16 +117,20 @@ function renderExtensions() {
 
 async function installMockSiren() {
   if (port.extensions().some((e) => e.name === 'mock-siren')) return;
+  const workerSource = "onmessage = (e) => { const m = e.data; if (m && m.primitive === 'actuate') { postMessage({ sense: 'siren_ir', type: 'ack', data: m.input }); postMessage({ id: m.id, ok: true, output: { ok: true }, model: 'siren-v1' }); } };";
   await port.install({
     name: 'mock-siren',
+    streams: [{ id: 'siren_ir', types: ['ir', 'ack'] }],
+    engines: [{ id: 'siren_w', model: 'siren-v1', primitives: { sense: {}, actuate: {} }, worker: { source: workerSource } }],
+    capabilities: [{ id: 'siren_act', steps: [{ primitive: 'actuate', engines: ['siren_w'] }], mode: 'live' }],
     commands: [{
       id: 'siren.on',
-      description: 'Sound the mock siren for a short duration',
+      capability: 'siren_act',
       args: { seconds: { type: 'number', min: 1, max: 30 } },
-      exposeTo: ['person', 'creature'],
-      run: ({ args }) => { acted.push('siren.on:' + args.seconds); }
-    }]
-  }, { actions: ['siren.on'] });
+      exposeTo: ['person', 'creature']
+    }],
+    triggers: [{ id: 'ir_siren', on: { stream: 'siren_ir', type: 'ir' }, command: 'siren.on', args: { seconds: 5 }, mode: 'live' }]
+  }, { streams: ['siren_ir'], engines: ['siren_w'], commands: ['siren.on'] });
   renderExtensions();
 }
 $('install-siren').addEventListener('click', () => { installMockSiren().catch((e) => log('sysroute', { why: 'install_error', err: e.message })); });

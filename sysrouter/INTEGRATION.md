@@ -44,7 +44,7 @@ Sizes are lines of code under review. Tests are counted separately because they 
 
 | Step | Pull request | Code | Tests | Page change | Users see |
 |---|---|---|---|---|---|
-| 1 | **The router.** `sysrouter.js`, `registry.js` | 470 + 380 | `test_router.mjs` 707, `mutants.mjs` 96, `fuzz_router.mjs` 104 | none | nothing |
+| 1 | **The router.** `sysrouter.js`, `registry.js` | 530 + 450 | `test_router.mjs` 792, `mutants.mjs` 104, `fuzz_router.mjs` 104 | none | nothing |
 | 2 | **Your readers as the first engine.** `s1-readers.js` | 31 | `test_readers_regression.mjs` 66 + golden file | none | nothing |
 | 3 | **The on-device engine and fuzzy commands.** `s1-ngram.js`, `fuzzy.js`, `models/wake.ngram.json` | 133 | `test_providers.mjs`, `fuzz_readers.mjs` | none | nothing |
 | 4 | **Shadow on the live page.** `boot.js` + your three insertions | 77 + 5 | `test_funnel.mjs` 161 | the insertions | nothing: rows in the journal for anyone who opens `?sysrouter=1` |
