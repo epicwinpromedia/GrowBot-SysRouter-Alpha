@@ -357,10 +357,11 @@ export function createRegistry(ctx) {
     }
     if (who.grants) for (const pid of ps.concat(sh)) if (!who.grants.providers.includes(pid)) fail('no grant for provider ' + pid);
     checkCollision(question.instructions, on, fail);
+    const unexposed = Array.isArray(spec.unexposed) ? Object.freeze(spec.unexposed.filter((k) => keys.includes(k))) : Object.freeze([]);
     const step = Object.freeze({ primitive: question.type, engines: Object.freeze(ps.slice()), shadow: Object.freeze(sh.slice()), policy, question, out: null });
     routes[spec.id] = {
       id: spec.id, tier: who.tier, owner: who.name || '', question, steps: Object.freeze([step]),
-      on: Object.freeze(Object.assign(dict(), on)), onArgs, providers: ps.slice(), shadow: sh.slice(), policy, mode, notFor: spec.notFor,
+      on: Object.freeze(Object.assign(dict(), on)), onArgs, unexposed, providers: ps.slice(), shadow: sh.slice(), policy, mode, notFor: spec.notFor,
       budgetMs: Math.max(20, Math.min(10000, +spec.budgetMs || 1500)), cooldownMs: Math.max(0, +spec.cooldownMs || 0),
       input: spec.input === 'creature' || spec.input === 'both' ? spec.input : 'person', agree: typeof spec.agree === 'string' ? spec.agree : '',
       perMin: who.grants ? who.grants.perMin : 0, maxUsd: who.grants ? who.grants.maxUsd : 0

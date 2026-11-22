@@ -169,6 +169,7 @@ export function createRouter(opts) {
   function row(r, why, x) {   // one journal row per decision (R-OBS-1). Never the words: the funnel's own "user" row holds their hash.
     const o = { r: r.id, tier: r.tier, mode: modeOf(r), why };
     if (r.owner) o.ext = r.owner;
+    if (r._from) o.from = r._from;
     if (x) for (const k in x) if (x[k] !== undefined && x[k] !== null && x[k] !== '') o[k] = x[k];
     if (r.agree && o.a && why !== 'agree' && why !== 'shadow_arm' && o.from !== 'creature') lastPick[r.id] = o.a;
     try { log('sysroute', o); } catch (e) {}
@@ -195,7 +196,7 @@ export function createRouter(opts) {
     }
   }
 
-  function emit(streamId, event, explicitHop) {
+  function emit(streamId, event, explicitHop, waitsOut) {
     if (flags.off) return null;
     const s = has(streams, streamId) ? streams[streamId] : null;
     if (!s || !event || typeof event !== 'object' || typeof event.type !== 'string' || !has(s.types, event.type)) throw new Error('sysrouter: bad event for ' + streamId);
@@ -205,11 +206,15 @@ export function createRouter(opts) {
     const ev = Object.freeze({ stream: streamId, type: event.type, data, t: now(), seq: ++evSeq, hop });
     s.latest = ev;
     const prevHop = activeHop; activeHop = hop;
+    const speaker = streamId === 'speech' ? ev.type : '';
     try {
       for (const fn of s.watchers.slice()) { try { fn(ev); } catch (e) {} }
       for (const tid in triggers) {
         const tr = triggers[tid];
-        if (tr.on.stream === streamId && (!tr.on.type || tr.on.type === ev.type)) fireTrigger(tr, ev.data, ev.hop);
+        if (tr.on.stream === streamId && (!tr.on.type || tr.on.type === ev.type)) {
+          const r = fireTrigger(tr, ev.data, ev.hop, false, speaker);
+          if (waitsOut && r && typeof r.then === 'function') waitsOut.push(r);
+        }
       }
     }
     finally { activeHop = prevHop; }
@@ -254,9 +259,12 @@ export function createRouter(opts) {
     return Object.freeze({ route: (spec) => reg.addRoute(spec, who), unroute: (id) => reg.dropRoute(id, who), grants: snap });
   }
 
-  function act(r, pick, x, rawArgs, hop, metered) {
+  function act(r, pick, x, rawArgs, hop, metered, speaker) {
     const aid = has(r.on, pick) ? r.on[pick] : '', mode = modeOf(r);
-    if (!aid) return row(r, 'none', x);
+    if (!aid) {
+      if (r.unexposed && r.unexposed.includes(pick)) { x.did = 0; return row(r, 'unexposed', x); }
+      return row(r, 'none', x);
+    }
     const a = actions[aid], t = now(), tier = TIERS[r.tier];
     x.act = aid;
     const isCap = !a.run && a.capability && has(capabilities, a.capability);
@@ -276,8 +284,10 @@ export function createRouter(opts) {
       if (h && h.until > t && h.tier < tier) return row(r, 'held', x);                 // a lower tier never pre-empts what a higher tier holds (R-TRUST-2)
     }
     if (isCap) {
-      return resolveCapability(capabilities[a.capability], checkedArgs, mode, hop, metered).then((res) => {
-        if (mode === 'shadow') { x.did = 0; return row(r, 'shadow', x); }
+      const cap = capabilities[a.capability];
+      const capMode = mode === 'shadow' || modeOf(cap) === 'shadow' ? 'shadow' : modeOf(cap);
+      return resolveCapability(cap, checkedArgs, capMode, hop, metered, speaker).then((res) => {
+        if (capMode === 'shadow') { x.did = 0; return row(r, 'shadow', x); }
         if (res && res.ok) {
           last[r.id + '>' + aid] = t;
           if (a.reserved) clearHolds();
@@ -316,7 +326,8 @@ export function createRouter(opts) {
     const g = P.exact ? { p: 0, pn: 0, margin: 0 } : gateOf(r, pid, res.model || P.model);
     if (!g) return { d: null, x, why: 'no_gate' };
     // an answer that triggers nothing has its own gate (pn): how sure "nothing was asked" must be before a cascade stops there instead of asking the next engine
-    if (d.p < (has(r.on, d.pick) ? g.p : g.pn) || d.p - d.second < g.margin) return { d: null, x, why: 'unsure' };
+    const target = has(r.on, d.pick) || (r.unexposed && r.unexposed.includes(d.pick));
+    if (d.p < (target ? g.p : g.pn) || d.p - d.second < g.margin) return { d: null, x, why: 'unsure' };
     return { d, x, why: '' };
   }
   function askAsync(r, pid, req, signal) {
@@ -366,14 +377,14 @@ export function createRouter(opts) {
   }
 
   function resolve(r, req, fresh, finish) {
-    const rid = r.id, st = r.steps[0];
-    if (flight[rid]) flight[rid].abort('stale');                                         // one flight per route: the engines still working on older words are told to stop
+    const fk = r._flightKey || r.id, st = r.steps[0];
+    if (flight[fk]) flight[fk].abort('stale');                                           // one flight per route (and speaker for input:'both'): older words are told to stop
     const ctl = new AbortController(), sctl = new AbortController();
     const out = resolveDecisionStep(r, st, req, ctl, sctl, fresh, finish);
     if (out.sync) return null;
-    flight[rid] = ctl;
+    flight[fk] = ctl;
     const timer = setTimeout(() => { ctl.abort('timeout'); sctl.abort('timeout'); }, r.budgetMs);
-    const end = () => { clearTimeout(timer); if (flight[rid] === ctl) delete flight[rid]; };
+    const end = () => { clearTimeout(timer); if (flight[fk] === ctl) delete flight[fk]; };
     return out.promise.then(end, end);
   }
 
@@ -381,7 +392,7 @@ export function createRouter(opts) {
     meta = meta || {};
     const out = { acted: [], done: null }, waits = [], from = meta.from === 'creature' ? 'creature' : 'person';
     if (flags.off || typeof text !== 'string' || !text.trim()) { out.done = Promise.resolve(out); return out; }
-    const ev = emit('speech', { type: from, data: text });
+    const ev = emit('speech', { type: from, data: text }, undefined, waits);
     if (!ev) { out.done = Promise.resolve(out); return out; }
     const state = ev.data, my = ++seq, prevHop = activeHop;
     activeHop = ev.hop;
@@ -389,10 +400,12 @@ export function createRouter(opts) {
       const r = routes[rid];
       if (modeOf(r) === 'off' || (r.input !== 'both' && r.input !== from)) continue;
       if (!checkExtRate(r)) continue;
-      seqOf[rid] = my;
-      const req = { state, questions: { q: r.question } }, fresh = () => seqOf[rid] === my;
-      const finish = (res) => { if (r.input === 'both') res.x.from = from; const o = act(r, res.d.pick, res.x, undefined, ev.hop, true); if (o && o.did) out.acted.push(o.act); };
-      const p = resolve(r, req, fresh, finish);
+      const sk = r.input === 'both' ? rid + ':' + from : rid;
+      const rr = r.input === 'both' ? Object.assign({}, r, { _from: from, _flightKey: sk }) : r;
+      seqOf[sk] = my;
+      const req = { state, questions: { q: r.question } }, fresh = () => seqOf[sk] === my;
+      const finish = (res) => { const o = act(rr, res.d.pick, res.x, undefined, ev.hop, true); if (o && o.did) out.acted.push(o.act); };
+      const p = resolve(rr, req, fresh, finish);
       if (p) waits.push(p);
     } } finally { activeHop = prevHop; }
     out.done = Promise.all(waits).then(() => out);
@@ -400,23 +413,25 @@ export function createRouter(opts) {
   }
 
   // Shadow agreement (R-OBS-3): when the brain's reply lands, say whether it agreed with what
-  // each route decided for the same words. route.agree names the reply field to compare.
+  // each route or capability decided for the same words (only when kind === 'event', #39, #29).
   function replied(reply, kind) {
     if (flags.off || !reply || typeof reply !== 'object') return;
-    if (kind === undefined || kind === 'event') {
+    if (kind === 'event') {
       for (const rid in routes) { const r = routes[rid], lp = lastPick[rid]; if (!r.agree || !lp) continue; delete lastPick[rid];
         row(r, 'agree', { a: lp, brain: typeof reply[r.agree] === 'string' ? reply[r.agree].slice(0, 24) : '', ok: reply[r.agree] === lp ? 1 : 0 }); }
+      for (const cid in capabilities) { const c = capabilities[cid], lp = lastPick[cid]; if (!c.agree || !lp) continue; delete lastPick[cid];
+        row(c, 'agree', { a: lp, brain: typeof reply[c.agree] === 'string' ? reply[c.agree].slice(0, 24) : '', ok: reply[c.agree] === lp ? 1 : 0 }); }
     }
     if (typeof reply.say === 'string' && reply.say.trim()) hear(reply.say, { from: 'creature' });
   }
 
   // Multi-step capability resolution sharing resolveDecisionStep, flight/stale, rate/spend caps, shadow suppression, and async hop propagation.
-  async function resolveCapability(cap, input, modeOverride, hop, metered) {
-    const effMode = modeOverride || cap.mode;
-    const r = { id: cap.id, tier: cap.tier, owner: cap.owner, mode: effMode, on: cap.behavior.request || dict(), onArgs: cap.behavior.onArgs, cooldownMs: cap.cooldownMs || 0, agree: cap.agree, perMin: cap.perMin || 0, maxUsd: cap.maxUsd || 0 };
-    if (modeOf(r) === 'off') return { ok: false, why: 'off' };
+  async function resolveCapability(cap, input, modeOverride, hop, metered, speaker) {
+    const effMode = modeOverride || modeOf(cap);
+    const r = { id: cap.id, tier: cap.tier, owner: cap.owner, mode: effMode, on: cap.behavior.request || dict(), onArgs: cap.behavior.onArgs, cooldownMs: cap.cooldownMs || 0, agree: cap.agree, perMin: cap.perMin || 0, maxUsd: cap.maxUsd || 0, _from: speaker || '' };
+    if (effMode === 'off' || modeOf(cap) === 'off') return { ok: false, why: 'off' };
     if (!metered && !checkExtRate(r)) return { ok: false, why: 'rate' };
-    const fkey = 'cap:' + cap.id, my = ++seq;
+    const fkey = 'cap:' + cap.id + (speaker ? ':' + speaker : ''), my = ++seq;
     seqOf[fkey] = my;
     if (flight[fkey]) flight[fkey].abort('stale');
     const ctl = flight[fkey] = new AbortController(), sctl = new AbortController();
@@ -434,10 +449,10 @@ export function createRouter(opts) {
           if (!fresh()) return { ok: false, why: 'stale' };
           if (!res || !res.d) return { ok: false, why: (res && res.why) || 'unsure' };
           finalDecision = res; cur = res.d.pick;
-          if (modeOf(r) === 'shadow' && !cap.behavior.request) row(r, 'shadow', Object.assign({}, res.x));
+          if (effMode === 'shadow' && !cap.behavior.request) row(r, 'shadow', Object.assign({}, res.x));
         } else {
           const pid = st.engines[0], P = providers[pid], t0 = now();
-          if (st.primitive === 'actuate' && modeOf(r) === 'shadow') { row(r, 'shadow', { p: pid }); return { ok: true, output: { ok: false }, decision: null }; }
+          if (st.primitive === 'actuate' && effMode === 'shadow') { row(r, 'shadow', { p: pid }); return { ok: true, output: { ok: false }, decision: null }; }
           if (overBudget(r, pid)) { row(r, 'budget', { p: pid, ms: 0 }); return { ok: false, why: 'budget' }; }
           let raw;
           try {
@@ -455,7 +470,7 @@ export function createRouter(opts) {
           cur = checked;
         }
       }
-      const isShadow = modeOf(r) === 'shadow';
+      const isShadow = effMode === 'shadow';
       if (isShadow) {
         if (cap.behavior.request && finalDecision) act(r, finalDecision.d.pick, finalDecision.x, undefined, hop, true);
         return { ok: true, output: cur, decision: finalDecision ? finalDecision.d : null };
@@ -467,11 +482,11 @@ export function createRouter(opts) {
     } finally { clearTimeout(timer); if (flight[fkey] === ctl) delete flight[fkey]; }
   }
 
-  function fireTrigger(tr, rawData, hop, metered) {
+  function fireTrigger(tr, rawData, hop, metered, speaker) {
     if (flags.off || modeOf(tr) === 'off') return null;
     if (!metered && !checkExtRate(tr)) return null;
-    const r = { id: tr.id, tier: tr.tier, owner: tr.owner, mode: tr.mode, on: { go: tr.command }, cooldownMs: tr.cooldownMs };
-    return act(r, 'go', {}, tr.args !== undefined ? tr.args : rawData, hop, true);
+    const r = { id: tr.id, tier: tr.tier, owner: tr.owner, mode: tr.mode, on: { go: tr.command }, cooldownMs: tr.cooldownMs, _from: speaker || '' };
+    return act(r, 'go', {}, tr.args !== undefined ? tr.args : rawData, hop, true, speaker);
   }
 
   function request(commandId, args, reqOpts) {

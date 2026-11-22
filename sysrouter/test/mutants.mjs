@@ -16,10 +16,10 @@ const SOURCES = { [R]: readFileSync(ROOT + R, "utf8"), [REG]: readFileSync(ROOT 
 const MUTANTS = [
   ["a shadow route acts", "if (mode === 'shadow' && !isCap) return row(r, 'shadow', x);", ""],
   ["a model with no fitted gate acts", "if (!g) return { d: null, x, why: 'no_gate' };", "if (!g) return { d, x, why: '' };"],
-  ["the gate is ignored", "if (d.p < (has(r.on, d.pick) ? g.p : g.pn) || d.p - d.second < g.margin)", "if (false)"],
+  ["the gate is ignored", "if (d.p < (target ? g.p : g.pn) || d.p - d.second < g.margin)", "if (false)"],
   ["an option the route never listed is accepted", "if (typeof pick !== 'string' || !has(q.criteria, pick)) return null;", "if (typeof pick !== 'string') return null;"],
   ["probabilities are not range-checked", "const ok = (x) => typeof x === 'number' && x >= 0 && x <= 1;", "const ok = (x) => true;"],
-  ["an answer about older words still acts", "fresh = () => seqOf[rid] === my;", "fresh = () => true;"],
+  ["an answer about older words still acts", "fresh = () => seqOf[sk] === my;", "fresh = () => true;"],
   // the kill switch is enforced twice (hear() returns at once, and every route's mode reads "off"), so breaking it takes both edits
   ["the kill switch is ignored", ["if (flags.off) return null;", "if (flags.off || typeof text !== 'string'", "const modeOf = (r) => flags.off ? 'off' : "], ["", "if (typeof text !== 'string'", "const modeOf = (r) => "]],
   ["a probability alone reaches a reserved action", "if (a.reserved && !(who.tier === 'core' || ps.every((pid) => providers[pid].exact) || spec.addsRecall === true)) fail('reserved action needs exact providers, or addsRecall:true');", "", REG],
@@ -44,7 +44,7 @@ const MUTANTS = [
   ["an option may be named like a built-in object member", "KEY.test(k) && !(k in Object.prototype) && ", "KEY.test(k) && ", REG],
   ["a registered question can be edited afterwards by its author", "Object.freeze(Object.assign({}, q.criteria));", "q.criteria;", REG],
   ["a registered answer table can be edited afterwards by its author", "on: Object.freeze(Object.assign(dict(), on)),", "on: rawSpec.on,", REG],
-  ["engines still working on older words are not told to stop", "if (flight[rid]) flight[rid].abort('stale');", ""],
+  ["engines still working on older words are not told to stop", "if (flight[fk]) flight[fk].abort('stale');", ""],
   ["an engine's reported name goes into the journal unchecked", ".replace(/[^\\w.\\/:@~-]/g, '')", ""],
   ["a confident \"nothing\" does not end a cascade", "      if (res.d) { winRes = res; if (onWin) onWin(res); return true; }", "      if (res.d && has(r.on, res.d.pick)) { winRes = res; if (onWin) onWin(res); return true; }"],
   ["a late answer past the budget acts", "return Promise.race([p, aborted]).finally(() => signal.removeEventListener('abort', onAbort)).then(\n      (res) => signal.aborted ? { d: null, x: { p: pid, ms: Math.round(now() - t0) }, why: whyAbort() } : settle(r, pid, res, t0),", "return p.then(\n      (res) => settle(r, pid, res, t0),"],
@@ -62,7 +62,7 @@ const MUTANTS = [
   ["out-of-range args reach the capability", "if (a.args) { const okArgs = checkArgs(a.args, checkedArgs); if (!okArgs) return row(r, 'bad_args', x); checkedArgs = okArgs; }", "if (false) {}"],
   ["a blocked hash installs", "if (blockList.hashes.has(hash)) throw new Error('sysrouter: blocked extension hash ' + hash);", "", REG],
   ["a creature request reaches an unexposed command", "if (!a.exposeTo.includes(from)) return row({ id: 'request', tier: a.tier, owner: a.owner, mode: 'live' }, 'refused', { act: commandId, from, did: 0 });", ""],
-  ["a tick reply writes an agree row", "if (kind === undefined || kind === 'event') {", "if (true) {"],
+  ["a tick reply writes an agree row", "if (kind === 'event') {", "if (true) {"],
   ["an async capability drops its hop count", "const nextHop = (typeof hop === 'number' ? hop : (activeHop >= 0 ? activeHop : -1)) + 1;", "const nextHop = 0;"],
   ["a probabilistic capability reaches a reserved command", "if (a.reserved && !(who.tier === 'core' || allExact || addsRecall)) fail('reserved action needs exact providers, or addsRecall:true');", "", REG],
   ["a shadow capability publishes", "if (isShadow) {\n        if (cap.behavior.request && finalDecision) act(r, finalDecision.d.pick, finalDecision.x, undefined, hop, true);\n        return { ok: true, output: cur, decision: finalDecision ? finalDecision.d : null };\n      }", "if (false) {}"],
@@ -74,7 +74,11 @@ const MUTANTS = [
   ["an extension route hears speech without a grant", "if (!who.grants || !who.grants.streams || !who.grants.streams.includes('speech')) fail('no grant for stream speech');", "", REG],
   ["an extension trigger ignores perMin", "if (!metered && !checkExtRate(tr)) return null;", ""],
   ["an extension ignores its maxUsd cap", "if (r.tier === 'extension' && r.owner && (extUsd[r.owner] || 0) >= (r.maxUsd || 0)) return true;", ""],
-  ["a third-party engine sets exact:true", "if (decl.exact || decl.inFunnel) throw new Error('sysrouter: third-party engines cannot set exact or inFunnel');", ""]
+  ["a third-party engine sets exact:true", "if (decl.exact || decl.inFunnel) throw new Error('sysrouter: third-party engines cannot set exact or inFunnel');", ""],
+  ["a reply with no kind writes an agree row", "if (kind === 'event') {", "if (kind === undefined || kind === 'event') {"],
+  ["a creature unsure row overwrites person lastPick", "if (r._from) o.from = r._from;", ""],
+  ["a creature tick aborts person in-flight emote", "const sk = r.input === 'both' ? rid + ':' + from : rid;", "const sk = rid;"],
+  ["an unexposed fuzzy command logs none instead of unexposed", "if (r.unexposed && r.unexposed.includes(pick)) { x.did = 0; return row(r, 'unexposed', x); }", ""]
 ];
 
 const dir = mkdtempSync(tmpdir() + "/sysrouter-mutants-");

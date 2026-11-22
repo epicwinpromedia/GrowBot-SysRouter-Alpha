@@ -61,12 +61,14 @@ export function embedProvider(cfg) {
   const embed = cfg.embed || embedder(cfg.ort, cfg.session, cfg.vocab), head = cfg.head || null;
   const id = head ? head.id : (cfg.id || 'minilm-zeroshot'), temp = head ? head.temp : (cfg.temp || 0.05);
   return {
-    model: id, types: ['choice', 'noul'], embed,
+    model: id, types: ['choice', 'noul'], primitives: { embed: {}, choice: {}, noul: {} }, embed,
     async ask(req, ctx) {
       const sig = ctx && ctx.signal, check = () => { if (sig && sig.aborted) throw new Error('aborted'); };
       check();
-      const q = req.questions.q, v = await embed(String(req.state));
+      const v = await embed(String(req.state));
       check();
+      if (req.primitive === 'embed') return { model: cfg.id || 'all-minilm-l6-v2', output: Array.from(v) };
+      const q = req.questions.q;
       const keys = q.type === 'noul' ? ['true', 'false'] : Object.keys(q.criteria);
       let z;
       if (head) {
@@ -77,6 +79,22 @@ export function embedProvider(cfg) {
       z = [];
       for (const k of keys) { check(); const p = await embed(String(q.criteria[k])); check(); let s = 0; for (let j = 0; j < v.length; j++) s += p[j] * v[j]; z.push(s / temp); }
       return answer(q, keys, softmax(z), id);
+    }
+  };
+}
+
+// Standalone linear head engine for composed embed -> choice capabilities (#29).
+export function headProvider(head) {
+  const id = head.id, temp = head.temp || 1;
+  return {
+    sync: true, model: id, primitives: { choice: {} },
+    ask(req) {
+      const q = req.questions.q, v = req.input;
+      if (!Array.isArray(v) || !v.length) return { model: id, answers: { q: { abstain: true } } };
+      const keys = Object.keys(q.criteria);
+      if (head.classes.length !== keys.length || !head.classes.every((c) => keys.includes(c))) return { model: id, answers: { q: { abstain: true } } };
+      const z = head.classes.map((_, c) => { let s = head.b[c]; for (let j = 0; j < v.length; j++) s += head.W[c][j] * v[j]; return s / temp; });
+      return answer(q, head.classes, softmax(z), id);
     }
   };
 }
