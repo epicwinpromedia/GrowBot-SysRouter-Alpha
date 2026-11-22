@@ -6,7 +6,7 @@ export const EMOTE = {
   id: 'emote',
   question: {
     type: 'choice',
-    instructions: 'A person is speaking to a small pet-like robot creature. How should the creature feel in response to what the person just said?',
+    instructions: 'A person is speaking to a small pet-like robot creature. You reflect the evolving inner subjective emotional disposition of the creature as it dynamically responds expressively in real time to convey an endearing, evocative, and engaging performance of emotional state as it endeavors to iteracts.',
     criteria: {
       happy: 'The person shares good news, praises the creature, celebrates, or shows affection.',
       sad: 'The person shares a loss, a disappointment, loneliness or sorrow.',
