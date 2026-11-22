@@ -3,8 +3,8 @@
 // this file, or any function it looks for, is missing.
 //
 // OFF BY DEFAULT. It boots only after ?sysrouter=1 (persisted, like ?express=bench), and
-// ?sysrouter=0 turns it off again. Once on, every route starts in SHADOW: it decides, writes
-// its journal row, and acts on nothing. A route acts only when ?sysroute=<id>:parallel says so.
+// ?sysrouter=0 turns it off again. Once on, every capability starts in SHADOW: it decides, writes
+// its journal row, and requests nothing. It acts only when ?sysroute=<id>:live says so (`parallel` alias accepted).
 //
 // What the page provides (all optional, all existing functions):
 //   logEv(e, d)            the journal                  -> rows named "sysroute"

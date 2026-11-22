@@ -10,7 +10,7 @@
 
      Run:  node sysrouter/tools/serve.mjs   then open http://localhost:8765/sysrouter/demo/
      The readers are Brit's own, read live from app/v3/next.html (not a copy).
-     ?mode=shadow (default) | parallel     ?embed=1 also loads the MiniLM engine (23 MB)
+     ?mode=shadow (default) | live (parallel alias)     ?embed=1 also loads the MiniLM engine (23 MB)
      Hosted engines are asked only if you set a lane yourself in this page's localStorage
      (pb_byok or pb_s1_url, see src/keys.js) and name a model with ?s1=cloudflare/clef-flash -->
 <style>
@@ -47,7 +47,7 @@ import { keyring, browserEnv } from '../src/keys.js';
 import { registerFuzzy, FUZZY } from '../src/fuzzy.js';
 import { registerEmote } from '../src/emote.js';
 
-const $ = (id) => document.getElementById(id), q = new URLSearchParams(location.search), mode = q.get('mode') === 'parallel' ? 'parallel' : 'shadow';
+const $ = (id) => document.getElementById(id), q = new URLSearchParams(location.search), rawMode = q.get('mode'), mode = rawMode === 'live' || rawMode === 'parallel' ? 'live' : 'shadow';
 const journal = [], acted = []; let current = '';
 const V2_WARN = new Set(['readers_acted', 'lost', 'hops', 'bad_args', 'refused', 'open', 'budget', 'rate']);
 const log = (e, d) => { journal.push(d); $('journal').textContent = journal.slice(-12).map((r) => JSON.stringify(r)).join('\n'); if (d.why !== 'boot') draw(d); };

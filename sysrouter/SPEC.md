@@ -10,13 +10,13 @@ Every section and rule carries one status:
 
 | Status | Meaning |
 |---|---|
-| **[built]** | In `src/`, exercised by `test/`, and passing (`node sysrouter/test/run-all.mjs`: 9 suites, all PASS on 2026-11-17) |
+| **[built]** | In `src/`, exercised by `test/`, and passing (`node sysrouter/test/run-all.mjs`: 11 suites, all PASS) |
 | **[specified]** | Decided and specified here; not yet in code |
 | **[differs]** | Decided here, but the code still does something else. Listed in §16 as work to do |
 | **[proposal to Brit]** | Needs a change in Brit's layer, which only he can decide |
 | **[open]** | Not decided; the options are written down in §15 |
 
-The shipped path today is eleven browser ES modules with no dependencies (`src/`, 814 lines); the router itself is `src/sysrouter.js` (273 lines).
+The shipped path today is 13 browser ES modules with no dependencies (`src/`, 1740 lines); the router itself is `src/sysrouter.js` (547 lines) and `src/registry.js` (451 lines).
 
 ---
 
@@ -77,13 +77,13 @@ Sharing names across lanes is deliberate. "Capability" names an open class; lett
 | Brit's stop commands | `reserved` actions | Registered before `seal()` |
 | System lane | tiers `core` and `system` | Sealed at `seal()`; `boot.js` publishes only `sr.port()` |
 | Third-party lane | tier `extension` | `port.install()`, `port.extensions()`, `port.uninstall()`, `sr.extension()` |
-| Permission | `grants` | `permissions` (`streams`, `actions`, `providers`, `engines`, `reqPerMin`, `hosts`, `usdPerDay`) |
+| Permission | `grants` | `permissions` (`streams`, `commands` / `actions`, `engines` / `providers`, `perMin`, `maxUsd`) |
 | Fuzzy commands | `wake` flag alias | `fuzzy`, `src/fuzzy.js` |
 | Emote | `express` flag alias | `emote`, `src/emote.js` |
 
 ## 3. The laws
 
-Every built law has a passing test and a deliberately broken router ("mutant") that the tests catch (`test/mutants.mjs`, 34 checks, all caught).
+Every built law has a passing test and a deliberately broken router ("mutant") that the tests catch (`test/mutants.mjs`, 68 mutants, all caught).
 
 | # | Law | Status | Requirement | Proved by |
 |---|---|---|---|---|
@@ -278,25 +278,25 @@ An extension is installed through the public port and receives a frozen facade, 
 - **[built]** It can never reach a stop command, run in any mode Brit's lane reserves, or see other registrations, gates or keys.
 - **[specified]** It can request one of Brit's commands only if he exposed that command and the person granted that request.
 
-### 8.3 Permissions [built: `grants` for actions, providers, rate; specified: the rest]
+### 8.3 Permissions [built]
 
 - **Brit sets the ceiling.** Only what he exposes can ever be granted: which of his streams, which of his commands.
 - **The person grants within it**, per extension: streams it may read, exposed commands it may request, engines it may call, keys and spend.
 - **Every install is visible and revocable.** It shows a confirmation when installed (precedent: the "⚡ reflex set" toast, added because testers could not tell a reflex had installed, `next.html:11619`). A list of extensions with what each may do is one tap away, with a way to remove each (precedent: "the person has the x", `next.html:11627`).
 
-### 8.4 Isolation [decided, §14.2]
+### 8.4 Isolation [built, §14.2]
 
 Third-party registrations are **data**: a manifest the loader passes to the facade. No third-party code runs in the page's scope. Code a third party brings (an engine, an attachment driver) runs in a **dedicated Web Worker** or behind a URL, and reaches the router only by messages.
 
 The measured cost of a Worker message round trip is in `results/browser.json`:
-- at full speed: p50 0.1 ms, p95 0.2 ms, p99 3 ms;
-- with the CPU slowed 6×: p95 0.7 ms, p99 5.3 ms.
+- at full speed: p50 0 ms, p95 0.1 ms, p99 0.2 ms;
+- with the CPU slowed 6×: p50 0.1 ms, p95 1.2 ms, p99 1.4 ms.
 
-These were measured on desktop Chromium 153 with CPU throttling, not on a phone.
+These were measured on desktop Chromium 156.0.8078.79 with CPU throttling, not on a phone.
 
 The in-page checks of §8.2 are a second line of defence, not the boundary. Hostile script that is already in the page is out of scope (`THREAT-MODEL.md` T6).
 
-### 8.5 Attachments [specified; one path open]
+### 8.5 Attachments [built; one path open]
 
 An attachment is an engine. Its sensor is a stream, its actuator is an `actuate` primitive, and its driver is code in a dedicated Worker.
 
@@ -377,7 +377,7 @@ One row per decision, written through `logEv("sysroute", …)` in the journal's 
 | `a`, `pr` | the answer and its probability (3 decimals) |
 | `ms`, `tok`, `usd` | time to answer, input tokens, cost of the call |
 | `act`, `did` | the command the answer maps to, and `1` if it was requested |
-| `why` | `acted`, `shadow`, `none`, `unsure`, `no_gate`, `abstain`, `bad_answer`, `timeout`, `error`, `stale`, `open` (circuit breaker), `budget` (spend cap), `cooldown`, `held`, `rate`, `act_error`, `shadow_arm`, `agree`, `boot`, `unwired`, `lost`, `readers_acted`, `hops`, `bad_args`, `refused` |
+| `why` | `acted`, `shadow`, `none`, `unexposed`, `unsure`, `no_gate`, `abstain`, `bad_answer`, `timeout`, `error`, `stale`, `open` (circuit breaker), `budget` (spend cap), `cooldown`, `held`, `rate`, `act_error`, `shadow_arm`, `agree`, `boot`, `unwired`, `lost`, `readers_acted`, `hops`, `bad_args`, `refused` |
 
 `sr.replied(o, kind)` writes one `agree` row per capability that set `agree` on person events (`kind === 'event'`). The row holds what the fast engine picked, what the brain's reply said, and whether they matched (R-OBS-3).
 
@@ -471,7 +471,7 @@ A third-party registration is pure data, so third-party code never needs to shar
 
 In `models/gates.json`, keyed by capability, engine and the model id the engine reports (`hosted@typesafe/jev-1.14-20261014`). A new model version has no gate, so by L3 it cannot act until it has been measured.
 
-The benchmark shows why this matters: fitted gates differ between engines, and between two hosts serving the same weights (`results/TABLES.md`: `clef` 0.7193 against `clef@primeintellect` 0.7002; `clef-flash` 0.8147 against 0.8703).
+The benchmark shows why this matters: fitted gates differ between engines, and between two hosts serving the same weights (`models/gates.json` / `results/TABLES.md`: `clef` 0.8846 against `clef@primeintellect` 0.8559; `clef-flash` 0.8794 against `clef-flash@primeintellect` 0.9101).
 
 ### 14.4 The router never pre-empts
 
@@ -497,12 +497,12 @@ Developers bring "their own models, their own primitives". A generative model is
    - (c) A trigger may carry a CSS selector tested against the live document. This would need his state reflected into the DOM, which his code does not do today.
 2. **Bluetooth and serial attachments.** Neither API has recorded Worker support (§8.5). A path for them would need page-scope code, which §14.2 rules out for third parties. Options: a small bridge Brit's layer owns, or network-only attachments.
 3. **The creature's door (§9.4).** Brit's decision. If he opens it, decide whether the person approves each command once at install time or each time the creature uses it.
-4. **The hop limit for chaining** (§6.3). Today's code allows one nested level.
+4. **The hop limit for chaining** (§6.3). Today's code defaults to `maxHops: 3` across both synchronous and async capability chains.
 5. **The exact data shapes** of §7.2–7.4, for review once the structure is accepted.
 
 ## 16. Where the code differs from this specification
 
-All Phase 2 items (D1–D8) are now `[built]` in `src/` and `integration/`. Remaining items are only the deliberate exclusions (`box` primitive without a verified shape, `when` conditions in §15.1, Bluetooth/serial attachments in §15.2) and Brit's optional page proposals (`integration/proposals/`).
+All Phase 2 items (D1–D8) and Phase 2 audit items (#18–#41) are `[built]` in `src/` and `integration/` and verified by `test/run-all.mjs` (11 suites, 68 mutants). Remaining non-built items are explicitly scoped exclusions or open decisions: the `box` primitive (no verified shape yet), third-party host-bound key senders (`REQUIREMENTS.md` R-SEC-3 / `THREAT-MODEL.md` T7, `[specified]`), `when` conditions (§15.1, `[open]`), Bluetooth/serial attachments (§15.2, `[open]`), and Brit's optional page proposals (`integration/proposals/`, `[proposal to Brit]`).
 
 ## 17. What is deliberately not here
 

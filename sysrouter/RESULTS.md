@@ -6,7 +6,7 @@ Every figure in this document is read from `results/TABLES.md`, `results/results
 
 ## 1. What was measured and what it cannot show
 
-- **Held-out splits only.** Every accuracy, recall, wrong-action, false-trigger, precision, and ECE figure comes from held-out lines that neither the on-device models nor the calibration gates saw during training or gate fitting (`wake`: 2,778 held-out rows; `express`: 1,103 held-out rows).
+- **Held-out splits only.** Every accuracy, recall, wrong-action, false-trigger, precision, and ECE figure comes from held-out lines that neither the on-device models nor the calibration gates saw during training or gate fitting (`wake`: **1,410** held-out rows, 1,368 tuning rows, 2,778 total; `express`: **574** held-out rows, 529 tuning rows, 1,103 total, counted from `data/v1/*.jsonl`). Where §4 or `results/TABLES.md` quotes `"Failed n / 2,778"` (or `/ 1,103`), that denominator counts total model calls across both splits, not held-out lines.
 - **In-domain vs out-of-domain.** Gates are fitted on the tuning split so that bad acts (a false trigger on a non-target line or a wrong action on a target line) stay within the route target over all tuning lines (`0.5%` for `wake`/`fuzzy`, `2.0%` for `express`/`emote`).
 - **What it cannot show.**
   - Live phone hardware latency (`results/browser.json` uses desktop Chromium with `Emulation.setCPUThrottlingRate` at 1×, 4×, and 6× as a stand-in; actual mid-range phone measurements remain to be gathered).
@@ -85,6 +85,7 @@ Measured in headless Chromium (`156.0.8078.79`, ONNX Runtime Web `1.19.2`, `numT
 
 - `hear()` returns synchronously in `<= 2.0 ms` p50 even at 6× CPU slowdown; MiniLM runs asynchronously after `hear()` returns.
 - Funnel integration overhead in `test_funnel.mjs` (`sendTxtFrom` with 2 shadow routes vs original): added `0.042 ms` p50, `0.113 ms` p99.
+- **Note on earlier 0 ms throttled MiniLM anomaly (3B.3, #38):** An earlier Phase 1 run on Chromium `153.0.8010.12` reported impossible `0 ms` MiniLM p50 timings at 4× and 6× CPU slowdown. The anomaly disappeared when re-measured on Chromium `156.0.8078.79` (producing the monotonic `6.2 / 32.1 / 50.8 ms` timings above); its root cause in Chromium 153 was not definitively identified. `bench/browser.mjs` now fails any run whose throttled `minilm_ms.p50` is below its `cpu_1x` `minilm_ms.p50`.
 
 ---
 
