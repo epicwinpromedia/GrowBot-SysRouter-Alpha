@@ -1,30 +1,30 @@
-// sysrouter.js — the GrowBot System Router. One registry for the fast paths.
-// A ROUTE is a typed question about what was just said (yes/no, pick one, score) plus a table
-// of which registered ACTION each answer may trigger. A PROVIDER answers the question: Brit's
-// own regex readers, an on-device model, Jev, Clef, a small language model. The router asks,
-// checks the answer, and at most selects an action the page registered. Zero dependencies.
+// sysrouter.js — the GrowBot System Router. One co-processing router and registry for fast paths.
+// Events in STREAMS fire TRIGGERS that invoke COMMANDS backed by CAPABILITIES built from typed
+// PRIMITIVES (choice, noul, score, embed, generate, query, sense, actuate) provided by ENGINES:
+// Brit's regex readers, on-device models, hosted decision models, or Worker attachments.
+// The router asks, checks every output, and at most requests an exposed command. Zero dependencies.
 //
-// Laws (sysrouter/SPEC.md has the reasons, sysrouter/test/ proves each one):
-//   • SELECT, NEVER AUTHOR. An answer can only pick a key of route.on, and that key can only
-//     name an action the PAGE registered. No engine output reaches the body any other way.
-//   • SHADOW FIRST. A route acts on nothing until its mode says so. Default mode: "shadow".
-//   • NO THRESHOLD, NO ACTION. A probabilistic provider with no calibrated gate for this
-//     route never acts. Gates are data (calibrate()), fitted on held-out data, per model.
+// Laws (sysrouter/SPEC.md §3 has the reasons, sysrouter/test/ proves each one):
+//   • SELECT, NEVER AUTHOR. An answer can only pick a declared option mapping to a registered
+//     command. No engine output reaches the body any other way.
+//   • SHADOW FIRST. A trigger's default mode is "shadow": it decides and logs and requests nothing.
+//   • NO GATE, NO ACTION. A probabilistic engine with no calibrated gate for this capability and
+//     exact model version never acts. Gates are data (calibrate()), fitted on held-out data.
 //   • FAIL TO TODAY. Timeout, error, bad answer, missing key, low confidence, stale words:
-//     nothing happens, the row says why, the words go down the path they take today.
-//   • THE PERSON'S NEWEST WORDS DECIDE. An answer that lands after newer words is dropped.
-//   • STOP IS CODE. Reserved actions are registered by the page before seal(), run for any
-//     tier's deterministic route, and can never be blocked, delayed or held off by a route.
+//     nothing is requested, the row says why, and GrowBot behaves as it does without the router.
+//   • THE PERSON'S NEWEST WORDS DECIDE. An answer that lands after newer words is dropped (stale).
+//   • STOP IS CODE. Reserved stop commands are registered before seal(), run through exact chains
+//     or addsRecall capabilities, and can never be blocked, delayed or reached by extensions.
 //
 // Usage:
 //   import { createRouter } from '/sysrouter/sysrouter.js';
 //   const sr = createRouter({ log: logEv });
-//   sr.action('perk', { run: () => playExpression('perk'), resource: 'legs', holdMs: 3000 });
-//   sr.provider('readers', readersProvider(_ftWords));          // sync, exact
-//   sr.provider('clef-flash', httpProvider({ ... }));            // async, probabilistic
-//   sr.route({ id: 'wake', question: {...}, on: { halt: 'halt' }, providers: ['readers', 'clef-flash'], policy: 'cascade' });
-//   sr.calibrate({ wake: { 'clef-flash': { p: 0.93 } } });
-//   sr.seal();                                                   // no reserved action or core route after this
+//   sr.command({ id: 'perk', run: () => playExpression('perk'), resource: 'legs', holdMs: 3000, exposeTo: ['person'] });
+//   sr.provider('readers', readersProvider(_ftWords));                       // sync, exact engine
+//   sr.provider('hosted', httpProvider({ model: 'cloudflare/clef-flash', send }));
+//   sr.route({ id: 'fuzzy', question: {...}, notFor: '...', on: { halt: 'halt' }, providers: ['readers', 'hosted'], policy: 'cascade', mode: 'live' });
+//   sr.calibrate({ fuzzy: { 'hosted@cloudflare/clef-flash': { p: 0.8794 } } });
+//   sr.seal(); const port = sr.port();                                       // system lane closed; page gets frozen port
 //   // in sendTxtFrom, after the local readers:  try{ if(typeof SysRouter!=="undefined") SysRouter.hear(t); }catch(_sr){}
 
 import { ID, GATE, MODES, TYPES, PRIMITIVES, EXPOSE_TO, dict, checkArgs, readPrimitive as checkPrim, createRegistry } from './registry.js';

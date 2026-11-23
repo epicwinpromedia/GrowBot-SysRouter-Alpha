@@ -53,6 +53,10 @@ async function measure(rate) {
 const result = { made: new Date().toISOString().slice(0, 10), chromium: browser.version(), onnxruntime_web: "1.19.2 (growbot.dev/ml, numThreads 1)", page_ready_ms_including_23MB_model: loadMs, providers, runs: {} };
 const cdp = await page.context().newCDPSession(page);
 for (const rate of [1, 4, 6]) { await cdp.send("Emulation.setCPUThrottlingRate", { rate }); result.runs["cpu_" + rate + "x"] = await measure(rate); }
+for (const rate of [4, 6]) {
+  const baseP50 = result.runs.cpu_1x.minilm_ms.p50, slowP50 = result.runs["cpu_" + rate + "x"].minilm_ms.p50;
+  if (!(slowP50 >= baseP50 && slowP50 > 0)) errors.push(`throttled cpu_${rate}x minilm_ms.p50 (${slowP50} ms) below cpu_1x (${baseP50} ms)`);
+}
 await cdp.send("Emulation.setCPUThrottlingRate", { rate: 1 });
 // model load on its own, cold, at each rate (a fresh page each time)
 result.minilm_cold_load_ms = {};
