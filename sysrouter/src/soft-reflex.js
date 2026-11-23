@@ -39,8 +39,9 @@ export function softReflexRoute(rule, n) {
 //   const soft = softReflexes(sr, { beep: () => sfx('beep'), ... }, 'clef-flash');
 //   soft.add({ when, not, act })  ->  route id or ""      soft.remove(id)
 export function softReflexes(sr, play, provider) {
-  for (const a of SOFT_ACTS) sr.action('reflex_' + a, { run: play[a], resource: 'voice', holdMs: 1200 });
-  const ext = sr.extension('creature', { actions: SOFT_ACTS.map((a) => 'reflex_' + a), providers: [provider], perMin: 30 }), used = new Array(MAX_SOFT).fill(false);
+  for (const a of SOFT_ACTS) sr.action('reflex_' + a, { run: play[a], resource: 'voice', holdMs: 1200, exposeTo: ['third-party'] });
+  if (typeof sr.exposeStream === 'function') sr.exposeStream('speech', ['third-party']);
+  const ext = sr.extension('creature', { actions: SOFT_ACTS.map((a) => 'reflex_' + a), providers: [provider], streams: ['speech'], perMin: 30 }), used = new Array(MAX_SOFT).fill(false);
   return {
     add(rule) {
       const n = used.indexOf(false), spec = softReflexRoute(rule, n);

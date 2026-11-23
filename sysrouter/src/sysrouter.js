@@ -27,7 +27,8 @@
 //   sr.seal();                                                   // no reserved action or core route after this
 //   // in sendTxtFrom, after the local readers:  try{ if(typeof SysRouter!=="undefined") SysRouter.hear(t); }catch(_sr){}
 
-import { ID, GATE, MODES, TYPES, PRIMITIVES, dict, checkArgs, readPrimitive as checkPrim, createRegistry } from './registry.js';
+import { ID, GATE, MODES, TYPES, PRIMITIVES, EXPOSE_TO, dict, checkArgs, readPrimitive as checkPrim, createRegistry } from './registry.js';
+import { workerEngine } from './worker-engine.js';
 
 const TIERS = { core: 0, system: 1, extension: 2 };          // lower number = higher priority
 const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
@@ -77,7 +78,7 @@ export function createRouter(opts) {
   const log = typeof opts.log === 'function' ? opts.log : () => {};
   const now = opts.now || (() => Date.now());
   const flags = opts.flags || { off: false, routes: {} };
-  const actions = dict(), providers = dict(), routes = dict(), capabilities = dict(), triggers = dict(), installed = dict(), gates = dict(), held = dict(), last = dict(), seqOf = dict(), spend = dict(), reqSpend = dict(), lastPick = dict(), flight = dict(), health = dict(), paid = dict(), streams = dict();
+  const actions = dict(), providers = dict(), routes = dict(), capabilities = dict(), triggers = dict(), installed = dict(), gates = dict(), held = dict(), last = dict(), seqOf = dict(), spend = dict(), reqSpend = dict(), extUsd = dict(), lastPick = dict(), flight = dict(), health = dict(), paid = dict(), streams = dict();
   // reliability limits, all overridable: a provider that fails BREAK.fails times in a row is left alone for BREAK.ms; hosted engines stop being asked once the session has spent maxUsd
   const BREAK = { fails: Math.max(1, +(opts.breaker && opts.breaker.fails) || 3), ms: Math.max(0, +(opts.breaker && opts.breaker.ms) || 30000) }, maxUsd = opts.maxUsd >= 0 ? +opts.maxUsd : 0.25, reqPerMin = opts.reqPerMin > 0 ? +opts.reqPerMin : 30;
   const maxHops = Number.isInteger(opts.maxHops) && opts.maxHops >= 0 ? opts.maxHops : 3;
@@ -85,7 +86,60 @@ export function createRouter(opts) {
   let blockList = { names: new Set(), hashes: new Set() };
   const assertOpen = () => { if (sealed) throw new Error('sysrouter: sealed'); };
 
-  const reg = createRegistry({ actions, providers, routes, capabilities, triggers, installed, streams, assertOpen, isSealed: () => sealed, getBlockList: () => blockList });
+  function registerProvider(id, p, who) {
+    if (!ID.test(id || '') || !p || typeof p.ask !== 'function') throw new Error('sysrouter: bad provider ' + id);
+    if (has(providers, id)) throw new Error('sysrouter: provider exists: ' + id);
+    const prims = dict();
+    if (p.primitives && typeof p.primitives === 'object' && !Array.isArray(p.primitives)) {
+      for (const k of Object.keys(p.primitives)) {
+        if (!PRIMITIVES.includes(k)) throw new Error('sysrouter: unknown primitive ' + k);
+        prims[k] = p.primitives[k] && typeof p.primitives[k] === 'object' ? Object.assign({}, p.primitives[k]) : {};
+      }
+      if (has(prims, 'match') && !has(prims, 'choice')) prims.choice = prims.match;
+    } else {
+      for (const k of (p.types || TYPES)) {
+        if (!PRIMITIVES.includes(k)) throw new Error('sysrouter: unknown primitive ' + k);
+        prims[k] = {};
+      }
+    }
+    const tier = who.tier, owner = who.name || '';
+    const isExt = tier === 'extension';
+    providers[id] = {
+      ask: p.ask, sync: isExt ? false : !!p.sync, exact: isExt ? false : !!p.exact, inFunnel: isExt ? false : !!p.inFunnel,
+      model: String(p.model || ''), types: Object.keys(prims), primitives: prims, tier, owner, terminate: p.terminate || null
+    };
+    if (has(prims, 'sense') && typeof p.subscribeSense === 'function') {
+      p.subscribeSense((ev) => {
+        if (flags.off || !ev || !has(streams, ev.stream)) return;
+        const s = streams[ev.stream];
+        if (s.tier === 'core' || s.tier !== tier || s.owner !== owner) return;
+        if (!has(s.types, ev.type)) return;
+        emit(ev.stream, { type: ev.type, data: ev.data });
+      });
+    }
+    return id;
+  }
+
+  async function registerExtEngine(decl, who) {
+    if (!decl || typeof decl !== 'object' || !ID.test(decl.id || '')) throw new Error('sysrouter: bad engine');
+    if (decl.exact || decl.inFunnel) throw new Error('sysrouter: third-party engines cannot set exact or inFunnel');
+    if (!decl.worker || typeof decl.worker !== 'object' || typeof decl.worker.source !== 'string' || !decl.worker.source.trim()) throw new Error('sysrouter: engine needs worker.source');
+    if (!decl.primitives || typeof decl.primitives !== 'object' || Array.isArray(decl.primitives) || !Object.keys(decl.primitives).length) throw new Error('sysrouter: engine needs primitives');
+    let w, blobUrl = '';
+    if (typeof Worker === 'function' && typeof Blob === 'function' && typeof URL === 'function' && typeof URL.createObjectURL === 'function') {
+      blobUrl = URL.createObjectURL(new Blob([decl.worker.source], { type: 'text/javascript' }));
+      w = new Worker(blobUrl, { type: 'module' });
+    } else {
+      const { Worker: NodeWorker } = await import('node:worker_threads');
+      w = new NodeWorker(decl.worker.source, { eval: true });
+    }
+    const eng = workerEngine(w, { primitives: decl.primitives, model: decl.model || '' });
+    const origTerm = eng.terminate;
+    eng.terminate = () => { if (origTerm) origTerm(); if (blobUrl) try { URL.revokeObjectURL(blobUrl); } catch (e) {} };
+    try { return registerProvider(decl.id, eng, who); } catch (e) { eng.terminate(); throw e; }
+  }
+
+  const reg = createRegistry({ actions, providers, routes, capabilities, triggers, installed, streams, assertOpen, isSealed: () => sealed, getBlockList: () => blockList, registerExtEngine });
 
   function setBlockList(bl) {
     const names = new Set(Array.isArray(bl && bl.names) ? bl.names.map(String) : []);
@@ -97,8 +151,17 @@ export function createRouter(opts) {
   }
   if (opts.blockList) setBlockList(opts.blockList);
 
-  streams['speech'] = { id: 'speech', tier: 'core', owner: '', types: { person: true, creature: true }, latest: null, watchers: [] };
-  streams['body.sense'] = { id: 'body.sense', tier: 'core', owner: '', types: { trig: true }, latest: null, watchers: [] };
+  const coreExp = (id) => Object.freeze(Array.isArray(opts.exposeStreams && opts.exposeStreams[id]) ? opts.exposeStreams[id].filter((e) => EXPOSE_TO.includes(e)) : []);
+  streams['speech'] = { id: 'speech', tier: 'core', owner: '', types: { person: true, creature: true }, exposeTo: coreExp('speech'), latest: null, watchers: [] };
+  streams['body.sense'] = { id: 'body.sense', tier: 'core', owner: '', types: { trig: true }, exposeTo: coreExp('body.sense'), latest: null, watchers: [] };
+
+  function exposeStream(id, list) {
+    assertOpen();
+    if (!has(streams, id) || !Array.isArray(list)) throw new Error('sysrouter: bad exposeStream ' + id);
+    const out = [];
+    for (const e of list) { if (!EXPOSE_TO.includes(e)) throw new Error('sysrouter: bad exposeTo ' + e); if (!out.includes(e)) out.push(e); }
+    streams[id].exposeTo = Object.freeze(out);
+  }
 
   const modeOf = (r) => flags.off ? 'off' : (flags.routes && has(flags.routes, r.id) ? flags.routes[r.id] : r.mode);
   const gateOf = (r, pid, model) => { if (!model) return null; const g = gates[r.id] || dict(); return g[pid + '@' + model] || null; };
@@ -117,6 +180,19 @@ export function createRouter(opts) {
     const m = Math.floor(now() / 60000), s = spend[r.owner] = spend[r.owner] && spend[r.owner].m === m ? spend[r.owner] : { m, n: 0 };
     if (++s.n > r.perMin) { row(r, 'rate'); return false; }
     return true;
+  }
+  function overBudget(r, pid) {
+    if (!paid[pid]) return false;
+    if (usd >= maxUsd) return true;
+    if (r.tier === 'extension' && r.owner && (extUsd[r.owner] || 0) >= (r.maxUsd || 0)) return true;
+    return false;
+  }
+  function addSpend(r, pid, cost) {
+    if (Number.isFinite(cost) && cost >= 0) {
+      usd += cost;
+      if (r.tier === 'extension' && r.owner) extUsd[r.owner] = (extUsd[r.owner] || 0) + cost;
+      if (cost > 0) paid[pid] = true;
+    }
   }
 
   function emit(streamId, event, explicitHop) {
@@ -154,30 +230,7 @@ export function createRouter(opts) {
     assertOpen();
     return reg.addCommand({ id, run: a.run, resource: a.resource, holdMs: a.holdMs, reserved: a.reserved, exposeTo: a.exposeTo }, { tier: 'system' });
   }
-  function provider(id, p) {
-    assertOpen();
-    if (!ID.test(id) || !p || typeof p.ask !== 'function') throw new Error('sysrouter: bad provider ' + id);
-    if (has(providers, id)) throw new Error('sysrouter: provider exists: ' + id);
-    const prims = dict();
-    if (p.primitives && typeof p.primitives === 'object' && !Array.isArray(p.primitives)) {
-      for (const k of Object.keys(p.primitives)) {
-        if (!PRIMITIVES.includes(k)) throw new Error('sysrouter: unknown primitive ' + k);
-        prims[k] = p.primitives[k] && typeof p.primitives[k] === 'object' ? Object.assign({}, p.primitives[k]) : {};
-      }
-      if (has(prims, 'match') && !has(prims, 'choice')) prims.choice = prims.match;
-    } else {
-      for (const k of (p.types || TYPES)) {
-        if (!PRIMITIVES.includes(k)) throw new Error('sysrouter: unknown primitive ' + k);
-        prims[k] = {};
-      }
-    }
-    providers[id] = { ask: p.ask, sync: !!p.sync, exact: !!p.exact, inFunnel: !!p.inFunnel, model: String(p.model || ''), types: Object.keys(prims), primitives: prims };
-    if (has(prims, 'sense') && typeof p.subscribeSense === 'function') {
-      p.subscribeSense((ev) => {
-        if (!flags.off && ev && has(streams, ev.stream) && has(streams[ev.stream].types, ev.type)) emit(ev.stream, { type: ev.type, data: ev.data });
-      });
-    }
-  }
+  function provider(id, p) { assertOpen(); registerProvider(id, p, { tier: 'system' }); }
   function calibrate(table) {   // { routeId: { 'providerId' or 'providerId@model': { p, pn, margin } } }
     assertOpen();
     if (!table || typeof table !== 'object') return;
@@ -201,7 +254,7 @@ export function createRouter(opts) {
     return Object.freeze({ route: (spec) => reg.addRoute(spec, who), unroute: (id) => reg.dropRoute(id, who), grants: snap });
   }
 
-  function act(r, pick, x, rawArgs, hop) {
+  function act(r, pick, x, rawArgs, hop, metered) {
     const aid = has(r.on, pick) ? r.on[pick] : '', mode = modeOf(r);
     if (!aid) return row(r, 'none', x);
     const a = actions[aid], t = now(), tier = TIERS[r.tier];
@@ -223,7 +276,7 @@ export function createRouter(opts) {
       if (h && h.until > t && h.tier < tier) return row(r, 'held', x);                 // a lower tier never pre-empts what a higher tier holds (R-TRUST-2)
     }
     if (isCap) {
-      return resolveCapability(capabilities[a.capability], checkedArgs, mode, hop).then((res) => {
+      return resolveCapability(capabilities[a.capability], checkedArgs, mode, hop, metered).then((res) => {
         if (mode === 'shadow') { x.did = 0; return row(r, 'shadow', x); }
         if (res && res.ok) {
           last[r.id + '>' + aid] = t;
@@ -253,7 +306,7 @@ export function createRouter(opts) {
     const P = providers[pid], x = { p: pid, ms: Math.round(now() - t0) };
     if (!res || typeof res !== 'object' || !res.answers) return { d: null, x, why: 'bad_answer' };
     if (res.model) x.m = String(res.model).replace(/[^\w.\/:@~-]/g, '').slice(0, 48);
-    if (Number.isFinite(res.usd) && res.usd >= 0) { x.usd = res.usd; usd += res.usd; if (res.usd > 0) paid[pid] = true; }
+    if (Number.isFinite(res.usd) && res.usd >= 0) { x.usd = res.usd; addSpend(r, pid, res.usd); }
     if (res.usage && res.usage.input_tokens >= 0) x.tok = res.usage.input_tokens;
     const raw = res.answers.q;
     if (raw && raw.abstain) return { d: null, x, why: 'abstain' };                      // "my rules do not cover this": escalate, never a confident none
@@ -271,7 +324,7 @@ export function createRouter(opts) {
     const whyAbort = () => signal.reason === 'stale' ? 'stale' : signal.reason === 'won' ? 'lost' : 'timeout';
     if (signal.aborted) return skip(whyAbort());                                                  // the budget is spent or newer words arrived: nobody else is asked (found by test/fuzz_router.mjs: a second engine asked after the deadline never settled)
     if (h.until > t0) return skip('open');                                                       // circuit breaker: this engine just failed several times running, so it is not asked and the cascade moves on
-    if (paid[pid] && usd >= maxUsd) return skip('budget');                                       // spend cap: an engine that charges is not asked once the session has spent its limit
+    if (overBudget(r, pid)) return skip('budget');                                               // spend cap: session or per-extension limit reached
     const mark = (res) => { if (res.why === 'error' || res.why === 'timeout' || res.why === 'bad_answer') { if (++h.fails >= BREAK.fails) { h.fails = 0; h.until = now() + BREAK.ms; } } else if (res.why !== 'stale' && res.why !== 'lost') h.fails = 0; return res; };
     let onAbort;
     const aborted = new Promise((_, rej) => { onAbort = () => rej(new Error('aborted')); signal.addEventListener('abort', onAbort, { once: true }); });
@@ -284,7 +337,6 @@ export function createRouter(opts) {
   }
 
   // Unified decision-step resolver used by both routes and capabilities (#26).
-  // Runs leading sync providers synchronously in this tick, then async providers under policy (single/cascade/race) and shadow arms.
   function resolveDecisionStep(r, st, req, ctl, sctl, fresh, onWin) {
     const rid = r.id, engines = st.engines, shadow = st.shadow || [], policy = st.policy;
     const stepR = Object.assign({}, r, { question: st.question, providers: engines, shadow, policy });
@@ -339,7 +391,7 @@ export function createRouter(opts) {
       if (!checkExtRate(r)) continue;
       seqOf[rid] = my;
       const req = { state, questions: { q: r.question } }, fresh = () => seqOf[rid] === my;
-      const finish = (res) => { if (r.input === 'both') res.x.from = from; const o = act(r, res.d.pick, res.x, undefined, ev.hop); if (o && o.did) out.acted.push(o.act); };
+      const finish = (res) => { if (r.input === 'both') res.x.from = from; const o = act(r, res.d.pick, res.x, undefined, ev.hop, true); if (o && o.did) out.acted.push(o.act); };
       const p = resolve(r, req, fresh, finish);
       if (p) waits.push(p);
     } } finally { activeHop = prevHop; }
@@ -358,12 +410,12 @@ export function createRouter(opts) {
     if (typeof reply.say === 'string' && reply.say.trim()) hear(reply.say, { from: 'creature' });
   }
 
-  // Multi-step capability resolution sharing resolveDecisionStep, flight/stale, rate cap, shadow suppression, and async hop propagation (#18, #25, #26).
-  async function resolveCapability(cap, input, modeOverride, hop) {
+  // Multi-step capability resolution sharing resolveDecisionStep, flight/stale, rate/spend caps, shadow suppression, and async hop propagation.
+  async function resolveCapability(cap, input, modeOverride, hop, metered) {
     const effMode = modeOverride || cap.mode;
-    const r = { id: cap.id, tier: cap.tier, owner: cap.owner, mode: effMode, on: cap.behavior.request || dict(), onArgs: cap.behavior.onArgs, cooldownMs: cap.cooldownMs || 0, agree: cap.agree, perMin: cap.perMin || 0 };
+    const r = { id: cap.id, tier: cap.tier, owner: cap.owner, mode: effMode, on: cap.behavior.request || dict(), onArgs: cap.behavior.onArgs, cooldownMs: cap.cooldownMs || 0, agree: cap.agree, perMin: cap.perMin || 0, maxUsd: cap.maxUsd || 0 };
     if (modeOf(r) === 'off') return { ok: false, why: 'off' };
-    if (!checkExtRate(r)) return { ok: false, why: 'rate' };
+    if (!metered && !checkExtRate(r)) return { ok: false, why: 'rate' };
     const fkey = 'cap:' + cap.id, my = ++seq;
     seqOf[fkey] = my;
     if (flight[fkey]) flight[fkey].abort('stale');
@@ -386,6 +438,7 @@ export function createRouter(opts) {
         } else {
           const pid = st.engines[0], P = providers[pid], t0 = now();
           if (st.primitive === 'actuate' && modeOf(r) === 'shadow') { row(r, 'shadow', { p: pid }); return { ok: true, output: { ok: false }, decision: null }; }
+          if (overBudget(r, pid)) { row(r, 'budget', { p: pid, ms: 0 }); return { ok: false, why: 'budget' }; }
           let raw;
           try {
             let onAbort;
@@ -395,6 +448,7 @@ export function createRouter(opts) {
             raw = await p;
           } catch (e) { const why = ctl.signal.aborted ? (ctl.signal.reason === 'stale' ? 'stale' : 'timeout') : 'error'; row(r, why, { p: pid, ms: Math.round(now() - t0) }); return { ok: false, why }; }
           if (ctl.signal.aborted) { const why = ctl.signal.reason === 'stale' ? 'stale' : 'timeout'; row(r, why, { p: pid, ms: Math.round(now() - t0) }); return { ok: false, why }; }
+          if (raw && typeof raw === 'object' && Number.isFinite(raw.usd) && raw.usd >= 0) addSpend(r, pid, raw.usd);
           const outVal = raw && typeof raw === 'object' && !Array.isArray(raw) && has(raw, 'output') ? raw.output : raw;
           const checked = readPrimitive(st.primitive, st, outVal);
           if (checked === null) { row(r, 'bad_answer', { p: pid, ms: Math.round(now() - t0) }); return { ok: false, why: 'bad_answer' }; }
@@ -403,20 +457,21 @@ export function createRouter(opts) {
       }
       const isShadow = modeOf(r) === 'shadow';
       if (isShadow) {
-        if (cap.behavior.request && finalDecision) act(r, finalDecision.d.pick, finalDecision.x, undefined, hop);
+        if (cap.behavior.request && finalDecision) act(r, finalDecision.d.pick, finalDecision.x, undefined, hop, true);
         return { ok: true, output: cur, decision: finalDecision ? finalDecision.d : null };
       }
       const nextHop = (typeof hop === 'number' ? hop : (activeHop >= 0 ? activeHop : -1)) + 1;
       if (cap.behavior.publish) emit(cap.behavior.publish, { type: cap.behavior.publishType, data: finalDecision ? finalDecision.d.pick : cur }, nextHop);
-      if (cap.behavior.request && finalDecision) act(r, finalDecision.d.pick, finalDecision.x, undefined, hop);
+      if (cap.behavior.request && finalDecision) act(r, finalDecision.d.pick, finalDecision.x, undefined, hop, true);
       return { ok: true, output: cur, decision: finalDecision ? finalDecision.d : null };
     } finally { clearTimeout(timer); if (flight[fkey] === ctl) delete flight[fkey]; }
   }
 
-  function fireTrigger(tr, rawData, hop) {
+  function fireTrigger(tr, rawData, hop, metered) {
     if (flags.off || modeOf(tr) === 'off') return null;
+    if (!metered && !checkExtRate(tr)) return null;
     const r = { id: tr.id, tier: tr.tier, owner: tr.owner, mode: tr.mode, on: { go: tr.command }, cooldownMs: tr.cooldownMs };
-    return act(r, 'go', {}, tr.args !== undefined ? tr.args : rawData, hop);
+    return act(r, 'go', {}, tr.args !== undefined ? tr.args : rawData, hop, true);
   }
 
   function request(commandId, args, reqOpts) {
@@ -425,19 +480,23 @@ export function createRouter(opts) {
     if (from !== 'person' && from !== 'creature') return row({ id: 'request', tier: 'system', mode: 'live' }, 'refused', { act: String(commandId || ''), did: 0 });
     const m = Math.floor(now() / 60000), rs = reqSpend[from] && reqSpend[from].min === m ? reqSpend[from] : (reqSpend[from] = { min: m, n: 0 });
     if (++rs.n > reqPerMin) return row({ id: 'request', tier: 'system', mode: 'live' }, 'rate', { act: String(commandId || ''), from, did: 0 });
-    let res = null;
-    for (const tid in triggers) {
-      const tr = triggers[tid];
-      if (tr.on[from] === true && tr.command === commandId) res = fireTrigger(tr, args);
-    }
-    if (res) return res;
+    // Exposure and person-grant checks run BEFORE any trigger fires (#20).
     const a = has(actions, commandId) ? actions[commandId] : null;
     if (!a) return row({ id: 'request', tier: 'system', mode: 'live' }, 'refused', { act: String(commandId || ''), from, did: 0 });
     if (!a.exposeTo.includes(from)) return row({ id: 'request', tier: a.tier, owner: a.owner, mode: 'live' }, 'refused', { act: commandId, from, did: 0 });
     if (a.tier === 'extension' && (!has(installed, a.owner) || !installed[a.owner].permissions.actions.includes(commandId))) {
       return row({ id: 'request', tier: a.tier, owner: a.owner, mode: 'live' }, 'refused', { act: commandId, from, did: 0 });
     }
-    return act({ id: 'request', tier: a.tier, owner: a.owner, mode: 'live', on: { go: commandId }, cooldownMs: a.cooldownMs }, 'go', { from }, args);
+    if (a.tier === 'extension' && has(installed, a.owner)) {
+      if (!checkExtRate({ id: 'request', tier: a.tier, owner: a.owner, mode: 'live', perMin: installed[a.owner].permissions.perMin })) return { did: 0, why: 'rate' };
+    }
+    let res = null;
+    for (const tid in triggers) {
+      const tr = triggers[tid];
+      if (tr.on[from] === true && tr.command === commandId) res = fireTrigger(tr, args, undefined, a.tier === 'extension' && tr.owner === a.owner);
+    }
+    if (res) return res;
+    return act({ id: 'request', tier: a.tier, owner: a.owner, mode: 'live', on: { go: commandId }, cooldownMs: a.cooldownMs }, 'go', { from }, args, undefined, true);
   }
 
   const extensions = () => Object.keys(installed).map((k) => ({ name: installed[k].name, hash: installed[k].hash, permissions: JSON.parse(JSON.stringify(installed[k].permissions)) }));
@@ -454,6 +513,7 @@ export function createRouter(opts) {
   return {
     action, command: (spec) => reg.addCommand(spec, { tier: 'system' }), provider, calibrate, extension, hear, replied, read, watch, emit,
     stream: (decl) => { assertOpen(); return reg.addStream(decl, { tier: 'system' }); },
+    exposeStream,
     capability: (spec) => { assertOpen(); return reg.addCapability(spec, { tier: 'system' }); },
     trigger: (spec) => { assertOpen(); return reg.addTrigger(spec, { tier: 'system' }); },
     invoke: (id, input, mode) => { const c = has(capabilities, id) ? capabilities[id] : null; if (!c) throw new Error('sysrouter: unknown capability ' + id); return resolveCapability(c, input, mode); },

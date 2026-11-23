@@ -30,6 +30,31 @@ export function snapshot(v, depth) {
   return d;
 }
 
+// Strict JSON-data guard for third-party manifests (SPEC §8.4, #22): refuses functions,
+// symbols, undefined, getters/setters, non-finite numbers, and non-plain objects.
+export function assertJsonData(v, depth) {
+  if (depth === undefined) depth = 0;
+  if (depth > 10) throw new Error('sysrouter: manifest too deep');
+  if (v === null || typeof v === 'boolean' || typeof v === 'string') return;
+  if (typeof v === 'number') { if (!Number.isFinite(v)) throw new Error('sysrouter: non-JSON value in manifest'); return; }
+  if (typeof v !== 'object') throw new Error('sysrouter: non-JSON value in manifest');
+  if (Array.isArray(v)) {
+    for (let i = 0; i < v.length; i++) {
+      const desc = Object.getOwnPropertyDescriptor(v, i);
+      if (desc && (desc.get || desc.set)) throw new Error('sysrouter: non-JSON value in manifest');
+      assertJsonData(v[i], depth + 1);
+    }
+    return;
+  }
+  const proto = Object.getPrototypeOf(v);
+  if (proto !== Object.prototype && proto !== null) throw new Error('sysrouter: non-JSON value in manifest');
+  for (const k of Object.keys(v)) {
+    const desc = Object.getOwnPropertyDescriptor(v, k);
+    if (desc && (desc.get || desc.set)) throw new Error('sysrouter: non-JSON value in manifest');
+    assertJsonData(v[k], depth + 1);
+  }
+}
+
 export function checkArgs(schema, raw) {
   if (!schema) return {};
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
@@ -85,9 +110,11 @@ export function readPrimitive(prim, spec, raw, readAnswer) {
 }
 
 export function canonJson(v) {
+  if (v === undefined || typeof v === 'function' || typeof v === 'symbol' || typeof v === 'bigint') throw new Error('sysrouter: non-JSON value in manifest');
+  if (typeof v === 'number' && !Number.isFinite(v)) throw new Error('sysrouter: non-JSON value in manifest');
   if (v === null || typeof v !== 'object') return JSON.stringify(v);
-  if (Array.isArray(v)) return '[' + v.map((x) => x === undefined ? 'null' : canonJson(x)).join(',') + ']';
-  const keys = Object.keys(v).filter((k) => v[k] !== undefined).sort();
+  if (Array.isArray(v)) return '[' + v.map((x) => canonJson(x)).join(',') + ']';
+  const keys = Object.keys(v).sort();
   return '{' + keys.map((k) => JSON.stringify(k) + ':' + canonJson(v[k])).join(',') + '}';
 }
 
@@ -111,9 +138,18 @@ export function validateQuestion(q, fail) {
   return { question: Object.freeze({ type: q.type, instructions: q.instructions, criteria }), keys };
 }
 
+function parseExposeTo(rExp) {
+  const exposeTo = [];
+  if (rExp !== undefined) {
+    if (!Array.isArray(rExp)) throw new Error('sysrouter: bad exposeTo');
+    for (const e of rExp) { if (!EXPOSE_TO.includes(e)) throw new Error('sysrouter: bad exposeTo ' + e); if (!exposeTo.includes(e)) exposeTo.push(e); }
+  }
+  return Object.freeze(exposeTo);
+}
+
 // The v2 registry: owns streams, commands, capabilities, triggers, routes, and extension install/uninstall (#37).
 export function createRegistry(ctx) {
-  const { actions, providers, routes, capabilities, triggers, installed, streams, assertOpen, isSealed, getBlockList } = ctx;
+  const { actions, providers, routes, capabilities, triggers, installed, streams, assertOpen, isSealed, getBlockList, registerExtEngine } = ctx;
 
   function checkCollision(instructions, onMap, fail) {
     for (const rid in routes) {
@@ -139,7 +175,8 @@ export function createRegistry(ctx) {
     if (Array.isArray(rt)) { for (const t of rt) if (typeof t === 'string' && KEY.test(t)) types[t] = true; }
     else if (rt && typeof rt === 'object') { for (const t of Object.keys(rt)) if (KEY.test(t) && !(t in Object.prototype)) types[t] = true; }
     if (!Object.keys(types).length) throw new Error('sysrouter: stream ' + id + ' needs types');
-    streams[id] = { id, tier: who.tier, owner: who.name || '', types, latest: null, watchers: [] };
+    const exposeTo = parseExposeTo(decl.exposeTo);
+    streams[id] = { id, tier: who.tier, owner: who.name || '', types, exposeTo, latest: null, watchers: [] };
     return id;
   }
 
@@ -152,13 +189,10 @@ export function createRegistry(ctx) {
     if (has(actions, id)) throw new Error('sysrouter: action exists: ' + id);
     if (reserved && isSealed()) throw new Error('sysrouter: reserved actions are registered before seal()');
     if (who.tier !== 'extension') assertOpen();
+    if (who.tier === 'extension' && run !== undefined) throw new Error('sysrouter: extension commands cannot carry run functions');
     if (typeof run !== 'function' && (typeof cap !== 'string' || !ID.test(cap))) throw new Error('sysrouter: command ' + id + ' needs capability or run');
     if (typeof run !== 'function' && !has(capabilities, cap)) throw new Error('sysrouter: unknown capability ' + cap);
-    const exposeTo = [];
-    if (rExp !== undefined) {
-      if (!Array.isArray(rExp)) throw new Error('sysrouter: bad exposeTo');
-      for (const e of rExp) { if (!EXPOSE_TO.includes(e)) throw new Error('sysrouter: bad exposeTo ' + e); if (!exposeTo.includes(e)) exposeTo.push(e); }
-    }
+    const exposeTo = parseExposeTo(rExp);
     let args = null;
     if (rArgs !== undefined && rArgs !== null) {
       if (typeof rArgs !== 'object' || Array.isArray(rArgs)) throw new Error('sysrouter: bad args schema');
@@ -177,7 +211,7 @@ export function createRegistry(ctx) {
         args[k] = Object.freeze(entry);
       }
     }
-    actions[id] = { id, tier: who.tier, owner: who.name || '', run: typeof run === 'function' ? run : null, capability: typeof cap === 'string' ? cap : '', args, exposeTo: Object.freeze(exposeTo), resource, holdMs, cooldownMs, reserved };
+    actions[id] = { id, tier: who.tier, owner: who.name || '', run: typeof run === 'function' ? run : null, capability: typeof cap === 'string' ? cap : '', args, exposeTo, resource, holdMs, cooldownMs, reserved };
     return id;
   }
 
@@ -223,6 +257,10 @@ export function createRegistry(ctx) {
     if (rawBeh && typeof rawBeh === 'object') {
       if (rawBeh.publish) {
         if (!has(streams, rawBeh.publish)) throw new Error('sysrouter: unknown stream ' + rawBeh.publish);
+        if (who.tier === 'extension') {
+          const ps = streams[rawBeh.publish];
+          if (ps.tier !== 'extension' || ps.owner !== (who.name || '')) throw new Error('sysrouter: extensions can publish only to own streams: ' + rawBeh.publish);
+        }
         beh.publish = rawBeh.publish;
         const ts = Object.keys(streams[beh.publish].types);
         beh.publishType = rawBeh.publishType && has(streams[beh.publish].types, rawBeh.publishType) ? rawBeh.publishType : ts[0];
@@ -236,6 +274,7 @@ export function createRegistry(ctx) {
           const a = actions[aid];
           if (a.reserved && !(who.tier === 'core' || allExact || addsRecall)) fail('reserved action needs exact providers, or addsRecall:true');
           if (a.reserved && who.tier === 'extension') throw new Error('sysrouter: extensions cannot reach reserved actions');
+          if (who.tier === 'extension' && a.tier !== 'extension' && !a.exposeTo.includes('third-party')) throw new Error('sysrouter: command not exposed to third-party: ' + aid);
           if (who.grants && !who.grants.actions.includes(aid)) throw new Error('sysrouter: no grant for action ' + aid);
           reqMap[k] = aid;
           if (entry && typeof entry === 'object' && entry.args !== undefined) beh.onArgs[k] = copyDict(entry.args);
@@ -244,7 +283,7 @@ export function createRegistry(ctx) {
         beh.request = Object.freeze(reqMap);
       }
     }
-    capabilities[id] = { id, tier: who.tier, owner: who.name || '', steps: Object.freeze(steps), policy: capPolicy, budgetMs, cooldownMs, mode, notFor: spec.notFor || '', addsRecall, agree, behavior: beh, perMin: who.grants ? who.grants.perMin : 0 };
+    capabilities[id] = { id, tier: who.tier, owner: who.name || '', steps: Object.freeze(steps), policy: capPolicy, budgetMs, cooldownMs, mode, notFor: spec.notFor || '', addsRecall, agree, behavior: beh, perMin: who.grants ? who.grants.perMin : 0, maxUsd: who.grants ? who.grants.maxUsd : 0 };
     return id;
   }
 
@@ -259,18 +298,24 @@ export function createRegistry(ctx) {
     if (!cmd || !has(actions, cmd)) throw new Error('sysrouter: unknown command ' + cmd);
     const a = actions[cmd];
     if (a.reserved && who.tier === 'extension') throw new Error('sysrouter: extensions cannot reach reserved actions');
+    if (who.tier === 'extension' && a.tier !== 'extension' && !a.exposeTo.includes('third-party')) throw new Error('sysrouter: command not exposed to third-party: ' + cmd);
     if (who.grants && !who.grants.actions.includes(cmd)) throw new Error('sysrouter: no grant for action ' + cmd);
     if (!ro || typeof ro !== 'object') throw new Error('sysrouter: bad trigger on');
     let onSnap;
     if (ro.stream) {
       if (!has(streams, ro.stream)) throw new Error('sysrouter: unknown stream ' + ro.stream);
+      if (who.tier === 'extension' && streams[ro.stream].tier !== 'extension' && !streams[ro.stream].exposeTo.includes('third-party')) throw new Error('sysrouter: stream not exposed to third-party: ' + ro.stream);
       if (who.grants && who.grants.streams && !who.grants.streams.includes(ro.stream)) throw new Error('sysrouter: no grant for stream ' + ro.stream);
       const t = ro.type;
       if (t !== undefined && (typeof t !== 'string' || !has(streams[ro.stream].types, t))) throw new Error('sysrouter: bad trigger stream type ' + t);
       onSnap = { stream: ro.stream, type: t || '' };
-    } else if (ro.person === true) onSnap = { person: true };
-    else if (ro.creature === true) onSnap = { creature: true };
-    else throw new Error('sysrouter: bad trigger on');
+    } else if (ro.person === true) {
+      if (!a.exposeTo.includes('person')) throw new Error('sysrouter: command not exposed to person: ' + cmd);
+      onSnap = { person: true };
+    } else if (ro.creature === true) {
+      if (!a.exposeTo.includes('creature')) throw new Error('sysrouter: command not exposed to creature: ' + cmd);
+      onSnap = { creature: true };
+    } else throw new Error('sysrouter: bad trigger on');
     const argsSnap = ra === undefined ? undefined : (ra && typeof ra === 'object' && !Array.isArray(ra) ? copyDict(ra) : ra);
     triggers[id] = { id, tier: who.tier, owner: who.name || '', on: Object.freeze(onSnap), command: cmd, args: argsSnap, mode, cooldownMs, perMin: who.grants ? who.grants.perMin : 0 };
     return id;
@@ -283,6 +328,10 @@ export function createRegistry(ctx) {
     const fail = (m) => { throw new Error('sysrouter: route ' + spec.id + ': ' + m); };
     if (!ID.test(spec.id || '')) fail('bad id');
     if (has(routes, spec.id)) fail('exists');
+    if (who.tier === 'extension') {
+      if (!who.grants || !who.grants.streams || !who.grants.streams.includes('speech')) fail('no grant for stream speech');
+      if (!streams['speech'].exposeTo.includes('third-party')) fail('stream not exposed to third-party: speech');
+    }
     const { question, keys } = validateQuestion(spec.question, fail);
     if (typeof spec.notFor !== 'string' || spec.notFor.trim().length < 12) fail('notFor is required: say what this route must NOT fire on (R-REG-5)');
     const rawMode = spec.mode || 'shadow', mode = rawMode === 'parallel' ? 'live' : rawMode, policy = spec.policy || 'single';
@@ -303,6 +352,7 @@ export function createRegistry(ctx) {
       const a = actions[aid];
       if (a.reserved && !(who.tier === 'core' || ps.every((pid) => providers[pid].exact) || spec.addsRecall === true)) fail('reserved action needs exact providers, or addsRecall:true');
       if (a.reserved && who.tier === 'extension') fail('extensions cannot reach reserved actions');
+      if (who.tier === 'extension' && a.tier !== 'extension' && !a.exposeTo.includes('third-party')) fail('command not exposed to third-party: ' + aid);
       if (who.grants && !who.grants.actions.includes(aid)) fail('no grant for action ' + aid);
     }
     if (who.grants) for (const pid of ps.concat(sh)) if (!who.grants.providers.includes(pid)) fail('no grant for provider ' + pid);
@@ -312,7 +362,8 @@ export function createRegistry(ctx) {
       id: spec.id, tier: who.tier, owner: who.name || '', question, steps: Object.freeze([step]),
       on: Object.freeze(Object.assign(dict(), on)), onArgs, providers: ps.slice(), shadow: sh.slice(), policy, mode, notFor: spec.notFor,
       budgetMs: Math.max(20, Math.min(10000, +spec.budgetMs || 1500)), cooldownMs: Math.max(0, +spec.cooldownMs || 0),
-      input: spec.input === 'creature' || spec.input === 'both' ? spec.input : 'person', agree: typeof spec.agree === 'string' ? spec.agree : '', perMin: who.grants ? who.grants.perMin : 0
+      input: spec.input === 'creature' || spec.input === 'both' ? spec.input : 'person', agree: typeof spec.agree === 'string' ? spec.agree : '',
+      perMin: who.grants ? who.grants.perMin : 0, maxUsd: who.grants ? who.grants.maxUsd : 0
     };
     return spec.id;
   }
@@ -321,9 +372,17 @@ export function createRegistry(ctx) {
 
   function normPerms(p) {
     const acts = ((p && (p.commands || p.actions)) || []).slice();
-    if (acts.some((id) => actions[id] && actions[id].reserved)) throw new Error('sysrouter: extensions cannot be granted reserved actions');
+    for (const id of acts) {
+      const a = has(actions, id) ? actions[id] : null;
+      if (a && a.reserved) throw new Error('sysrouter: extensions cannot be granted reserved actions');
+      if (a && a.tier !== 'extension' && !a.exposeTo.includes('third-party')) throw new Error('sysrouter: command not exposed to third-party: ' + id);
+    }
     const engs = ((p && (p.engines || p.providers)) || []).slice();
     const strms = ((p && p.streams) || []).slice();
+    for (const id of strms) {
+      const s = has(streams, id) ? streams[id] : null;
+      if (s && s.tier !== 'extension' && !s.exposeTo.includes('third-party')) throw new Error('sysrouter: stream not exposed to third-party: ' + id);
+    }
     const perMin = Math.max(1, Math.min(120, +(p && p.perMin) || 20));
     const pMaxUsd = p && p.maxUsd >= 0 ? +p.maxUsd : 0;
     return { actions: acts, providers: engs, streams: strms, perMin, maxUsd: pMaxUsd };
@@ -336,12 +395,17 @@ export function createRegistry(ctx) {
     for (const k in capabilities) if (capabilities[k].tier === 'extension' && capabilities[k].owner === name) delete capabilities[k];
     for (const k in actions) if (actions[k].tier === 'extension' && actions[k].owner === name) delete actions[k];
     for (const k in streams) if (streams[k].tier === 'extension' && streams[k].owner === name) delete streams[k];
+    for (const k in providers) if (providers[k].tier === 'extension' && providers[k].owner === name) {
+      if (typeof providers[k].terminate === 'function') providers[k].terminate();
+      delete providers[k];
+    }
     delete installed[name];
     return true;
   }
 
   async function install(manifest, permissions) {
     if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) throw new Error('sysrouter: bad manifest');
+    assertJsonData(manifest);
     const blockList = getBlockList();
     const name = manifest.name;
     if (!ID.test(name || '')) throw new Error('sysrouter: bad extension name');
@@ -351,11 +415,16 @@ export function createRegistry(ctx) {
     if (has(installed, name)) throw new Error('sysrouter: extension already installed: ' + name);
     const p = normPerms(permissions);
     const who = { tier: 'extension', name, grants: p };
-    const created = { streams: [], actions: [], capabilities: [], triggers: [], routes: [] };
+    const created = { streams: [], engines: [], actions: [], capabilities: [], triggers: [], routes: [] };
     try {
       for (const s of (manifest.streams || [])) {
         if (!p.streams.includes(s && s.id)) throw new Error('sysrouter: no grant for stream ' + (s && s.id));
         created.streams.push(addStream(s, who));
+      }
+      for (const e of (manifest.engines || [])) {
+        if (!e || typeof e !== 'object') throw new Error('sysrouter: bad engine');
+        if (!p.providers.includes(e.id)) throw new Error('sysrouter: no grant for provider ' + e.id);
+        created.engines.push(await registerExtEngine(e, who));
       }
       for (const c of (manifest.capabilities || [])) created.capabilities.push(addCapability(c, who));
       for (const c of (manifest.commands || [])) {
@@ -369,6 +438,7 @@ export function createRegistry(ctx) {
       for (const k of created.triggers) delete triggers[k];
       for (const k of created.actions) delete actions[k];
       for (const k of created.capabilities) delete capabilities[k];
+      for (const k of created.engines) { if (providers[k] && typeof providers[k].terminate === 'function') providers[k].terminate(); delete providers[k]; }
       for (const k of created.streams) delete streams[k];
       throw e;
     }

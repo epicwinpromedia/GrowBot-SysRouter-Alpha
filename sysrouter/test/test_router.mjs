@@ -13,10 +13,10 @@ const choice = (k, p, rest) => ({ model: "m1", answers: { q: { type: "choice", c
 // a router with a clock we own, a journal we can read, and counters on every action
 function mk(flags) {
   const rows = [], ran = [], clock = { t: 1e6 };
-  const sr = createRouter({ log: (e, d) => rows.push(Object.assign({ e }, d)), now: () => clock.t, flags });
+  const sr = createRouter({ log: (e, d) => rows.push(Object.assign({ e }, d)), now: () => clock.t, flags, exposeStreams: { speech: ["third-party"] } });
   sr.action("halt", { run: () => ran.push("halt"), reserved: true });
   sr.action("spin", { run: () => ran.push("spin"), resource: "legs", holdMs: 4000 });
-  sr.action("perk", { run: () => ran.push("perk"), resource: "legs", holdMs: 1000 });
+  sr.action("perk", { run: () => ran.push("perk"), resource: "legs", holdMs: 1000, exposeTo: ["third-party"] });
   return { sr, rows, ran, clock, why: () => rows.map((r) => r.why).join(",") };
 }
 const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? answer : () => answer }, o || {});
@@ -81,7 +81,7 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   throws("a probability alone may not be the path to a reserved action", () => a.sr.route({ id: "r2", question: { type: "choice", instructions: "other", criteria: Q.criteria }, notFor: NOT, on: { halt: "halt" }, providers: ["model"] }), /reserved/);
   check("…unless the route only ADDS recall", !!a.sr.route({ id: "r3", question: { type: "choice", instructions: "other 2", criteria: Q.criteria }, notFor: NOT, on: { halt: "halt" }, providers: ["readers", "model"], policy: "cascade", addsRecall: true }));
   throws("granting halt to an extension throws at extension()", () => a.sr.extension("toy", { actions: ["halt", "spin"], providers: ["model", "readers"] }), /reserved/);
-  const lateExt = a.sr.extension("late_ext", { actions: ["limp_pre"], providers: ["readers"] });
+  const lateExt = a.sr.extension("late_ext", { actions: ["limp_pre"], providers: ["readers"], streams: ["speech"] });
   a.sr.action("limp_pre", { run() {}, reserved: true });
   throws("an extension holding an exact provider cannot reach a reserved action", () => lateExt.route({ id: "x", question: { type: "choice", instructions: "ext q", criteria: Q.criteria }, notFor: NOT, on: { halt: "limp_pre" }, providers: ["readers"] }), /reserved|extensions/);
   a.sr.seal();
@@ -104,7 +104,7 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   b.sr.route({ id: "r", question: Q, notFor: NOT, on: { halt: "halt", spin: "spin" }, providers: ["readers"], mode: "parallel", cooldownMs: 60000 });
   b.sr.hear("spin"); say = "halt"; b.sr.hear("stop"); b.sr.hear("stop");
   check("stop runs every time: no cooldown, no hold can stand in its way", b.ran.join() === "spin,halt,halt", b.ran);
-  const ex = b.sr.extension("toy", { actions: ["perk"], providers: ["readers"] });
+  const ex = b.sr.extension("toy", { actions: ["perk"], providers: ["readers"], streams: ["speech"] });
   ex.route({ id: "e", question: { type: "choice", instructions: "ext", criteria: { perk: "perk", none: "none" } }, notFor: NOT, on: { perk: "perk" }, providers: ["readers"], mode: "parallel" });
   say = "perk"; b.sr.hear("yay");
   check("a stop cleared the system tier's hold on the legs", b.ran[b.ran.length - 1] === "perk", b.ran);
@@ -161,7 +161,7 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
     h.sr.provider("p", fake(() => choice(say, 1), { sync: true, exact: true }));
     const SQ = { type: "choice", instructions: "sys throw q", criteria: { spin: "spin", halt: "halt", perk: "perk", none: "none" } };
     h.sr.route({ id: "sys", question: SQ, notFor: NOT, on: { spin: "bad_legs", halt: "bad_stop", perk: "spin" }, providers: ["p"], mode: "parallel" });
-    const ext = h.sr.extension("toy", { actions: ["perk"], providers: ["p"] });
+    const ext = h.sr.extension("toy", { actions: ["perk"], providers: ["p"], streams: ["speech"] });
     const EQ = { type: "choice", instructions: "ext q", criteria: { spin: "spin", perk: "perk", none: "none" } };
     ext.route({ id: "toy.perk", question: EQ, notFor: NOT, on: { spin: "perk", perk: "perk" }, providers: ["p"], mode: "parallel" });
     h.sr.hear("spin");
@@ -250,14 +250,15 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   const a = mk(); let say = "spin";
   a.sr.provider("p", fake(() => choice(say, 1), { sync: true, exact: true }));
   a.sr.route({ id: "sys", question: Q, notFor: NOT, on: { spin: "spin" }, providers: ["p"], mode: "parallel" });
-  const ext = a.sr.extension("toy", { actions: ["perk"], providers: ["p"], perMin: 3 });
+  const ext = a.sr.extension("toy", { actions: ["perk"], providers: ["p"], streams: ["speech"], perMin: 3 });
   const EQ = { type: "choice", instructions: "ext question", criteria: { perk: "celebrate", spin: "spin", none: "none" } };
   ext.route({ id: "toy.perk", question: EQ, notFor: NOT, on: { spin: "perk", perk: "perk" }, providers: ["p"], mode: "parallel" });
   a.sr.hear("spin");
   check("system route took the legs; the extension's action on the same resource is held", a.ran.join() === "spin" && a.rows.some((r) => r.r === "toy.perk" && r.why === "held" && r.tier === "extension" && r.ext === "toy"), a.rows);
   a.clock.t += 4001; say = "perk"; a.sr.hear("hooray"); say = "spin";      // only the extension's route has a "perk" option
   check("…and runs once the hold has expired and the system route is not claiming the legs", a.ran.filter((x) => x === "perk").length === 1, a.ran);
-  throws("an extension cannot use an action it was not granted", () => ext.route({ id: "x1", question: { type: "choice", instructions: "q1", criteria: EQ.criteria }, notFor: NOT, on: { spin: "spin" }, providers: ["p"] }), /no grant for action/);
+  a.sr.action("exposed_ungranted", { run() {}, exposeTo: ["third-party"] });
+  throws("an extension cannot use an action it was not granted", () => ext.route({ id: "x1", question: { type: "choice", instructions: "q1", criteria: EQ.criteria }, notFor: NOT, on: { spin: "exposed_ungranted" }, providers: ["p"] }), /no grant for action/);
   a.sr.provider("secret", fake(choice("spin", 1)));
   throws("…nor a provider it was not granted", () => ext.route({ id: "x2", question: { type: "choice", instructions: "q2", criteria: EQ.criteria }, notFor: NOT, on: {}, providers: ["secret"] }), /no grant for provider/);
   throws("mode: 'preempt' is refused at registration", () => ext.route({ id: "x3", question: { type: "choice", instructions: "q3", criteria: EQ.criteria }, notFor: NOT, on: {}, providers: ["p"], mode: "preempt" }), /bad mode/);
@@ -312,7 +313,7 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   f.sr.provider("ng", fake(choice("halt", 0.99)));
   f.sr.route({ id: "r", question: Q, notFor: NOT, on: { halt: "halt", spin: "spin" }, providers: ["readers", "ng"], policy: "cascade", mode: "live", cooldownMs: 2000, addsRecall: true });
   f.sr.calibrate({ r: { "ng@m1": { p: 0.9 } } });
-  const extF = f.sr.extension("toy", { actions: ["perk"], providers: ["ng"] });
+  const extF = f.sr.extension("toy", { actions: ["perk"], providers: ["ng"], streams: ["speech"] });
   extF.route({ id: "toy.perk", question: { type: "choice", instructions: "ext f", criteria: { perk: "perk", none: "none" } }, notFor: NOT, on: { perk: "perk" }, providers: ["ng"], mode: "live" });
   await f.sr.hear("stop").done;
   check("inFunnel match logs readers_acted with did: 0 and calls nothing", f.ran.length === 0 && f.rows.some((r) => r.r === "r" && r.why === "readers_acted" && r.did === 0), [f.ran, f.rows]);
@@ -496,7 +497,7 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   const tr = mk(); let fired = [];
   tr.sr.stream({ id: "sensors", types: ["ir", "sound"] });
   tr.sr.command({ id: "on_ir", run: (ctx) => fired.push("ir:" + JSON.stringify(ctx.args)) });
-  tr.sr.command({ id: "on_person", run: (ctx) => fired.push("person:" + JSON.stringify(ctx.args)) });
+  tr.sr.command({ id: "on_person", run: (ctx) => fired.push("person:" + JSON.stringify(ctx.args)), exposeTo: ["person"] });
   tr.sr.trigger({ id: "t_ir", on: { stream: "sensors", type: "ir" }, command: "on_ir", mode: "live" });
   tr.sr.trigger({ id: "t_person", on: { person: true }, command: "on_person", mode: "live" });
   tr.sr.emit("sensors", { type: "sound", data: { v: 1 } });
@@ -514,8 +515,8 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
 
   // port.install, permissions, blockList, uninstall, hash stability (1D.6)
   const ins = mk(); let insRan = 0;
-  ins.sr.stream({ id: "ext_ev", types: ["ping"] });
-  ins.sr.command({ id: "ext_cmd", run: () => { insRan++; } });
+  ins.sr.stream({ id: "ext_ev", types: ["ping"], exposeTo: ["third-party"] });
+  ins.sr.command({ id: "ext_cmd", run: () => { insRan++; }, exposeTo: ["third-party"] });
   const ip = ins.sr.port();
   const man1 = { name: "ext_one", triggers: [{ id: "et1", on: { stream: "ext_ev", type: "ping" }, command: "ext_cmd", mode: "live" }] };
   const man2 = { triggers: [{ mode: "live", command: "ext_cmd", on: { type: "ping", stream: "ext_ev" }, id: "et1" }], name: "ext_one" };
@@ -701,6 +702,90 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
     g.sr.route({ id: "r_snap", question: { type: "choice", instructions: "snap route q", criteria: { spin: "s", none: "n" } }, notFor: NOT, on: { spin: routeOnEntry }, providers: ["p"] });
     check("#41: every field of command, capability, trigger, and route object-form on is read exactly once",
       Object.values(reads).every((n) => n === 1), reads);
+  }
+
+  // ---- #19: exposure ceiling for system commands and streams ----
+  {
+    const c19 = createRouter({ log: () => {} });
+    c19.command({ id: "walk_forward", run: () => {}, resource: "legs" }); // not exposed to third-party
+    c19.stream({ id: "private_s", types: ["e"] });                         // not exposed to third-party
+    c19.seal();
+    let errCmd = "", errPerm = "", errStrm = "", errCore = "";
+    try { await c19.port().install({ name: "drv", streams: [{ id: "drv_s", types: ["go"] }], triggers: [{ id: "drv_t", on: { stream: "drv_s" }, command: "walk_forward", mode: "live" }] }, { streams: ["drv_s"], commands: ["walk_forward"] }); } catch (e) { errCmd = e.message; }
+    try { await c19.port().install({ name: "drv_p" }, { commands: ["walk_forward"] }); } catch (e) { errPerm = e.message; }
+    try { await c19.port().install({ name: "drv2", triggers: [] }, { streams: ["private_s"] }); } catch (e) { errStrm = e.message; }
+    try { await c19.port().install({ name: "drv3", triggers: [] }, { streams: ["speech"] }); } catch (e) { errCore = e.message; }
+    check("#19: exposure ceiling refuses unexposed system command, system stream, and core stream",
+      /not exposed to third-party/.test(errCmd) && /not exposed to third-party/.test(errPerm) && /not exposed to third-party/.test(errStrm) && /not exposed to third-party/.test(errCore),
+      [errCmd, errPerm, errStrm, errCore]);
+  }
+
+  // ---- #20: port.request() checks exposeTo before triggers; addTrigger checks exposeTo ----
+  {
+    const c20 = createRouter({ log: () => {} }); let ran20 = 0;
+    c20.command({ id: "feed", run: () => ran20++, exposeTo: ["third-party"] }); // NOT exposed to creature
+    c20.seal();
+    let trigErr = "";
+    try { await c20.port().install({ name: "door", triggers: [{ id: "door_t", on: { creature: true }, command: "feed", mode: "live" }] }, { commands: ["feed"] }); } catch (e) { trigErr = e.message; }
+    const req20 = c20.port().request("feed", {}, { from: "creature" });
+    check("#20: creature trigger for unexposed command is refused and port.request refuses before triggers",
+      /not exposed to creature/.test(trigErr) && req20.why === "refused" && ran20 === 0,
+      [trigErr, req20, ran20]);
+  }
+
+  // ---- #22: data-only manifests (no functions/getters) and no extension run functions ----
+  {
+    const c22 = createRouter({ log: () => {} }); c22.seal(); const p22 = c22.port();
+    let fnErr = "", getErr = "";
+    try { await p22.install({ name: "h1", commands: [{ id: "c1", run: () => "pwn" }] }, { commands: ["c1"] }); } catch (e) { fnErr = e.message; }
+    const trickyMan = { name: "h2" };
+    Object.defineProperty(trickyMan, "extra", { enumerable: true, get: () => "x" });
+    try { await p22.install(trickyMan, {}); } catch (e) { getErr = e.message; }
+    check("#22: manifest with function or getter is refused before hashing",
+      /non-JSON/.test(fnErr) && /non-JSON/.test(getErr), [fnErr, getErr]);
+  }
+
+  // ---- #30: extension routes require speech stream grant ----
+  {
+    const c30 = mk();
+    c30.sr.provider("eng", fake(choice("spin", 0.99)));
+    c30.sr.seal();
+    let err30 = "";
+    try {
+      await c30.sr.port().install({
+        name: "ear",
+        routes: [{ id: "ear_r", question: Q, notFor: NOT, on: { spin: "perk" }, providers: ["eng"], mode: "shadow" }]
+      }, { commands: ["perk"], engines: ["eng"], streams: [] });
+    } catch (e) { err30 = e.message; }
+    check("#30: extension route without speech stream grant is refused", /no grant for stream speech/.test(err30), err30);
+  }
+
+  // ---- #31: per-extension perMin (triggers/capabilities/requests) and maxUsd enforced ----
+  {
+    const rows31 = []; let tickCount = 0, paidCalls = 0;
+    const c31 = createRouter({ log: (e, d) => rows31.push(d), maxUsd: 1.0, exposeStreams: { speech: ["third-party"] } });
+    c31.command({ id: "tick", run: () => tickCount++, exposeTo: ["third-party"] });
+    c31.provider("paid_e", fake(async () => { paidCalls++; return Object.assign(choice("spin", 0.99), { usd: 0.005 }); }));
+    c31.calibrate({ ext_cap: { "paid_e@m1": { p: 0.6 } } });
+    c31.seal();
+    await c31.port().install({
+      name: "flood",
+      streams: [{ id: "fl", types: ["e"] }],
+      triggers: [{ id: "fl_t", on: { stream: "fl" }, command: "tick", mode: "live" }]
+    }, { streams: ["fl"], commands: ["tick"], perMin: 3 });
+    for (let i = 0; i < 10; i++) c31.emit("fl", { type: "e", data: String(i) });
+    check("#31: extension trigger obeys perMin rate cap", tickCount === 3 && rows31.filter((r) => r.r === "fl_t" && r.why === "rate").length === 7, [tickCount, rows31]);
+
+    await c31.port().install({
+      name: "spender",
+      routes: [{ id: "ext_cap", question: Q, notFor: NOT, on: { spin: "tick" }, providers: ["paid_e"], mode: "live" }]
+    }, { streams: ["speech"], commands: ["tick"], engines: ["paid_e"], maxUsd: 0.004 });
+    await c31.hear("spin 1").done;
+    await c31.hear("spin 2").done;
+    await c31.hear("spin 3").done;
+    check("#31: extension maxUsd caps paid engine before session maxUsd",
+      paidCalls === 1 && rows31.filter((r) => r.r === "ext_cap" && r.why === "budget").length === 2,
+      [paidCalls, rows31.filter((r) => r.r === "ext_cap")]);
   }
 }
 

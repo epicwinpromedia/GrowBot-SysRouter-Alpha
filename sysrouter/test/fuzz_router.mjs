@@ -23,11 +23,11 @@ const viol = (law, extra) => { if (bad.length < 10) bad.push({ law, round, seed:
 while (hears < TOTAL) {
   round++;
   const clock = { t: 1e6 }, journal = [], ran = [], flags = { off: rand() < 0.08, routes: {} };
-  const sr = createRouter({ log: (e, d) => journal.push(d), now: () => clock.t, flags });
+  const sr = createRouter({ log: (e, d) => journal.push(d), now: () => clock.t, flags, exposeStreams: { speech: ["third-party"] } });
   // actions: a few reserved (registered before seal), a few ordinary on shared resources
   const nAct = 2 + int(5), actMeta = {};
-  for (let i = 0; i < nAct; i++) { const id = "a" + i, reserved = i === 0 || rand() < 0.15; actMeta[id] = { reserved };
-    sr.action(id, { run: () => { ran.push(id); if (rand() < 0.03) throw new Error("executor failed"); }, reserved, resource: pick(["legs", "voice", "", "face"]), holdMs: int(3000) }); }
+  for (let i = 0; i < nAct; i++) { const id = "a" + i, reserved = i === 0 || rand() < 0.15, exposeTo = reserved ? [] : ["third-party"]; actMeta[id] = { reserved, exposeTo };
+    sr.action(id, { run: () => { ran.push(id); if (rand() < 0.03) throw new Error("executor failed"); }, reserved, exposeTo, resource: pick(["legs", "voice", "", "face"]), holdMs: int(3000) }); }
   // providers: each with its own way of going wrong
   const provs = {}, nProv = 1 + int(4);
   for (let i = 0; i < nProv; i++) { const id = "p" + i, sync = rand() < 0.35, exact = sync && rand() < 0.6, fault = pick(["ok", "ok", "ok", "garbage", "throw", "reject", "hang", "slow", "wild"]);
@@ -48,7 +48,7 @@ while (hears < TOTAL) {
     } }); }
   // routes: system, core and extension, valid and invalid; invalid ones must be refused whole
   const routes = {}, exts = [0, 1].map((i) => ({ name: "ext" + i, actions: Object.keys(actMeta).filter((a) => !actMeta[a].reserved && rand() < 0.5), providers: Object.keys(provs).filter(() => rand() < 0.7) }));
-  const facades = exts.map((g) => sr.extension(g.name, { actions: g.actions, providers: g.providers, perMin: 1 + int(40) }));
+  const facades = exts.map((g) => sr.extension(g.name, { actions: g.actions, providers: g.providers, streams: ["speech"], perMin: 1 + int(40), maxUsd: 0.25 }));
   for (let i = 0; i < 2 + int(5); i++) {
     const noul = rand() < 0.3, opts = noul ? ["true", "false"] : Array.from({ length: 2 + int(4) }, (_, k) => "o" + k), on = {};
     for (const o of opts) if (rand() < 0.6) on[o] = pick(Object.keys(actMeta).concat(rand() < 0.05 ? ["ghost"] : []));
