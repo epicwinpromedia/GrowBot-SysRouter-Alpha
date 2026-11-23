@@ -332,8 +332,10 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   const row = a.rows[0];
   check("the row names route, tier, mode, provider, model, answer, probability, tokens, cost, action", row.e === "sysroute" && row.r === "r" && row.tier === "system" && row.mode === "live" && row.p === "p" && row.m === "vendor/model-2026" && row.a === "spin" && row.pr === 0.91 && row.tok === 412 && row.usd === 0.000021 && row.act === "spin" && row.did === 1 && typeof row.ms === "number", row);
   check("the person's words are never in a row", !JSON.stringify(a.rows).includes("Hargreaves") && !JSON.stringify(a.rows).includes("maiden"));
-  a.sr.replied({ say: "ok", emotion: "spin" }); a.sr.replied({ emotion: "calm" });
-  check("replied() logs agreement with the brain once per decision", a.rows.filter((r) => r.why === "agree").length === 1 && a.rows[1].ok === 1 && a.rows[1].brain === "spin", a.rows.slice(1));
+  a.sr.replied({ say: "ok", emotion: "spin" });
+  check("#39: replied() with no kind writes no agree row", a.rows.filter((r) => r.why === "agree").length === 0, a.rows);
+  a.sr.replied({ say: "ok", emotion: "spin" }, "event"); a.sr.replied({ emotion: "calm" }, "event");
+  check("replied(o, 'event') logs agreement with the brain once per decision", a.rows.filter((r) => r.why === "agree").length === 1 && a.rows[1].ok === 1 && a.rows[1].brain === "spin", a.rows.slice(1));
 }
 
 // ---- answer shapes (research/VENDORS.md §1) ----
@@ -786,6 +788,42 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
     check("#31: extension maxUsd caps paid engine before session maxUsd",
       paidCalls === 1 && rows31.filter((r) => r.r === "ext_cap" && r.why === "budget").length === 2,
       [paidCalls, rows31.filter((r) => r.r === "ext_cap")]);
+  }
+
+  // ---- #23: creature events have isolated per-speaker state on input:'both' routes ----
+  {
+    const r23 = [], s23 = createRouter({ log: (e, d) => r23.push(d) });
+    s23.provider("em_sync", {
+      sync: true, model: "m1", types: ["choice"],
+      ask: (req) => /great/.test(req.state)
+        ? { model: "m1", answers: { q: { type: "choice", choice: "happy", probabilities: { happy: 0.95, sad: 0.03, calm: 0.02 } } } }
+        : { model: "m1", answers: { q: { type: "choice", choice: "sad", probabilities: { sad: 0.55, happy: 0.25, calm: 0.20 } } } }
+    });
+    s23.route({ id: "em", question: { type: "choice", instructions: "feel 23", criteria: { happy: "h", sad: "s", calm: "c" } }, notFor: NOT, on: {}, providers: ["em_sync"], input: "both", agree: "emotion", mode: "shadow" });
+    s23.calibrate({ em: { "em_sync@m1": { p: 0.8 } } });
+    s23.hear("that is great news");
+    s23.replied({ say: "oh no that is bad", emotion: "curious" }, "tick"); // creature unsure row with a:"sad"
+    s23.replied({ say: "yay", emotion: "happy" }, "event");
+    const ag23 = r23.filter((x) => x.why === "agree");
+    const cUnsure = r23.find((x) => x.why === "unsure" && x.a === "sad");
+    check("#23: creature unsure row carries from:creature and never overwrites pending person lastPick",
+      cUnsure && cUnsure.from === "creature" && ag23.length === 1 && ag23[0].a === "happy" && ag23[0].ok === 1,
+      [cUnsure, ag23, r23]);
+
+    const r23b = [], s23b = createRouter({ log: (e, d) => r23b.push(d) });
+    s23b.provider("em_async", {
+      model: "m1", types: ["choice"],
+      ask: async (req) => { await sleep(20); return { model: "m1", answers: { q: { type: "choice", choice: "happy", probabilities: { happy: 0.96, calm: 0.04 } } } }; }
+    });
+    s23b.route({ id: "em", question: { type: "choice", instructions: "feel 23b", criteria: { happy: "h", calm: "c" } }, notFor: NOT, on: {}, providers: ["em_async"], input: "both", agree: "emotion", mode: "shadow" });
+    s23b.calibrate({ em: { "em_async@m1": { p: 0.8 } } });
+    const pFlight = s23b.hear("that is great news");
+    s23b.replied({ say: "hello friend", emotion: "calm" }, "tick");
+    await pFlight.done;
+    await sleep(30);
+    check("#23: creature tick reply never aborts person's in-flight emote decision as stale",
+      !r23b.some((x) => x.why === "stale") && r23b.some((x) => x.from === "person" && x.a === "happy") && r23b.some((x) => x.from === "creature" && x.a === "happy"),
+      r23b);
   }
 }
 

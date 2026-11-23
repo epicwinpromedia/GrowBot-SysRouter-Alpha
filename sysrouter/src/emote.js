@@ -1,6 +1,6 @@
-// emote.js — the second co-processor: emote (SPEC §13.2, D6, D7).
+// emote.js — the second co-processor: emote (SPEC §13.2, D6, D7, #29).
 // Reads both speakers on the speech stream (person and creature). Supports either a
-// composed 2-step capability (embed -> choice head) or the one-step n-gram fallback.
+// composed 2-step capability (embed -> choice head) triggered on speech, or the one-step n-gram fallback.
 
 export const EMOTE = {
   id: 'emote',
@@ -45,19 +45,24 @@ export function registerEmote(sr, react, providers, over) {
   if (!sr.read('emote')) {
     try { sr.stream({ id: 'emote', types: ['pick'] }); } catch (e) {}
   }
-  if (over.embedEngine && over.headEngine) {
-    return sr.capability({
-      id: over.id || 'emote_composed',
+  if (isComposed) {
+    const capId = over.id || 'emote';
+    sr.capability({
+      id: capId,
       steps: [
         { primitive: 'embed', engines: [over.embedEngine] },
         { primitive: 'choice', engines: [over.headEngine], question: EMOTE.question }
       ],
       budgetMs: over.budgetMs || EMOTE.budgetMs,
+      cooldownMs: over.cooldownMs !== undefined ? over.cooldownMs : EMOTE.cooldownMs,
       mode: over.mode || EMOTE.mode,
       notFor: over.notFor || EMOTE.notFor,
       agree: EMOTE.agree,
       behavior: { publish: 'emote', request: EMOTE.on }
     });
+    sr.command({ id: capId + '.run', capability: capId });
+    sr.trigger({ id: capId + '.speech', on: { stream: 'speech' }, command: capId + '.run', mode: 'live' });
+    return capId;
   }
   return sr.route(Object.assign({}, EMOTE, { providers }, over));
 }

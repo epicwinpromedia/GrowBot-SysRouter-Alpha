@@ -61,8 +61,8 @@ The demo page lets you type what a person might say. It shows what each capabili
 ## What is where
 
 ```
-src/           the shipped path: 13 browser ES modules, zero dependencies, 1647 lines
-  sysrouter.js     the router (530 lines)               registry.js   v2 registry, validation & helpers
+src/           the shipped path: 13 browser ES modules, zero dependencies, 1738 lines
+  sysrouter.js     the router (545 lines)               registry.js   v2 registry, validation & helpers
   s1-readers.js    Brit's readers as an engine          s1-ngram.js   on-device linear model
   s1-embed.js      on-device MiniLM (ONNX Runtime Web)  s1-http.js    Jev / Clef / OpenRouter
   s1-chat.js       a small chat model as a decision engine   keys.js  one key resolver, Node and browser

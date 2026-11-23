@@ -1,7 +1,7 @@
-// fuzzy.js — the first co-processor: fuzzy commands (SPEC §13.1, D7, P1).
-// A spoken command, in whatever words the person found, selects ONE exposed command.
-// The option set is built dynamically from the commands the host (and person-granted
-// extensions) exposed, plus `none`, so an unexposed command can never be picked.
+// fuzzy.js — the first co-processor: fuzzy commands (SPEC §13.1, D7, P1, #28).
+// Brit's trained question (8 options + none) stays fixed so calibrated gates and on-device
+// models stay valid (L3). Unexposed commands are filtered from the command table and log
+// why:"unexposed", did:0. Developer commands get their own separate fuzzy.ext question.
 
 export const FUZZY = {
   id: 'fuzzy',
@@ -33,7 +33,7 @@ export const WAKE_ROUTE = FUZZY;
 
 export function registerFuzzy(sr, run, providers, over) {
   run = run || {};
-  const criteria = {}, on = {};
+  const on = {}, unexposed = [];
   const meta = {
     halt: { reserved: true },
     still: { reserved: true },
@@ -45,24 +45,39 @@ export function registerFuzzy(sr, run, providers, over) {
     sing: { resource: 'voice', holdMs: 3000 }
   };
   for (const k of Object.keys(FUZZY.on)) {
-    if (typeof run[k] !== 'function') continue;
+    if (typeof run[k] !== 'function') { unexposed.push(k); continue; }
     sr.command(Object.assign({ id: k, run: run[k], exposeTo: ['person'] }, meta[k] || {}));
-    criteria[k] = FUZZY.question.criteria[k];
     on[k] = k;
   }
-  const extra = over && over.extraCommands;
-  if (Array.isArray(extra)) {
+  const opts = Object.assign({}, over || {});
+  const extra = opts.extraCommands;
+  delete opts.extraCommands;
+  const rid = sr.route(Object.assign({}, FUZZY, { question: FUZZY.question, on, unexposed, providers }, opts));
+  // Developer commands (2A.3, #28) get their own separate question, never merged into Brit's.
+  if (Array.isArray(extra) && extra.length) {
+    const extCrit = {}, extOn = {};
     for (const c of extra) {
       if (!c || !c.id || !c.description) continue;
       if (Array.isArray(c.exposeTo) && !c.exposeTo.includes('person')) continue;
-      criteria[c.id] = c.description;
-      on[c.id] = c.id;
+      extCrit[c.id] = c.description;
+      extOn[c.id] = c.id;
+    }
+    if (Object.keys(extOn).length) {
+      extCrit.none = FUZZY.question.criteria.none;
+      sr.route({
+        id: 'fuzzy.ext',
+        question: { type: 'choice', instructions: 'A person is speaking to a small robot creature. Is the person invoking one of these extension commands right now? Pick the command or none.', criteria: extCrit },
+        notFor: FUZZY.notFor,
+        on: extOn,
+        providers,
+        policy: providers.length > 1 ? 'cascade' : 'single',
+        mode: 'shadow',
+        budgetMs: FUZZY.budgetMs,
+        cooldownMs: FUZZY.cooldownMs
+      });
     }
   }
-  criteria.none = FUZZY.question.criteria.none;
-  const opts = Object.assign({}, over || {});
-  delete opts.extraCommands;
-  return sr.route(Object.assign({}, FUZZY, { question: { type: 'choice', instructions: FUZZY.question.instructions, criteria }, on, providers }, opts));
+  return rid;
 }
 
 export const registerWake = registerFuzzy;
