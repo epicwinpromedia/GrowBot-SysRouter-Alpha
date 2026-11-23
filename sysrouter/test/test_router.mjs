@@ -469,6 +469,7 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
       { primitive: "embed", engines: ["emb"] },
       { primitive: "choice", engines: ["head"], instructions: "pick mood", criteria: { spin: "happy", none: "none" } }
     ],
+    notFor: NOT,
     budgetMs: 200, mode: "live",
     behavior: { publish: "moods", request: { spin: "spin" } }
   });
@@ -485,6 +486,7 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
       { primitive: "embed", engines: ["slow_emb"] },
       { primitive: "choice", engines: ["step2_chk"], instructions: "pick", criteria: { spin: "s", none: "n" } }
     ],
+    notFor: NOT,
     budgetMs: 25, mode: "live", behavior: { request: { spin: "spin" } }
   });
   const r2 = await cap.sr.invoke("budget_cap", "hi");
@@ -567,6 +569,139 @@ const fake = (answer, o) => Object.assign({ ask: typeof answer === "function" ? 
   repSr.replied({ emotion: "happy", say: "" }, "event");
   const agrees = repRows.filter((r) => r.why === "agree");
   check("event reply after tick produces exactly one agree row against person pick", agrees.length === 1 && agrees[0].a === "happy" && agrees[0].ok === 1, agrees);
+
+  // ---- #18: async hop limit across A -> B -> A capability chains ----
+  {
+    const hRows = [], hSr = createRouter({ log: (e, d) => hRows.push(d), maxHops: 3 });
+    hSr.provider("slow", { model: "m1", types: ["choice"], ask: async () => { await sleep(3); return choice("go", 0.99, { none: 0.01 }); } });
+    hSr.calibrate({ capa: { "slow@m1": { p: 0.6 } }, capb: { "slow@m1": { p: 0.6 } } });
+    hSr.stream({ id: "sa", types: ["e"] }); hSr.stream({ id: "sb", types: ["e"] });
+    const HQ = { type: "choice", instructions: "hop q", criteria: { go: "go", none: "n" } };
+    hSr.capability({ id: "capa", steps: [{ primitive: "choice", engines: ["slow"], question: HQ }], notFor: NOT, mode: "live", behavior: { publish: "sb" } });
+    hSr.capability({ id: "capb", steps: [{ primitive: "choice", engines: ["slow"], question: HQ }], notFor: NOT, mode: "live", behavior: { publish: "sa" } });
+    hSr.command({ id: "cmda", capability: "capa" }); hSr.command({ id: "cmdb", capability: "capb" });
+    hSr.trigger({ id: "ta", on: { stream: "sa" }, command: "cmda", mode: "live" });
+    hSr.trigger({ id: "tb", on: { stream: "sb" }, command: "cmdb", mode: "live" });
+    let saCount = 0, sbCount = 0;
+    hSr.watch("sa", () => saCount++); hSr.watch("sb", () => sbCount++);
+    hSr.emit("sa", { type: "e", data: "start" });
+    await sleep(120);
+    check("#18: async capability chain A -> B -> A stops at maxHops with hops row",
+      saCount === 2 && sbCount === 2 && hRows.some((r) => r.why === "hops" && r.hop === 4),
+      [saCount, sbCount, hRows]);
+  }
+
+  // ---- #24: L8 enforced on capabilities ----
+  {
+    const l8 = mk();
+    l8.sr.provider("prob", fake(choice("halt", 0.99)));
+    l8.sr.provider("exactp", fake(choice("halt", 1), { sync: true, exact: true }));
+    throws("#24: capability with probabilistic engine cannot request reserved command without addsRecall",
+      () => l8.sr.capability({ id: "stopcap", steps: [{ primitive: "choice", engines: ["prob"], question: Q }], notFor: NOT, mode: "live", behavior: { request: { halt: "halt" } } }),
+      /reserved/);
+    check("#24: capability with exact engine can request reserved command",
+      !!l8.sr.capability({ id: "stop_exact", steps: [{ primitive: "choice", engines: ["exactp"], question: Q }], notFor: NOT, mode: "live", behavior: { request: { halt: "halt" } } }));
+    check("#24: capability with addsRecall:true can request reserved command",
+      !!l8.sr.capability({ id: "stop_recall", steps: [{ primitive: "choice", engines: ["prob"], question: Q }], notFor: NOT, addsRecall: true, mode: "live", behavior: { request: { halt: "halt" } } }));
+  }
+
+  // ---- #25: shadow trigger runs capability engines and suppresses publish/request/actuate ----
+  {
+    const shRows = [], shRan = [], shSr = createRouter({ log: (e, d) => shRows.push(d) });
+    shSr.command({ id: "do_go", run: () => shRan.push("go") });
+    shSr.provider("pz", { sync: true, model: "z1", types: ["choice"], ask: () => ({ model: "z1", answers: { q: { type: "choice", choice: "go", probabilities: { go: 0.99, none: 0.01 } } } }) });
+    shSr.calibrate({ zcap: { "pz@z1": { p: 0.6 } } });
+    shSr.stream({ id: "zs", types: ["e"] }); shSr.stream({ id: "zpub", types: ["e"] });
+    const ZQ = { type: "choice", instructions: "shadow cap q", criteria: { go: "go", none: "n" } };
+    shSr.capability({ id: "zcap", steps: [{ primitive: "choice", engines: ["pz"], question: ZQ }], notFor: NOT, mode: "live", behavior: { publish: "zpub", request: { go: "do_go" } } });
+    shSr.command({ id: "zcmd", capability: "zcap" });
+    shSr.trigger({ id: "zt", on: { stream: "zs" }, command: "zcmd" }); // default: shadow
+    shSr.emit("zs", { type: "e", data: "hello" });
+    await sleep(20);
+    check("#25: shadow trigger runs capability engine, logs decision with did:0, publishes nothing, runs nothing",
+      shRan.length === 0 && shSr.read("zpub") === null &&
+      shRows.some((r) => r.r === "zcap" && r.p === "pz" && r.a === "go" && r.why === "shadow") &&
+      shRows.some((r) => r.r === "zt" && r.why === "shadow" && r.did === 0),
+      [shRan, shSr.read("zpub"), shRows]);
+  }
+
+  // ---- #26: capabilities enforce validation, race policy, shadow arms, and stale flights ----
+  {
+    const u = mk();
+    u.sr.provider("pq", fake(choice("go", 0.99)));
+    throws("#26: capability requires notFor for decision steps",
+      () => u.sr.capability({ id: "no_nf", steps: [{ primitive: "choice", engines: ["pq"], question: { type: "choice", instructions: "q", criteria: { go: "g", none: "n" } } }] }),
+      /notFor/);
+    throws("#26: capability rejects over-long instructions and bad option keys",
+      () => u.sr.capability({ id: "weak", notFor: NOT, steps: [{ primitive: "choice", engines: ["pq"], question: { type: "choice", instructions: "x".repeat(5000), criteria: { go: "g", none: "n" } } }] }),
+      /600/);
+    throws("#26: capability rejects bad option keys and long descriptions",
+      () => u.sr.capability({ id: "weak2", notFor: NOT, steps: [{ primitive: "choice", engines: ["pq"], question: { type: "choice", instructions: "ok", criteria: { go: "y".repeat(400), none: "n", "bad key!": "z" } } }] }),
+      /option names/);
+    const rc = mk();
+    rc.sr.provider("fast_unsure", fake(async () => choice("spin", 0.4, { none: 0.6 })));
+    rc.sr.provider("slow_sure", fake(async () => { await sleep(15); return choice("spin", 0.98); }));
+    rc.sr.capability({ id: "race_cap", notFor: NOT, steps: [{ primitive: "choice", engines: ["fast_unsure", "slow_sure"], policy: "race", question: Q }], mode: "live", behavior: { request: { spin: "spin" } } });
+    rc.sr.calibrate({ race_cap: { "fast_unsure@m1": { p: 0.9 }, "slow_sure@m1": { p: 0.9 } } });
+    const rr = await rc.sr.invoke("race_cap", "spin");
+    check("#26: capability supports race policy", rr.ok && rc.ran.join() === "spin", [rr, rc.ran]);
+  }
+
+  // ---- #27: unknown capability refused; capability command writes acted/did:1 only after settlement ----
+  {
+    const g = mk();
+    throws("#27: command bound to unknown capability is refused at registration",
+      () => g.sr.command({ id: "ghost", capability: "no_such_capability" }),
+      /unknown capability/);
+    g.sr.provider("fail_p", fake(async () => { await sleep(5); throw new Error("boom"); }));
+    g.sr.stream({ id: "gs", types: ["e"] });
+    g.sr.capability({ id: "fail_cap", notFor: NOT, steps: [{ primitive: "choice", engines: ["fail_p"], question: Q }], mode: "live" });
+    g.sr.command({ id: "fail_cmd", capability: "fail_cap" });
+    g.sr.trigger({ id: "gt", on: { stream: "gs" }, command: "fail_cmd", mode: "live" });
+    g.sr.emit("gs", { type: "e", data: "x" });
+    await sleep(30);
+    const gtRows = g.rows.filter((r) => r.r === "gt");
+    check("#27: failed capability logs error/did:0 on trigger instead of premature acted/did:1",
+      gtRows.length === 1 && gtRows[0].why === "error" && gtRows[0].did === 0 && !gtRows.some((r) => r.why === "acted"),
+      gtRows);
+  }
+
+  // ---- #41: single-read snapshot across all v2 registrations ----
+  {
+    const g = mk();
+    g.sr.provider("p", fake(choice("spin", 1), { sync: true, exact: true }));
+    g.sr.stream({ id: "s_pub", types: ["ev"] });
+    const reads = {};
+    const trk = (k, v) => ({ enumerable: true, get() { reads[k] = (reads[k] || 0) + 1; return v; } });
+    const argDecl = Object.defineProperties({}, { type: trk("arg.type", "number"), min: trk("arg.min", 1), max: trk("arg.max", 10) });
+    const cmdSpec = Object.defineProperties({}, {
+      id: trk("cmd.id", "c_snap"), run: trk("cmd.run", () => {}), args: trk("cmd.args", Object.defineProperties({}, { n: trk("arg.n", argDecl) })),
+      exposeTo: trk("cmd.exp", ["person"]), resource: trk("cmd.res", "legs"), holdMs: trk("cmd.hold", 100), cooldownMs: trk("cmd.cd", 10), reserved: trk("cmd.rsv", false)
+    });
+    g.sr.command(cmdSpec);
+    const reqEntry = Object.defineProperties({}, { command: trk("req.cmd", "c_snap"), args: trk("req.args", { n: 5 }) });
+    const capSpec = Object.defineProperties({}, {
+      id: trk("cap.id", "cap_snap"), notFor: trk("cap.nf", NOT), mode: trk("cap.mode", "live"), policy: trk("cap.pol", "single"),
+      steps: trk("cap.steps", [Object.defineProperties({}, {
+        primitive: trk("st.prim", "choice"), engines: trk("st.eng", ["p"]),
+        question: trk("st.q", Object.defineProperties({}, { type: trk("sq.t", "choice"), instructions: trk("sq.i", "snap cap q"), criteria: trk("sq.c", { spin: "s", none: "n" }) }))
+      })]),
+      behavior: trk("cap.beh", Object.defineProperties({}, {
+        publish: trk("beh.pub", "s_pub"), publishType: trk("beh.pt", "ev"),
+        request: trk("beh.req", Object.defineProperties({}, { spin: trk("beh.spin", reqEntry) }))
+      }))
+    });
+    g.sr.capability(capSpec);
+    const trigSpec = Object.defineProperties({}, {
+      id: trk("tr.id", "tr_snap"), command: trk("tr.cmd", "c_snap"), mode: trk("tr.mode", "shadow"),
+      on: trk("tr.on", Object.defineProperties({}, { stream: trk("tr.stream", "s_pub"), type: trk("tr.type", "ev") }))
+    });
+    g.sr.trigger(trigSpec);
+    const routeOnEntry = Object.defineProperties({}, { command: trk("ron.cmd", "c_snap"), args: trk("ron.args", { n: 3 }) });
+    g.sr.route({ id: "r_snap", question: { type: "choice", instructions: "snap route q", criteria: { spin: "s", none: "n" } }, notFor: NOT, on: { spin: routeOnEntry }, providers: ["p"] });
+    check("#41: every field of command, capability, trigger, and route object-form on is read exactly once",
+      Object.values(reads).every((n) => n === 1), reads);
+  }
 }
 
 done("router laws");

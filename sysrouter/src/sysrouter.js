@@ -27,12 +27,9 @@
 //   sr.seal();                                                   // no reserved action or core route after this
 //   // in sendTxtFrom, after the local readers:  try{ if(typeof SysRouter!=="undefined") SysRouter.hear(t); }catch(_sr){}
 
-import { ID, KEY, GATE, dict, copyDict, checkArgs, readPrimitive as checkPrim, sha256Hex } from './registry.js';
+import { ID, GATE, MODES, TYPES, PRIMITIVES, dict, checkArgs, readPrimitive as checkPrim, createRegistry } from './registry.js';
 
 const TIERS = { core: 0, system: 1, extension: 2 };          // lower number = higher priority
-const MODES = ['shadow', 'live'], POLICIES = ['single', 'cascade', 'race'], TYPES = ['noul', 'choice', 'score'];
-const PRIMITIVES = ['noul', 'choice', 'score', 'generate', 'match', 'embed', 'query', 'sense', 'actuate'];
-const EXPOSE_TO = ['third-party', 'creature', 'person'], ARG_TYPES = ['number', 'string', 'boolean', 'enum'];
 const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 
 // Kill switch and per-route modes, the codebase's way: read from the URL, persisted to
@@ -86,18 +83,25 @@ export function createRouter(opts) {
   const maxHops = Number.isInteger(opts.maxHops) && opts.maxHops >= 0 ? opts.maxHops : 3;
   let sealed = false, seq = 0, evSeq = 0, activeHop = -1, usd = 0;
   let blockList = { names: new Set(), hashes: new Set() };
+  const assertOpen = () => { if (sealed) throw new Error('sysrouter: sealed'); };
+
+  const reg = createRegistry({ actions, providers, routes, capabilities, triggers, installed, streams, assertOpen, isSealed: () => sealed, getBlockList: () => blockList });
+
   function setBlockList(bl) {
     const names = new Set(Array.isArray(bl && bl.names) ? bl.names.map(String) : []);
     const hashes = new Set(Array.isArray(bl && bl.hashes) ? bl.hashes.map((h) => String(h).toLowerCase()) : []);
     blockList = { names, hashes };
     for (const n of Object.keys(installed)) {
-      if (names.has(n) || hashes.has(installed[n].hash)) uninstall(n);
+      if (names.has(n) || hashes.has(installed[n].hash)) reg.uninstall(n);
     }
   }
   if (opts.blockList) setBlockList(opts.blockList);
 
   streams['speech'] = { id: 'speech', tier: 'core', owner: '', types: { person: true, creature: true }, latest: null, watchers: [] };
   streams['body.sense'] = { id: 'body.sense', tier: 'core', owner: '', types: { trig: true }, latest: null, watchers: [] };
+
+  const modeOf = (r) => flags.off ? 'off' : (flags.routes && has(flags.routes, r.id) ? flags.routes[r.id] : r.mode);
+  const gateOf = (r, pid, model) => { if (!model) return null; const g = gates[r.id] || dict(); return g[pid + '@' + model] || null; };
 
   function row(r, why, x) {   // one journal row per decision (R-OBS-1). Never the words: the funnel's own "user" row holds their hash.
     const o = { r: r.id, tier: r.tier, mode: modeOf(r), why };
@@ -107,28 +111,19 @@ export function createRouter(opts) {
     try { log('sysroute', o); } catch (e) {}
     return o;
   }
-  const modeOf = (r) => flags.off ? 'off' : (flags.routes && has(flags.routes, r.id) ? flags.routes[r.id] : r.mode);
-  const gateOf = (r, pid, model) => { if (!model) return null; const g = gates[r.id] || dict(); return g[pid + '@' + model] || null; };
 
-  const assertOpen = () => { if (sealed) throw new Error('sysrouter: sealed'); };
-
-  function addStream(rawDecl, who) {
-    if (!rawDecl || typeof rawDecl !== 'object') throw new Error('sysrouter: bad stream');
-    const id = rawDecl.id, rt = rawDecl.types;
-    if (!ID.test(id || '')) throw new Error('sysrouter: bad stream id ' + id);
-    if (has(streams, id)) throw new Error('sysrouter: stream exists: ' + id);
-    const types = dict();
-    if (Array.isArray(rt)) { for (const t of rt) if (typeof t === 'string' && KEY.test(t)) types[t] = true; }
-    else if (rt && typeof rt === 'object') { for (const t of Object.keys(rt)) if (KEY.test(t) && !(t in Object.prototype)) types[t] = true; }
-    if (!Object.keys(types).length) throw new Error('sysrouter: stream ' + id + ' needs types');
-    streams[id] = { id, tier: who.tier, owner: who.name || '', types, latest: null, watchers: [] };
-    return id;
+  function checkExtRate(r) {
+    if (!r.perMin) return true;
+    const m = Math.floor(now() / 60000), s = spend[r.owner] = spend[r.owner] && spend[r.owner].m === m ? spend[r.owner] : { m, n: 0 };
+    if (++s.n > r.perMin) { row(r, 'rate'); return false; }
+    return true;
   }
-  function emit(streamId, event) {
+
+  function emit(streamId, event, explicitHop) {
     if (flags.off) return null;
     const s = has(streams, streamId) ? streams[streamId] : null;
     if (!s || !event || typeof event !== 'object' || typeof event.type !== 'string' || !has(s.types, event.type)) throw new Error('sysrouter: bad event for ' + streamId);
-    const hop = activeHop >= 0 ? activeHop + 1 : 0;
+    const hop = typeof explicitHop === 'number' ? explicitHop : (activeHop >= 0 ? activeHop + 1 : 0);
     if (hop > maxHops) { row({ id: streamId, tier: s.tier, owner: s.owner, mode: 'live' }, 'hops', { stream: streamId, type: event.type, hop }); return null; }
     const raw = event.data, data = typeof raw === 'string' ? (raw.length > 600 ? raw.slice(0, 600) : raw) : raw;
     const ev = Object.freeze({ stream: streamId, type: event.type, data, t: now(), seq: ++evSeq, hop });
@@ -138,7 +133,7 @@ export function createRouter(opts) {
       for (const fn of s.watchers.slice()) { try { fn(ev); } catch (e) {} }
       for (const tid in triggers) {
         const tr = triggers[tid];
-        if (tr.on.stream === streamId && (!tr.on.type || tr.on.type === ev.type)) fireTrigger(tr, ev.data);
+        if (tr.on.stream === streamId && (!tr.on.type || tr.on.type === ev.type)) fireTrigger(tr, ev.data, ev.hop);
       }
     }
     finally { activeHop = prevHop; }
@@ -152,48 +147,12 @@ export function createRouter(opts) {
     return () => { const i = ws.indexOf(fn); if (i >= 0) ws.splice(i, 1); };
   }
 
-  function addCommand(rawSpec, who) {
-    if (!rawSpec || typeof rawSpec !== 'object') throw new Error('sysrouter: bad command');
-    const id = rawSpec.id, cap = rawSpec.capability, run = rawSpec.run, rArgs = rawSpec.args, rExp = rawSpec.exposeTo;
-    const resource = rawSpec.resource ? String(rawSpec.resource) : '', holdMs = +rawSpec.holdMs || 0, cooldownMs = Math.max(0, +rawSpec.cooldownMs || 0), reserved = !!rawSpec.reserved;
-    if (!ID.test(id || '')) throw new Error('sysrouter: bad command ' + id);
-    if (has(actions, id)) throw new Error('sysrouter: action exists: ' + id);
-    if (reserved && sealed) throw new Error('sysrouter: reserved actions are registered before seal()');
-    if (who.tier !== 'extension') assertOpen();
-    if (typeof run !== 'function' && (typeof cap !== 'string' || !ID.test(cap))) throw new Error('sysrouter: command ' + id + ' needs capability or run');
-    const exposeTo = [];
-    if (rExp !== undefined) {
-      if (!Array.isArray(rExp)) throw new Error('sysrouter: bad exposeTo');
-      for (const e of rExp) { if (!EXPOSE_TO.includes(e)) throw new Error('sysrouter: bad exposeTo ' + e); if (!exposeTo.includes(e)) exposeTo.push(e); }
-    }
-    let args = null;
-    if (rArgs !== undefined && rArgs !== null) {
-      if (typeof rArgs !== 'object' || Array.isArray(rArgs)) throw new Error('sysrouter: bad args schema');
-      args = dict();
-      for (const k of Object.keys(rArgs)) {
-        if (!KEY.test(k) || (k in Object.prototype)) throw new Error('sysrouter: bad arg name ' + k);
-        const d = rArgs[k];
-        if (!d || typeof d !== 'object' || !ARG_TYPES.includes(d.type)) throw new Error('sysrouter: bad arg type ' + k);
-        const entry = { type: d.type };
-        if (d.type === 'number') { if (d.min !== undefined) entry.min = +d.min; if (d.max !== undefined) entry.max = +d.max; }
-        if (d.type === 'string' && d.maxLen !== undefined) entry.maxLen = Math.max(0, +d.maxLen);
-        if (d.type === 'enum') {
-          if (!Array.isArray(d.values) || !d.values.length || !d.values.every((v) => typeof v === 'string')) throw new Error('sysrouter: enum needs values');
-          entry.values = Object.freeze(d.values.slice());
-        }
-        args[k] = Object.freeze(entry);
-      }
-    }
-    actions[id] = { id, tier: who.tier, owner: who.name || '', run: typeof run === 'function' ? run : null, capability: typeof cap === 'string' ? cap : '', args, exposeTo: Object.freeze(exposeTo), resource, holdMs, cooldownMs, reserved };
-    return id;
-  }
-
   function action(id, a) {
     if (!ID.test(id) || !a || typeof a.run !== 'function') throw new Error('sysrouter: bad action ' + id);
     if (has(actions, id)) throw new Error('sysrouter: action exists: ' + id);
     if (a.reserved && sealed) throw new Error('sysrouter: reserved actions are registered before seal()');
     assertOpen();
-    return addCommand({ id, run: a.run, resource: a.resource, holdMs: a.holdMs, reserved: a.reserved, exposeTo: a.exposeTo }, { tier: 'system' });
+    return reg.addCommand({ id, run: a.run, resource: a.resource, holdMs: a.holdMs, reserved: a.reserved, exposeTo: a.exposeTo }, { tier: 'system' });
   }
   function provider(id, p) {
     assertOpen();
@@ -232,94 +191,23 @@ export function createRouter(opts) {
     }
   }
 
-  // Registration is DATA: no function crosses this line, so the same call works from a Worker
-  // or an iframe by message (R-TRUST-5). `who` is set by the loader, never read from the spec.
-  function addRoute(rawSpec, who) {
-    if (!rawSpec || typeof rawSpec !== 'object') throw new Error('sysrouter: route ' + (rawSpec && rawSpec.id) + ': bad id');
-    const rq = rawSpec.question, rcrit = rq && typeof rq === 'object' ? rq.criteria : null;
-    const rp = rawSpec.providers, rs = rawSpec.shadow, ro = rawSpec.on;
-    const spec = {
-      id: rawSpec.id,
-      question: rq && typeof rq === 'object' ? { type: rq.type, instructions: rq.instructions, criteria: Array.isArray(rcrit) ? rcrit.slice() : copyDict(rcrit) } : null,
-      notFor: rawSpec.notFor, mode: rawSpec.mode, policy: rawSpec.policy,
-      providers: Array.isArray(rp) ? rp.slice() : rp,
-      shadow: Array.isArray(rs) ? rs.slice() : rs,
-      on: ro === undefined ? dict() : copyDict(ro),
-      addsRecall: rawSpec.addsRecall, budgetMs: rawSpec.budgetMs, cooldownMs: rawSpec.cooldownMs, input: rawSpec.input, agree: rawSpec.agree
-    };
-    const fail = (m) => { throw new Error('sysrouter: route ' + spec.id + ': ' + m); };
-    if (!ID.test(spec.id || '')) fail('bad id');
-    if (has(routes, spec.id)) fail('exists');
-    const q = spec.question;
-    if (!q || !TYPES.includes(q.type) || typeof q.instructions !== 'string' || !q.instructions.trim()) fail('question needs type and instructions');
-    if (q.type === 'score' ? !(Array.isArray(q.criteria) && q.criteria.length >= 2 && q.criteria.length <= 10) : !(q.criteria && typeof q.criteria === 'object' && !Array.isArray(q.criteria))) fail('bad criteria');
-    if (q.type === 'choice' && (Object.keys(q.criteria).length < 2 || Object.keys(q.criteria).length > 64)) fail('choice needs 2-64 options');
-    if (q.instructions.length > 600) fail('instructions over 600 characters');
-    if (q.type !== 'score' && !Object.keys(q.criteria).every((k) => KEY.test(k) && !(k in Object.prototype) && typeof q.criteria[k] === 'string' && q.criteria[k].length <= 300)) fail('option names are plain words, descriptions are strings up to 300 characters');
-    if (q.type === 'score' && !q.criteria.every((c) => typeof c === 'string' && c.length <= 300)) fail('score levels are strings up to 300 characters');
-    if (q.type === 'noul' && Object.keys(q.criteria).sort().join() !== 'false,true') fail('a yes/no question has criteria true and false');
-    const criteria = q.type === 'score' ? Object.freeze(q.criteria.slice()) : Object.freeze(Object.assign({}, q.criteria));
-    if (typeof spec.notFor !== 'string' || spec.notFor.trim().length < 12) fail('notFor is required: say what this route must NOT fire on (R-REG-5)');
-    const rawMode = spec.mode || 'shadow', mode = rawMode === 'parallel' ? 'live' : rawMode, policy = spec.policy || 'single';
-    if (!MODES.includes(mode) || !POLICIES.includes(policy)) fail('bad mode or policy');
-    const ps = spec.providers || [], sh = spec.shadow || [];
-    if (!Array.isArray(ps) || !Array.isArray(sh) || !ps.length || ps.length > 4 || sh.length > 4) fail('1-4 providers');
-    for (const pid of ps.concat(sh)) { if (!has(providers, pid)) fail('unknown provider ' + pid); if (!providers[pid].types.includes(q.type)) fail(pid + ' cannot answer ' + q.type); }
-    if (policy === 'single' && ps.length !== 1) fail('single takes one provider');
-    if (spec.on === null) fail('bad on');
-    const on = spec.on, keys = q.type === 'noul' ? ['true', 'false'] : q.type === 'choice' ? Object.keys(q.criteria) : q.criteria.map((_, i) => String(i));
-    const onArgs = dict();
-    for (const k of Object.keys(on)) {
-      if (!keys.includes(k)) fail('on.' + k + ' is not an answer');
-      const rawEntry = on[k], aid = typeof rawEntry === 'string' ? rawEntry : (rawEntry && typeof rawEntry === 'object' && typeof rawEntry.command === 'string' ? rawEntry.command : '');
-      if (!aid || !has(actions, aid)) fail('unknown action ' + aid);
-      on[k] = aid;
-      if (rawEntry && typeof rawEntry === 'object' && rawEntry.args !== undefined) onArgs[k] = copyDict(rawEntry.args);
-      const a = actions[aid];
-      // a reserved action (stop, halt) is reachable only through an exact provider chain: a probability may never be the only thing between words and a stop, in either direction (R-SAFE-1)
-      if (a.reserved && !(who.tier === 'core' || ps.every((pid) => providers[pid].exact) || spec.addsRecall === true)) fail('reserved action needs exact providers, or addsRecall:true');
-      if (a.reserved && who.tier === 'extension') fail('extensions cannot reach reserved actions');
-      if (who.grants && !who.grants.actions.includes(aid)) fail('no grant for action ' + aid);
-    }
-    if (who.grants) for (const pid of ps.concat(sh)) if (!who.grants.providers.includes(pid)) fail('no grant for provider ' + pid);
-    for (const rid in routes) {   // collisions (R-REG-5): two acting routes may not both claim one answer of one identical question
-      const o = routes[rid]; if (o.question.instructions === q.instructions && Object.keys(on).some((k) => has(o.on, k) && o.on[k] !== on[k])) fail('collides with ' + rid);
-    }
-    routes[spec.id] = { id: spec.id, tier: who.tier, owner: who.name || '', question: Object.freeze({ type: q.type, instructions: q.instructions, criteria }),
-      on: Object.freeze(Object.assign(dict(), on)), onArgs, providers: ps.slice(), shadow: sh.slice(), policy, mode, notFor: spec.notFor,
-      budgetMs: Math.max(20, Math.min(10000, +spec.budgetMs || 1500)), cooldownMs: Math.max(0, +spec.cooldownMs || 0),
-      input: spec.input === 'creature' || spec.input === 'both' ? spec.input : 'person', agree: typeof spec.agree === 'string' ? spec.agree : '', perMin: who.grants ? who.grants.perMin : 0 };
-    return spec.id;
-  }
-  function dropRoute(id, who) { const r = routes[id]; if (!r || (who.name || '') !== r.owner || r.tier !== who.tier) return false; delete routes[id]; return true; }
-
-  // The loader hands an extension this facade and nothing else (R-TRUST-1..4): it can add and
-  // remove ITS OWN routes, over the actions and providers it was granted, at its own rate cap.
-  function normPerms(p) {
-    const acts = ((p && (p.commands || p.actions)) || []).slice();
-    if (acts.some((id) => actions[id] && actions[id].reserved)) throw new Error('sysrouter: extensions cannot be granted reserved actions');
-    const engs = ((p && (p.engines || p.providers)) || []).slice();
-    const strms = ((p && p.streams) || []).slice();
-    const perMin = Math.max(1, Math.min(120, +(p && p.perMin) || 20));
-    const pMaxUsd = p && p.maxUsd >= 0 ? +p.maxUsd : 0;
-    return { actions: acts, providers: engs, streams: strms, perMin, maxUsd: pMaxUsd };
-  }
   function extension(name, grants) {
     assertOpen();
     if (!ID.test(name)) throw new Error('sysrouter: bad extension name');
     if (blockList.names.has(name)) throw new Error('sysrouter: blocked extension name ' + name);
-    const p = normPerms(grants);
+    const p = reg.normPerms(grants);
     const who = { tier: 'extension', name, grants: p };
     const snap = () => JSON.parse(JSON.stringify(who.grants));
-    return Object.freeze({ route: (spec) => addRoute(spec, who), unroute: (id) => dropRoute(id, who), grants: snap });
+    return Object.freeze({ route: (spec) => reg.addRoute(spec, who), unroute: (id) => reg.dropRoute(id, who), grants: snap });
   }
 
-  function act(r, pick, x, rawArgs) {
+  function act(r, pick, x, rawArgs, hop) {
     const aid = has(r.on, pick) ? r.on[pick] : '', mode = modeOf(r);
     if (!aid) return row(r, 'none', x);
     const a = actions[aid], t = now(), tier = TIERS[r.tier];
     x.act = aid;
-    if (mode === 'shadow') return row(r, 'shadow', x);
+    const isCap = !a.run && a.capability && has(capabilities, a.capability);
+    if (mode === 'shadow' && !isCap) return row(r, 'shadow', x);
     const clearHolds = () => { for (const k in held) delete held[k]; };
     if (x.p && providers[x.p] && providers[x.p].inFunnel) {
       if (a.reserved) clearHolds();
@@ -329,16 +217,32 @@ export function createRouter(opts) {
     let checkedArgs = rawArgs !== undefined ? rawArgs : (r.onArgs && has(r.onArgs, pick) ? r.onArgs[pick] : undefined);
     if (a.args) { const okArgs = checkArgs(a.args, checkedArgs); if (!okArgs) return row(r, 'bad_args', x); checkedArgs = okArgs; }
     const cd = a.cooldownMs || r.cooldownMs;
-    if (!a.reserved) {
+    if (mode !== 'shadow' && !a.reserved) {
       if (cd && t - (last[r.id + '>' + aid] || -1e15) < cd) return row(r, 'cooldown', x);   // per action: a debounce against the same thing twice, never a block on a different command
       const h = a.resource && held[a.resource];
       if (h && h.until > t && h.tier < tier) return row(r, 'held', x);                 // a lower tier never pre-empts what a higher tier holds (R-TRUST-2)
     }
+    if (isCap) {
+      return resolveCapability(capabilities[a.capability], checkedArgs, mode, hop).then((res) => {
+        if (mode === 'shadow') { x.did = 0; return row(r, 'shadow', x); }
+        if (res && res.ok) {
+          last[r.id + '>' + aid] = t;
+          if (a.reserved) clearHolds();
+          else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };
+          x.did = 1;
+          return row(r, 'acted', x);
+        }
+        x.did = 0;
+        return row(r, (res && res.why) || 'error', x);
+      });
+    }
+    const prevHop = activeHop;
+    if (typeof hop === 'number') activeHop = hop;
     try { if (a.run) a.run({ route: r.id, pick, tier: r.tier, args: checkedArgs }); } catch (e) { return row(r, 'act_error', x); }
+    finally { activeHop = prevHop; }
     last[r.id + '>' + aid] = t;
     if (a.reserved) clearHolds();                                                        // a stop clears every hold, whoever owns it
     else if (a.resource && a.holdMs) held[a.resource] = { tier, until: t + a.holdMs };
-    if (!a.run && a.capability && has(capabilities, a.capability)) resolveCapability(capabilities[a.capability], checkedArgs, mode);
     x.did = 1;
     return row(r, 'acted', x);
   }
@@ -379,32 +283,46 @@ export function createRouter(opts) {
     ).then(mark);
   }
 
-  function resolve(r, req, fresh, finish) {
-    const rid = r.id;
-    // 1. the leading sync providers, in order, in this tick
-    let i = 0, decided = false;
-    for (; i < r.providers.length && providers[r.providers[i]].sync; i++) {
+  // Unified decision-step resolver used by both routes and capabilities (#26).
+  // Runs leading sync providers synchronously in this tick, then async providers under policy (single/cascade/race) and shadow arms.
+  function resolveDecisionStep(r, st, req, ctl, sctl, fresh, onWin) {
+    const rid = r.id, engines = st.engines, shadow = st.shadow || [], policy = st.policy;
+    const stepR = Object.assign({}, r, { question: st.question, providers: engines, shadow, policy });
+    let i = 0, decided = false, syncWin = null, lastRes = null;
+    for (; i < engines.length && providers[engines[i]].sync; i++) {
       const t0 = now(); let res;
-      try { res = settle(r, r.providers[i], providers[r.providers[i]].ask(req, { route: rid }), t0); } catch (e) { res = { d: null, x: { p: r.providers[i] }, why: 'error' }; }
-      if (res.d) { finish(res); decided = true; break; }
-      if (r.policy === 'single' || i === r.providers.length - 1 || res.why !== 'abstain') row(r, res.why, res.x);
+      try { res = settle(stepR, engines[i], providers[engines[i]].ask(req, { route: rid }), t0); } catch (e) { res = { d: null, x: { p: engines[i] }, why: 'error' }; }
+      lastRes = res;
+      if (res.d) { decided = true; syncWin = res; if (onWin) onWin(res); break; }
+      if (policy === 'single' || i === engines.length - 1 || res.why !== 'abstain') row(r, res.why, res.x);
     }
-    const rest = decided ? [] : r.providers.slice(i);
-    if (!rest.length && !r.shadow.length) return null;
-    // 2. the async providers, outside the brain's single flight (R-RT-5), under the route's budget
-    if (flight[rid]) flight[rid].abort('stale');                                         // one flight per route: the engines still working on older words are told to stop
-    const ctl = flight[rid] = new AbortController(), sctl = new AbortController(), timer = setTimeout(() => { ctl.abort('timeout'); sctl.abort('timeout'); }, r.budgetMs);
-    const sh = r.shadow.map((pid) => askAsync(r, pid, req, sctl.signal).then((res) => { row(r, 'shadow_arm', Object.assign(res.x, { arm: res.why || 'ok' })); }));
+    const rest = decided ? [] : engines.slice(i);
+    if (!rest.length && !shadow.length) return { sync: true, res: syncWin || lastRes };
+    const sh = shadow.map((pid) => askAsync(stepR, pid, req, sctl.signal).then((res) => { row(r, 'shadow_arm', Object.assign(res.x, { arm: res.why || 'ok' })); }));
+    let winRes = syncWin, failRes = lastRes;
     let main;
-    if (r.policy === 'race') main = new Promise((done) => { let left = rest.length, won = false; if (!left) done();
-      rest.forEach((pid) => askAsync(r, pid, req, ctl.signal).then((res) => { if (res.d && !won) { won = true; if (fresh()) finish(res); else row(r, 'stale', res.x); ctl.abort('won'); } else if (!res.d && !won && res.why !== 'lost' && (left === 1 || res.why !== 'abstain')) row(r, res.why, res.x); if (!--left || won) done(); })); });   // first CONFIDENT answer wins, not first to arrive
-    else main = rest.reduce((chain, pid, k) => chain.then((got) => got ? got : askAsync(r, pid, req, ctl.signal).then((res) => {
+    if (decided) main = Promise.resolve(true);
+    else if (policy === 'race') main = new Promise((done) => { let left = rest.length, won = false; if (!left) done();
+      rest.forEach((pid) => askAsync(stepR, pid, req, ctl.signal).then((res) => { if (res.d && !won) { won = true; if (fresh()) { winRes = res; if (onWin) onWin(res); } else row(r, 'stale', res.x); ctl.abort('won'); } else if (!res.d && !won && res.why !== 'lost' && (left === 1 || res.why !== 'abstain')) { failRes = res; row(r, res.why, res.x); } if (!--left || won) done(); })); });   // first CONFIDENT answer wins, not first to arrive
+    else main = rest.reduce((chain, pid, k) => chain.then((got) => got ? got : askAsync(stepR, pid, req, ctl.signal).then((res) => {
       if (!fresh()) { row(r, 'stale', res.x); return true; }
-      if (res.d) { finish(res); return true; }
+      if (res.d) { winRes = res; if (onWin) onWin(res); return true; }
+      failRes = res;
       if (k === rest.length - 1 || res.why !== 'abstain') row(r, res.why, res.x);     // every engine consulted writes a row except a non-final abstain
       return false; })), Promise.resolve(false));
+    return { sync: false, promise: Promise.all([main].concat(sh)).then(() => winRes || failRes) };
+  }
+
+  function resolve(r, req, fresh, finish) {
+    const rid = r.id, st = r.steps[0];
+    if (flight[rid]) flight[rid].abort('stale');                                         // one flight per route: the engines still working on older words are told to stop
+    const ctl = new AbortController(), sctl = new AbortController();
+    const out = resolveDecisionStep(r, st, req, ctl, sctl, fresh, finish);
+    if (out.sync) return null;
+    flight[rid] = ctl;
+    const timer = setTimeout(() => { ctl.abort('timeout'); sctl.abort('timeout'); }, r.budgetMs);
     const end = () => { clearTimeout(timer); if (flight[rid] === ctl) delete flight[rid]; };
-    return Promise.all([main].concat(sh)).then(end, end);
+    return out.promise.then(end, end);
   }
 
   function hear(text, meta) {
@@ -418,10 +336,10 @@ export function createRouter(opts) {
     try { for (const rid in routes) {
       const r = routes[rid];
       if (modeOf(r) === 'off' || (r.input !== 'both' && r.input !== from)) continue;
-      if (r.perMin) { const m = Math.floor(now() / 60000), s = spend[r.owner] = spend[r.owner] && spend[r.owner].m === m ? spend[r.owner] : { m, n: 0 }; if (++s.n > r.perMin) { row(r, 'rate'); continue; } }
+      if (!checkExtRate(r)) continue;
       seqOf[rid] = my;
       const req = { state, questions: { q: r.question } }, fresh = () => seqOf[rid] === my;
-      const finish = (res) => { if (r.input === 'both') res.x.from = from; const o = act(r, res.d.pick, res.x); if (o.did) out.acted.push(o.act); };
+      const finish = (res) => { if (r.input === 'both') res.x.from = from; const o = act(r, res.d.pick, res.x, undefined, ev.hop); if (o && o.did) out.acted.push(o.act); };
       const p = resolve(r, req, fresh, finish);
       if (p) waits.push(p);
     } } finally { activeHop = prevHop; }
@@ -440,140 +358,65 @@ export function createRouter(opts) {
     if (typeof reply.say === 'string' && reply.say.trim()) hear(reply.say, { from: 'creature' });
   }
 
-  function addCapability(rawSpec, who) {
-    if (!rawSpec || typeof rawSpec !== 'object') throw new Error('sysrouter: bad capability');
-    const id = rawSpec.id, rawSteps = rawSpec.steps, rawBeh = rawSpec.behavior;
-    const capPolicy = rawSpec.policy || 'single', budgetMs = Math.max(20, Math.min(10000, +rawSpec.budgetMs || 1500));
-    const rawMode = rawSpec.mode || 'shadow', mode = rawMode === 'parallel' ? 'live' : rawMode;
-    const addsRecall = !!rawSpec.addsRecall, agree = typeof rawSpec.agree === 'string' ? rawSpec.agree : '';
-    if (!ID.test(id || '')) throw new Error('sysrouter: bad capability id ' + id);
-    if (has(capabilities, id)) throw new Error('sysrouter: capability exists: ' + id);
-    if (!MODES.includes(mode) || !POLICIES.includes(capPolicy)) throw new Error('sysrouter: bad mode or policy');
-    if (!Array.isArray(rawSteps) || !rawSteps.length || rawSteps.length > 8) throw new Error('sysrouter: capability needs 1-8 steps');
-    const steps = [];
-    for (const st of rawSteps) {
-      if (!st || typeof st !== 'object' || !PRIMITIVES.includes(st.primitive)) throw new Error('sysrouter: bad capability step');
-      const prim = st.primitive, eng = (st.engines || st.providers || []).slice(), pol = st.policy || capPolicy;
-      if (!eng.length || eng.length > 4 || !POLICIES.includes(pol)) throw new Error('sysrouter: bad step engines/policy');
-      if (pol === 'single' && eng.length !== 1) throw new Error('sysrouter: single takes one engine');
-      for (const pid of eng) {
-        if (!has(providers, pid)) throw new Error('sysrouter: unknown provider ' + pid);
-        if (!has(providers[pid].primitives, prim) && !providers[pid].types.includes(prim)) throw new Error(pid + ' cannot run ' + prim);
-        if (who.grants && !who.grants.providers.includes(pid)) throw new Error('sysrouter: no grant for provider ' + pid);
-      }
-      let question = null;
-      if (TYPES.includes(prim) || prim === 'match') {
-        const rq = st.question || { type: prim === 'match' ? 'choice' : prim, instructions: st.instructions || id, criteria: st.criteria };
-        const qt = rq.type, crit = rq.criteria;
-        if (!TYPES.includes(qt) || typeof rq.instructions !== 'string' || !rq.instructions.trim()) throw new Error('sysrouter: bad step question');
-        const cCopy = Array.isArray(crit) ? Object.freeze(crit.slice()) : Object.freeze(Object.assign({}, copyDict(crit)));
-        question = Object.freeze({ type: qt, instructions: rq.instructions, criteria: cCopy });
-      }
-      steps.push(Object.freeze({ primitive: prim, engines: Object.freeze(eng), policy: pol, question, out: st.out ? copyDict(st.out) : null }));
-    }
-    const beh = { publish: '', publishType: '', request: null, onArgs: dict() };
-    if (rawBeh && typeof rawBeh === 'object') {
-      if (rawBeh.publish) {
-        if (!has(streams, rawBeh.publish)) throw new Error('sysrouter: unknown stream ' + rawBeh.publish);
-        beh.publish = rawBeh.publish;
-        const ts = Object.keys(streams[beh.publish].types);
-        beh.publishType = rawBeh.publishType && has(streams[beh.publish].types, rawBeh.publishType) ? rawBeh.publishType : ts[0];
-      }
-      if (rawBeh.request && typeof rawBeh.request === 'object') {
-        const reqMap = dict();
-        for (const k of Object.keys(rawBeh.request)) {
-          const entry = rawBeh.request[k], aid = typeof entry === 'string' ? entry : (entry && typeof entry === 'object' ? entry.command : '');
-          if (!aid || !has(actions, aid)) throw new Error('sysrouter: unknown action ' + aid);
-          const a = actions[aid];
-          if (a.reserved && who.tier === 'extension') throw new Error('sysrouter: extensions cannot reach reserved actions');
-          if (who.grants && !who.grants.actions.includes(aid)) throw new Error('sysrouter: no grant for action ' + aid);
-          reqMap[k] = aid;
-          if (entry && typeof entry === 'object' && entry.args !== undefined) beh.onArgs[k] = copyDict(entry.args);
-        }
-        beh.request = Object.freeze(reqMap);
-      }
-    }
-    capabilities[id] = { id, tier: who.tier, owner: who.name || '', steps: Object.freeze(steps), policy: capPolicy, budgetMs, mode, addsRecall, agree, behavior: beh };
-    return id;
-  }
-
-  async function resolveCapability(cap, input, modeOverride) {
-    const r = { id: cap.id, tier: cap.tier, owner: cap.owner, mode: modeOverride || cap.mode, on: cap.behavior.request || dict(), onArgs: cap.behavior.onArgs, cooldownMs: 0, agree: cap.agree };
-    const ctl = new AbortController(), timer = setTimeout(() => ctl.abort('timeout'), cap.budgetMs);
+  // Multi-step capability resolution sharing resolveDecisionStep, flight/stale, rate cap, shadow suppression, and async hop propagation (#18, #25, #26).
+  async function resolveCapability(cap, input, modeOverride, hop) {
+    const effMode = modeOverride || cap.mode;
+    const r = { id: cap.id, tier: cap.tier, owner: cap.owner, mode: effMode, on: cap.behavior.request || dict(), onArgs: cap.behavior.onArgs, cooldownMs: cap.cooldownMs || 0, agree: cap.agree, perMin: cap.perMin || 0 };
+    if (modeOf(r) === 'off') return { ok: false, why: 'off' };
+    if (!checkExtRate(r)) return { ok: false, why: 'rate' };
+    const fkey = 'cap:' + cap.id, my = ++seq;
+    seqOf[fkey] = my;
+    if (flight[fkey]) flight[fkey].abort('stale');
+    const ctl = flight[fkey] = new AbortController(), sctl = new AbortController();
+    const timer = setTimeout(() => { ctl.abort('timeout'); sctl.abort('timeout'); }, cap.budgetMs);
+    const fresh = () => seqOf[fkey] === my;
     let cur = input, finalDecision = null;
     try {
       for (let k = 0; k < cap.steps.length; k++) {
         const st = cap.steps[k];
-        if (ctl.signal.aborted) { row(r, 'timeout', { step: k }); return { ok: false, why: 'timeout' }; }
+        if (ctl.signal.aborted) { const why = ctl.signal.reason === 'stale' ? 'stale' : 'timeout'; row(r, why, { step: k }); return { ok: false, why }; }
         if (st.question) {
-          const stepRoute = Object.assign({}, r, { question: st.question, providers: st.engines, shadow: [], policy: st.policy, budgetMs: cap.budgetMs });
           const req = { state: typeof cur === 'string' ? cur : JSON.stringify(cur), input: cur, questions: { q: st.question } };
-          let res = null;
-          for (let j = 0; j < st.engines.length; j++) {
-            const pid = st.engines[j];
-            if (ctl.signal.aborted) { res = { d: null, x: { p: pid, ms: 0 }, why: 'timeout' }; break; }
-            res = providers[pid].sync
-              ? (() => { const t0 = now(); try { return settle(stepRoute, pid, providers[pid].ask(req, { route: cap.id, signal: ctl.signal }), t0); } catch (e) { return { d: null, x: { p: pid }, why: 'error' }; } })()
-              : await askAsync(stepRoute, pid, req, ctl.signal);
-            if (res.d) break;
-            if (st.policy === 'single' || j === st.engines.length - 1 || res.why !== 'abstain') row(r, res.why, res.x);
-          }
+          const stepOut = resolveDecisionStep(r, st, req, ctl, sctl, fresh, null);
+          const res = stepOut.sync ? stepOut.res : await stepOut.promise;
+          if (!fresh()) return { ok: false, why: 'stale' };
           if (!res || !res.d) return { ok: false, why: (res && res.why) || 'unsure' };
           finalDecision = res; cur = res.d.pick;
+          if (modeOf(r) === 'shadow' && !cap.behavior.request) row(r, 'shadow', Object.assign({}, res.x));
         } else {
           const pid = st.engines[0], P = providers[pid], t0 = now();
           if (st.primitive === 'actuate' && modeOf(r) === 'shadow') { row(r, 'shadow', { p: pid }); return { ok: true, output: { ok: false }, decision: null }; }
           let raw;
           try {
+            let onAbort;
+            const aborted = new Promise((_, rej) => { onAbort = () => rej(new Error('timeout')); ctl.signal.addEventListener('abort', onAbort, { once: true }); });
             const p = P.sync ? P.ask({ state: cur, input: cur, primitive: st.primitive, signal: ctl.signal }, { signal: ctl.signal, route: cap.id })
-              : Promise.race([Promise.resolve().then(() => P.ask({ state: cur, input: cur, primitive: st.primitive, signal: ctl.signal }, { signal: ctl.signal, route: cap.id })),
-                new Promise((_, rej) => ctl.signal.addEventListener('abort', () => rej(new Error('timeout')), { once: true }))]);
+              : Promise.race([Promise.resolve().then(() => P.ask({ state: cur, input: cur, primitive: st.primitive, signal: ctl.signal }, { signal: ctl.signal, route: cap.id })), aborted]).finally(() => ctl.signal.removeEventListener('abort', onAbort));
             raw = await p;
-          } catch (e) { const why = ctl.signal.aborted ? 'timeout' : 'error'; row(r, why, { p: pid, ms: Math.round(now() - t0) }); return { ok: false, why }; }
-          if (ctl.signal.aborted) { row(r, 'timeout', { p: pid, ms: Math.round(now() - t0) }); return { ok: false, why: 'timeout' }; }
+          } catch (e) { const why = ctl.signal.aborted ? (ctl.signal.reason === 'stale' ? 'stale' : 'timeout') : 'error'; row(r, why, { p: pid, ms: Math.round(now() - t0) }); return { ok: false, why }; }
+          if (ctl.signal.aborted) { const why = ctl.signal.reason === 'stale' ? 'stale' : 'timeout'; row(r, why, { p: pid, ms: Math.round(now() - t0) }); return { ok: false, why }; }
           const outVal = raw && typeof raw === 'object' && !Array.isArray(raw) && has(raw, 'output') ? raw.output : raw;
           const checked = readPrimitive(st.primitive, st, outVal);
           if (checked === null) { row(r, 'bad_answer', { p: pid, ms: Math.round(now() - t0) }); return { ok: false, why: 'bad_answer' }; }
           cur = checked;
         }
       }
-      if (cap.behavior.publish) emit(cap.behavior.publish, { type: cap.behavior.publishType, data: finalDecision ? finalDecision.d.pick : cur });
-      if (cap.behavior.request && finalDecision) act(r, finalDecision.d.pick, finalDecision.x);
+      const isShadow = modeOf(r) === 'shadow';
+      if (isShadow) {
+        if (cap.behavior.request && finalDecision) act(r, finalDecision.d.pick, finalDecision.x, undefined, hop);
+        return { ok: true, output: cur, decision: finalDecision ? finalDecision.d : null };
+      }
+      const nextHop = (typeof hop === 'number' ? hop : (activeHop >= 0 ? activeHop : -1)) + 1;
+      if (cap.behavior.publish) emit(cap.behavior.publish, { type: cap.behavior.publishType, data: finalDecision ? finalDecision.d.pick : cur }, nextHop);
+      if (cap.behavior.request && finalDecision) act(r, finalDecision.d.pick, finalDecision.x, undefined, hop);
       return { ok: true, output: cur, decision: finalDecision ? finalDecision.d : null };
-    } finally { clearTimeout(timer); }
+    } finally { clearTimeout(timer); if (flight[fkey] === ctl) delete flight[fkey]; }
   }
 
-  function addTrigger(rawSpec, who) {
-    if (!rawSpec || typeof rawSpec !== 'object') throw new Error('sysrouter: bad trigger');
-    const id = rawSpec.id, ro = rawSpec.on, cmd = rawSpec.command, ra = rawSpec.args;
-    const rawMode = rawSpec.mode || 'shadow', mode = rawMode === 'parallel' ? 'live' : rawMode, cooldownMs = Math.max(0, +rawSpec.cooldownMs || 0);
-    if (!ID.test(id || '')) throw new Error('sysrouter: bad trigger id ' + id);
-    if (has(triggers, id)) throw new Error('sysrouter: trigger exists: ' + id);
-    if (!MODES.includes(mode)) throw new Error('sysrouter: bad trigger mode');
-    if (!cmd || !has(actions, cmd)) throw new Error('sysrouter: unknown command ' + cmd);
-    const a = actions[cmd];
-    if (a.reserved && who.tier === 'extension') throw new Error('sysrouter: extensions cannot reach reserved actions');
-    if (who.grants && !who.grants.actions.includes(cmd)) throw new Error('sysrouter: no grant for action ' + cmd);
-    if (!ro || typeof ro !== 'object') throw new Error('sysrouter: bad trigger on');
-    let onSnap;
-    if (ro.stream) {
-      if (!has(streams, ro.stream)) throw new Error('sysrouter: unknown stream ' + ro.stream);
-      if (who.grants && who.grants.streams && !who.grants.streams.includes(ro.stream)) throw new Error('sysrouter: no grant for stream ' + ro.stream);
-      const t = ro.type;
-      if (t !== undefined && (typeof t !== 'string' || !has(streams[ro.stream].types, t))) throw new Error('sysrouter: bad trigger stream type ' + t);
-      onSnap = { stream: ro.stream, type: t || '' };
-    } else if (ro.person === true) onSnap = { person: true };
-    else if (ro.creature === true) onSnap = { creature: true };
-    else throw new Error('sysrouter: bad trigger on');
-    const argsSnap = ra === undefined ? undefined : (ra && typeof ra === 'object' && !Array.isArray(ra) ? copyDict(ra) : ra);
-    triggers[id] = { id, tier: who.tier, owner: who.name || '', on: Object.freeze(onSnap), command: cmd, args: argsSnap, mode, cooldownMs };
-    return id;
-  }
-
-  function fireTrigger(tr, rawData) {
+  function fireTrigger(tr, rawData, hop) {
     if (flags.off || modeOf(tr) === 'off') return null;
     const r = { id: tr.id, tier: tr.tier, owner: tr.owner, mode: tr.mode, on: { go: tr.command }, cooldownMs: tr.cooldownMs };
-    return act(r, 'go', {}, tr.args !== undefined ? tr.args : rawData);
+    return act(r, 'go', {}, tr.args !== undefined ? tr.args : rawData, hop);
   }
 
   function request(commandId, args, reqOpts) {
@@ -597,81 +440,25 @@ export function createRouter(opts) {
     return act({ id: 'request', tier: a.tier, owner: a.owner, mode: 'live', on: { go: commandId }, cooldownMs: a.cooldownMs }, 'go', { from }, args);
   }
 
-  function uninstall(name) {
-    if (!has(installed, name)) return false;
-    for (const k in triggers) if (triggers[k].tier === 'extension' && triggers[k].owner === name) delete triggers[k];
-    for (const k in routes) if (routes[k].tier === 'extension' && routes[k].owner === name) delete routes[k];
-    for (const k in capabilities) if (capabilities[k].tier === 'extension' && capabilities[k].owner === name) delete capabilities[k];
-    for (const k in actions) if (actions[k].tier === 'extension' && actions[k].owner === name) delete actions[k];
-    for (const k in streams) if (streams[k].tier === 'extension' && streams[k].owner === name) delete streams[k];
-    delete installed[name];
-    return true;
-  }
-
-  async function install(manifest, permissions) {
-    if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) throw new Error('sysrouter: bad manifest');
-    const name = manifest.name;
-    if (!ID.test(name || '')) throw new Error('sysrouter: bad extension name');
-    if (blockList.names.has(name)) throw new Error('sysrouter: blocked extension name ' + name);
-    const hash = await sha256Hex(manifest);
-    if (blockList.hashes.has(hash)) throw new Error('sysrouter: blocked extension hash ' + hash);
-    if (has(installed, name)) throw new Error('sysrouter: extension already installed: ' + name);
-    const p = normPerms(permissions);
-    const who = { tier: 'extension', name, grants: p };
-    const created = { streams: [], actions: [], capabilities: [], triggers: [], routes: [] };
-    try {
-      for (const s of (manifest.streams || [])) {
-        if (!p.streams.includes(s && s.id)) throw new Error('sysrouter: no grant for stream ' + (s && s.id));
-        created.streams.push(addStream(s, who));
-      }
-      for (const c of (manifest.capabilities || [])) created.capabilities.push(addCapability(c, who));
-      for (const c of (manifest.commands || [])) {
-        if (!p.actions.includes(c && c.id)) throw new Error('sysrouter: no grant for action ' + (c && c.id));
-        created.actions.push(addCommand(c, who));
-      }
-      for (const t of (manifest.triggers || [])) created.triggers.push(addTrigger(t, who));
-      for (const r of (manifest.routes || [])) created.routes.push(addRoute(r, who));
-    } catch (e) {
-      for (const k of created.routes) delete routes[k];
-      for (const k of created.triggers) delete triggers[k];
-      for (const k of created.actions) delete actions[k];
-      for (const k of created.capabilities) delete capabilities[k];
-      for (const k of created.streams) delete streams[k];
-      throw e;
-    }
-    installed[name] = { name, hash, permissions: p };
-    return { name, hash, permissions: JSON.parse(JSON.stringify(p)) };
-  }
-
   const extensions = () => Object.keys(installed).map((k) => ({ name: installed[k].name, hash: installed[k].hash, permissions: JSON.parse(JSON.stringify(installed[k].permissions)) }));
-
   const sense = (trig) => (flags.off || typeof trig !== 'string' || !trig.trim()) ? null : emit('body.sense', { type: 'trig', data: trig });
-
   const release = (resource) => { delete held[resource]; };
   const spent = () => usd;
   const list = () => Object.keys(routes).map((id) => ({ id, tier: routes[id].tier, owner: routes[id].owner, mode: modeOf(routes[id]), providers: routes[id].providers.slice(), on: Object.assign({}, routes[id].on) }));
   const port = Object.freeze({
-    hear, replied,
-    read,
-    watch,
-    sense,
-    request,
-    list,
-    extensions,
-    install,
-    uninstall,
-    spent, release,
+    hear, replied, read, watch, sense, request, list, extensions,
+    install: reg.install, uninstall: reg.uninstall, spent, release,
     flags: () => ({ off: !!flags.off, routes: Object.assign({}, flags.routes) })
   });
 
   return {
-    action, command: (spec) => addCommand(spec, { tier: 'system' }), provider, calibrate, extension, hear, replied, read, watch, emit,
-    stream: (decl) => { assertOpen(); return addStream(decl, { tier: 'system' }); },
-    capability: (spec) => { assertOpen(); return addCapability(spec, { tier: 'system' }); },
-    trigger: (spec) => { assertOpen(); return addTrigger(spec, { tier: 'system' }); },
+    action, command: (spec) => reg.addCommand(spec, { tier: 'system' }), provider, calibrate, extension, hear, replied, read, watch, emit,
+    stream: (decl) => { assertOpen(); return reg.addStream(decl, { tier: 'system' }); },
+    capability: (spec) => { assertOpen(); return reg.addCapability(spec, { tier: 'system' }); },
+    trigger: (spec) => { assertOpen(); return reg.addTrigger(spec, { tier: 'system' }); },
     invoke: (id, input, mode) => { const c = has(capabilities, id) ? capabilities[id] : null; if (!c) throw new Error('sysrouter: unknown capability ' + id); return resolveCapability(c, input, mode); },
-    route: (spec) => { assertOpen(); return addRoute(spec, { tier: 'system' }); },
-    core: (spec) => { if (sealed) throw new Error('sysrouter: core routes are registered before seal()'); return addRoute(spec, { tier: 'core' }); },
+    route: (spec) => { assertOpen(); return reg.addRoute(spec, { tier: 'system' }); },
+    core: (spec) => { if (sealed) throw new Error('sysrouter: core routes are registered before seal()'); return reg.addRoute(spec, { tier: 'core' }); },
     unroute: (id) => { assertOpen(); const r = routes[id]; if (!r || r.tier === 'extension') return false; delete routes[id]; return true; },
     setBlockList,
     seal: () => { sealed = true; },
