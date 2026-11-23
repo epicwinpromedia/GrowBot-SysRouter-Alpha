@@ -129,6 +129,7 @@ for (const name of ["jev", "clef", "clef-flash"]) {
       if (m.abort) { aborted++; parentPort.postMessage({ id: 99999, ok: true, output: [1] }); return; }
       if (m.input === 'slow') { setTimeout(() => parentPort.postMessage({ id: m.id, ok: true, output: [1, 2], model: 'w1' }), 60); return; }
       if (m.input === 'bad') { parentPort.postMessage({ id: m.id, ok: true, output: 'not-an-array', model: 'w1' }); return; }
+      if (m.input === 'fail') { parentPort.postMessage({ id: m.id, ok: false, error: 'worker boom', output: [1, 2], model: 'w1' }); return; }
       if (m.primitive === 'embed') { parentPort.postMessage({ id: m.id, ok: true, output: [String(m.input).length, 1], model: 'w1' }); return; }
       if (m.primitive === 'choice') { parentPort.postMessage({ id: m.id, ok: true, output: { type: 'choice', choice: 'spin', probabilities: { spin: 0.99, none: 0.01 } }, model: 'w1', usd: 0.0001 }); return; }
       parentPort.postMessage({ id: m.id, ok: false, error: 'unsupported' });
@@ -138,9 +139,10 @@ for (const name of ["jev", "clef", "clef-flash"]) {
   const eng = workerEngine(w, { primitives: { embed: {}, choice: {} }, model: "w1" });
   const eRes = await eng.ask({ primitive: "embed", input: "hello" });
   check("workerEngine: embed round trip returns checked vector and model", Array.isArray(eRes.output) && eRes.output[0] === 5 && eRes.model === "w1", eRes);
-  let badErr = "";
+  let badErr = "", failErr = "";
   try { await eng.ask({ primitive: "embed", input: "bad" }); } catch (e) { badErr = e.message; }
-  check("workerEngine: malformed output is rejected by primitive checker", /bad_answer/.test(badErr), badErr);
+  try { await eng.ask({ primitive: "embed", input: "fail" }); } catch (e) { failErr = e.message; }
+  check("workerEngine: malformed output and ok:false errors are rejected", /bad_answer/.test(badErr) && /worker boom/.test(failErr), [badErr, failErr]);
   const ctl = new AbortController();
   const slowP = eng.ask({ primitive: "embed", input: "slow" }, { signal: ctl.signal });
   setTimeout(() => ctl.abort("timeout"), 10);

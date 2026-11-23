@@ -456,11 +456,13 @@ export function createRouter(opts) {
           if (overBudget(r, pid)) { row(r, 'budget', { p: pid, ms: 0 }); return { ok: false, why: 'budget' }; }
           let raw;
           try {
-            let onAbort;
-            const aborted = new Promise((_, rej) => { onAbort = () => rej(new Error('timeout')); ctl.signal.addEventListener('abort', onAbort, { once: true }); });
-            const p = P.sync ? P.ask({ state: cur, input: cur, primitive: st.primitive, signal: ctl.signal }, { signal: ctl.signal, route: cap.id })
-              : Promise.race([Promise.resolve().then(() => P.ask({ state: cur, input: cur, primitive: st.primitive, signal: ctl.signal }, { signal: ctl.signal, route: cap.id })), aborted]).finally(() => ctl.signal.removeEventListener('abort', onAbort));
-            raw = await p;
+            if (P.sync) {
+              raw = P.ask({ state: cur, input: cur, primitive: st.primitive, signal: ctl.signal }, { signal: ctl.signal, route: cap.id });
+            } else {
+              let onAbort;
+              const aborted = new Promise((_, rej) => { onAbort = () => rej(new Error('timeout')); ctl.signal.addEventListener('abort', onAbort, { once: true }); });
+              raw = await Promise.race([Promise.resolve().then(() => P.ask({ state: cur, input: cur, primitive: st.primitive, signal: ctl.signal }, { signal: ctl.signal, route: cap.id })), aborted]).finally(() => ctl.signal.removeEventListener('abort', onAbort));
+            }
           } catch (e) { const why = ctl.signal.aborted ? (ctl.signal.reason === 'stale' ? 'stale' : 'timeout') : 'error'; row(r, why, { p: pid, ms: Math.round(now() - t0) }); return { ok: false, why }; }
           if (ctl.signal.aborted) { const why = ctl.signal.reason === 'stale' ? 'stale' : 'timeout'; row(r, why, { p: pid, ms: Math.round(now() - t0) }); return { ok: false, why }; }
           if (raw && typeof raw === 'object' && Number.isFinite(raw.usd) && raw.usd >= 0) addSpend(r, pid, raw.usd);

@@ -10,6 +10,7 @@ const here = new URL(".", import.meta.url).pathname, quick = process.argv.includ
 const TESTS = [
   ["test_router.mjs", "the router's laws"],
   ["test_providers.mjs", "providers and registrations, against recorded live replies"],
+  ["test_boot.mjs", "the shipped boot path against real models"],
   ["test_keys.mjs", "the key resolver"],
   ["test_readers_regression.mjs", "Brit's readers unchanged, alone and behind the router"],
   ["test_funnel.mjs", "the real input funnel with and without the integration"],

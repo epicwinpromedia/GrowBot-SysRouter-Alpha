@@ -10,8 +10,8 @@ import { tmpdir } from "node:os";
 import { ROOT } from "../bench/lib.mjs";
 import { check, done } from "./t.mjs";
 
-const R = "src/sysrouter.js", REG = "src/registry.js";
-const SOURCES = { [R]: readFileSync(ROOT + R, "utf8"), [REG]: readFileSync(ROOT + REG, "utf8") };
+const R = "src/sysrouter.js", REG = "src/registry.js", W = "src/worker-engine.js", BOOT = "src/boot.js";
+const SOURCES = { [R]: readFileSync(ROOT + R, "utf8"), [REG]: readFileSync(ROOT + REG, "utf8"), [W]: readFileSync(ROOT + W, "utf8"), [BOOT]: readFileSync(ROOT + BOOT, "utf8") };
 // [the law that is broken, the exact text to find, what to put instead, optional file (default src/sysrouter.js)]
 const MUTANTS = [
   ["a shadow route acts", "if (mode === 'shadow' && !isCap) return row(r, 'shadow', x);", ""],
@@ -78,7 +78,11 @@ const MUTANTS = [
   ["a reply with no kind writes an agree row", "if (kind === 'event') {", "if (kind === undefined || kind === 'event') {"],
   ["a creature unsure row overwrites person lastPick", "if (r._from) o.from = r._from;", ""],
   ["a creature tick aborts person in-flight emote", "const sk = r.input === 'both' ? rid + ':' + from : rid;", "const sk = rid;"],
-  ["an unexposed fuzzy command logs none instead of unexposed", "if (r.unexposed && r.unexposed.includes(pick)) { x.did = 0; return row(r, 'unexposed', x); }", ""]
+  ["an unexposed fuzzy command logs none instead of unexposed", "if (r.unexposed && r.unexposed.includes(pick)) { x.did = 0; return row(r, 'unexposed', x); }", ""],
+  ["workerEngine accepts malformed primitive output", "if (checked === null) { entry.reject(new Error('sysrouter: bad_answer')); return; }", "", W],
+  ["workerEngine forwards invalid worker errors as ok", "if (!msg.ok) { entry.reject(new Error(String(msg.error || 'worker error'))); return; }", "", W],
+  ["boot exposes all 8 commands when host.command is used without host.commands", "const DEFAULT_COMMAND_KINDS = ['halt', 'still', 'follow', 'unfollow'];", "const DEFAULT_COMMAND_KINDS = Object.keys(FUZZY.on);", BOOT],
+  ["boot publishes unsealed router instead of frozen port", "w.SysRouter = sr.port();", "w.SysRouter = sr;", BOOT]
 ];
 
 const dir = mkdtempSync(tmpdir() + "/sysrouter-mutants-");
@@ -88,7 +92,7 @@ mkdirSync(dir + "/src"); for (const f of readdirSync(ROOT + "src")) copyFileSync
 rmSync(dir + "/test"); mkdirSync(dir + "/test"); for (const f of readdirSync(ROOT + "test")) if (f.endsWith(".mjs")) copyFileSync(ROOT + "test/" + f, dir + "/test/" + f); else symlinkSync(ROOT + "test/" + f, dir + "/test/" + f);
 rmSync(dir + "/bench"); mkdirSync(dir + "/bench"); for (const f of readdirSync(ROOT + "bench")) copyFileSync(ROOT + "bench/" + f, dir + "/bench/" + f);
 
-const SUITE = [["test/test_router.mjs"], ["test/test_providers.mjs"], ["test/fuzz_router.mjs", "8000"]];
+const SUITE = [["test/test_router.mjs"], ["test/test_providers.mjs"], ["test/test_boot.mjs"], ["test/fuzz_router.mjs", "8000"]];
 const runs = () => { for (const [t, ...a] of SUITE) { const r = spawnSync(process.execPath, [dir + "/" + t, ...a], { cwd: dir, encoding: "utf8", timeout: 120000 }); if (r.status !== 0) return t.replace("test/", ""); } return ""; };
 
 for (const [file, src] of Object.entries(SOURCES)) writeFileSync(dir + "/" + file, src);
